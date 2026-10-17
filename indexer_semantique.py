@@ -49,7 +49,7 @@ print("⏳ Cette étape peut prendre quelques minutes (API Google)...")
 MODELE_EMBEDDING = "gemini-embedding-001"
 
 # On traite par lots (batchs) pour éviter de surcharger l'API d'un coup
-BATCH_SIZE = 100
+BATCH_SIZE = 20
 embeddings = []
 
 for i in range(0, len(versets), BATCH_SIZE):
@@ -72,13 +72,29 @@ for i in range(0, len(versets), BATCH_SIZE):
             embeddings.append(emb.values)
 
         # Petite pause pour ne pas dépasser le quota de l'API gratuite
-        time.sleep(1)
+        time.sleep(13)
 
         print(f"   ✅ {min(i + BATCH_SIZE, len(versets))} / {len(versets)} versets traités")
 
     except Exception as e:
         print(f"❌ Erreur sur le batch {i} : {e}")
-        raise e
+        if "429" in str(e) or "RESOURCE_EXHAUSTED" in str(e):
+            print("⏳ Rate limit atteint, pause de 60s puis nouvelle tentative...")
+            time.sleep(60)
+            # Une seule nouvelle tentative
+            result = client.models.embed_content(
+                model=MODELE_EMBEDDING,
+                contents=textes_batch,
+                config=types.EmbedContentConfig(
+                    task_type="RETRIEVAL_DOCUMENT",
+                    output_dimensionality=768,
+                ),
+            )
+            for emb in result.embeddings:
+                embeddings.append(emb.values)
+            print(f"   ✅ (retry) {min(i + BATCH_SIZE, len(versets))} / {len(versets)}")
+        else:
+            raise e
 
 print("\n✅ Tous les versets ont été transformés !")
 

@@ -1444,10 +1444,10 @@ def _obtenir_resultats_moteur_impl(
             and orchestrateur.moteur
         ):
 
-            resultats = (
+                        resultats = (
                 orchestrateur.moteur.rechercher(
                     requete,
-                    limite=nombre_resultats,
+                    nombre_resultats=nombre_resultats,
                 )
             )
 
@@ -2839,10 +2839,12 @@ def traiter_question_bible_stream(
         for source in sources_finales
     ]
 
-        # ========================================================
+    
+    # ========================================================
     # 12. GÉNÉRATION EN STREAMING
     # ========================================================
     yield {"type": "status", "message": "Apollos rédige…"}
+    
     # Import local (au cas où le module ne serait pas dispo)
     try:
         from generateur_reponse import generer_reponse_biblique_stream
@@ -2853,6 +2855,10 @@ def traiter_question_bible_stream(
         }
         yield {"type": "done"}
         return
+
+
+
+           
 
     # Préparer les versets pour le générateur (comme dans appeler_generateur)
     versets_pour_generateur: List[Dict[str, Any]] = []
@@ -2913,12 +2919,7 @@ def traiter_question_bible_stream(
                 "message": "Je n'ai pas pu générer une réponse.",
             }
 
-    except Exception:
-        logger.exception("Erreur pendant le streaming")
-        yield {
-            "type": "error",
-            "message": "Désolé, une erreur technique est survenue.",
-        }
+
 
     
     except Exception:
