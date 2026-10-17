@@ -1,0 +1,233 @@
+# ============================================================
+# .gitignore — PROJET BIBLE-IA
+# ============================================================
+#
+# Ce fichier indique à Git ce qu'il ne doit PAS sauvegarder
+# ni envoyer sur GitHub.
+#
+# Chaque ligne est un nom de fichier ou de dossier à ignorer.
+# Les lignes commençant par # sont des commentaires.
+# ============================================================
+
+
+# ------------------------------------------------------------
+# 🔐 SECRETS — LE PLUS IMPORTANT
+# ------------------------------------------------------------
+# Ne JAMAIS envoyer de clés API, mots de passe ou tokens.
+# Un secret envoyé une fois sur GitHub reste dans l'historique,
+# même si tu le supprimes ensuite.
+
+.env
+.env.*
+*.key
+*.pem
+secrets.json
+config_secret.py
+
+
+# ------------------------------------------------------------
+# 📦 FICHIERS LOURDS OU REGENERABLES
+# ------------------------------------------------------------
+# Ces fichiers sont soit trop volumineux pour GitHub,
+# soit reconstructibles avec tes scripts.
+#
+# embeddings.npy       -> regenere par indexer_semantique.py
+# profils_versets.json -> regenere par profiler_versets.py
+#
+# NOTE : bible.json et versets_index.json ne sont PAS ignores,
+# car ce sont tes donnees sources. Si un jour bible.json depasse
+# 100 Mo, GitHub le refusera et il faudra le gerer autrement.
+
+embeddings.npy
+profils_versets.json
+
+
+# ------------------------------------------------------------
+# 🐍 FICHIERS TECHNIQUES DE PYTHON
+# ------------------------------------------------------------
+# Crees automatiquement par Python, inutiles a partager.
+
+__pycache__/
+*.py[cod]
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.egg-info/
+dist/
+build/
+
+
+# ------------------------------------------------------------
+# 🏠 ENVIRONNEMENTS VIRTUELS
+# ------------------------------------------------------------
+# Si tu crees un environnement virtuel Python plus tard.
+
+venv/
+env/
+.venv/
+ENV/
+
+
+# ------------------------------------------------------------
+# 🤖 MODELE SENTENCE-TRANSFORMERS
+# ------------------------------------------------------------
+# Le modele telecharge depuis Hugging Face (plusieurs centaines
+# de Mo). Il se retelecharge automatiquement si besoin.
+
+models/
+.cache/
+*.safetensors
+*.bin
+
+
+# ------------------------------------------------------------
+# 💻 FICHIERS DE TON EDITEUR ET DE WINDOWS
+# ------------------------------------------------------------
+
+.vscode/
+.idea/
+*.swp
+Thumbs.db
+desktop.ini
+Desktop.ini
+
+
+# ------------------------------------------------------------
+# 📋 JOURNAUX ET FICHIERS TEMPORAIRES
+# ------------------------------------------------------------
+
+*.log
+logs/
+*.tmp
+*.bak
+
+.env
+.env.*
+!.env.example
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+.venv/
+venv/
+*.egg-info/
+
+# ------------------------------------------------------------
+# 🟢 NEXT.JS / NODE / FRONTEND
+# ------------------------------------------------------------
+node_modules/
+.next/
+out/
+dist/
+*.tsbuildinfo
+next-env.d.ts
+
+# Variables d'environnement Next.js
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Fichiers de build Next.js
+/build
+.next/cache/
+
+# Logs frontend
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# Vercel
+.vercel
+
+# Fichiers système
+.DS_Store
+
+# ------------------------------------------------------------
+# 🟢 NEXT.JS / NODE (frontend)
+# ------------------------------------------------------------
+node_modules/
+.next/
+out/
+*.tsbuildinfo
+next-env.d.ts
+
+# Variables d'environnement Next.js
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Vercel
+.vercel
+
+# OS
+.DS_Store
+
+# ------------------------------------------------------------
+# 🟢 NEXT.JS / NODE (frontend)
+# ------------------------------------------------------------
+node_modules/
+.next/
+out/
+*.tsbuildinfo
+next-env.d.ts
+
+# Variables d'environnement Next.js
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Vercel
+.vercel
+
+# OS
+.DS_Store
+
+# ------------------------------------------------------------
+# 🧹 FICHIERS DE DEVELOPPEMENT (a ne pas versionner)
+# ------------------------------------------------------------
+# Dossiers de conversion temporaires
+temp-lingala/
+temp-kituba/
+temp-bible-repo/
+*.zip
+
+# Scripts de conversion (garde-les en local, pas sur GitHub)
+convert_*.py
+fix_*.py
+diag_*.py
+
+# Sauvegardes
+*.backup
+*.bak
+
+# ------------------------------------------------------------
+# FICHIERS TEMPORAIRES DE DEVELOPPEMENT
+# ------------------------------------------------------------
+
+# Sources brutes de traductions (on garde les JSON convertis)
+frontend/public/translations/*-test.json
+frontend/public/translations/temp-list.txt
+frontend/public/translations/*.v1
+frontend/public/translations/clean_*.py
+frontend/public/translations/ru_synod.json
+frontend/public/translations/zh_cunpss-shen.json
+frontend/public/translations/temp-*.txt
+
+# Fichiers de test
+test_*.py
+test.json
+diagnostic_*.py
+
+# Fichiers lourds / obsolètes
+frelsg.bbl.mybible.gz
+zerlon.xml
+
+# Sources bibliques brutes (archive locale, pas nécessaire au runtime)
+frelsg.bbl.mybible.gz
+*.mybible.gz

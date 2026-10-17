@@ -1,0 +1,241 @@
+@import "tailwindcss";
+
+/* ============================================================
+   LILOBA — Palette beige + noir + marron
+   ============================================================ */
+
+:root {
+  /* Couleur d'action par défaut (personnalisable) */
+  --color-accent: #78350f;   /* Marron */
+  --color-gold: #d4af37;
+
+  /* ==== THÈME CLAIR ==== */
+  --background: #f5efe4;       /* Beige crème */
+  --foreground: #1a1a1a;       /* Noir doux */
+  --muted: #7a6e5d;            /* Brun gris */
+  --border: #d9cdb8;           /* Beige foncé */
+
+  /* Bulles */
+  --bubble-user: #f5f0e8;      /* Beige très clair (proche blanc) */
+  --bubble-user-text: #1a1a1a; /* Noir doux */
+  --bubble-assistant: #ffffff; /* Blanc pur */
+  --bubble-assistant-text: #1a1a1a;
+
+  /* Surfaces */
+  --surface: #ffffff;
+  --surface-hover: #ede4d3;
+  --input-bg: #ffffff;
+}
+
+.dark {
+  /* Couleur d'action par défaut (personnalisable) */
+  --color-accent: #78350f;   /* Marron */
+
+  /* ==== THÈME SOMBRE — NOIR ABSOLU ==== */
+  --background: #000000;       /* Noir pur */
+  --foreground: #f0e5d0;       /* Beige clair */
+  --muted: #8a8070;
+  --border: #1f1f1f;
+
+  /* Bulles */
+  --bubble-user: #857668;      /* Brun très foncé */
+  --bubble-user-text: #f0e5d0; /* Beige clair */
+  --bubble-assistant: #0a0a0a;
+  --bubble-assistant-text: #f0e5d0;
+
+  /* Surfaces */
+  --surface: #0a0a0a;
+  --surface-hover: #141414;
+  --input-bg: #0a0a0a;
+}
+
+/* ============================================================
+   BASE
+   ============================================================ */
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  max-width: 100vw;
+  overflow-x: hidden;
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease;
+}
+
+input,
+textarea,
+select {
+  color: var(--foreground);
+  background: transparent;
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: var(--muted);
+  opacity: 1;
+}
+
+/* ============================================================
+   SCROLLBAR
+   ============================================================ */
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-accent);
+  border-radius: 4px;
+  opacity: 0.5;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-accent);
+  filter: brightness(1.2);
+}
+
+/* ============================================================
+   ANIMATIONS
+   ============================================================ */
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes typing-bounce {
+  0%,
+  60%,
+  100% {
+    transform: translateY(0);
+    opacity: 0.4;
+  }
+  30% {
+    transform: translateY(-6px);
+    opacity: 1;
+  }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.3s ease-out;
+}
+
+/* ============================================================
+   MARKDOWN
+   ============================================================ */
+
+.chat-markdown {
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+}
+
+.chat-markdown > *:first-child {
+  margin-top: 0;
+}
+
+.chat-markdown > *:last-child {
+  margin-bottom: 0;
+}
+
+.chat-markdown ul,
+.chat-markdown ol {
+  padding-left: 0;
+}
+
+.chat-markdown code {
+  font-family: ui-monospace, "SF Mono", Monaco, monospace;
+  font-size: 0.85em;
+}
+
+.chat-markdown hr {
+  margin: 1rem 0;
+  border: 0;
+  border-top: 1px solid var(--border);
+}
+
+/* ============================================================
+   ANIMATIONS — Menu contextuel iOS
+   ============================================================ */
+
+@keyframes scale-in {
+  from {
+    opacity: 0;
+    transform: scale(0.92);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.animate-scale-in {
+  animation: scale-in 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* ============================================================
+   ANIMATIONS — Double-clic verset
+   ============================================================ */
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translate(-50%, 30px);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
+}
+
+@keyframes fadeInOverlay {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* ============================================================
+   SELECT natifs — forcer le thème sombre cohérent
+   ============================================================ */
+
+select {
+  color-scheme: light;
+}
+
+.dark select,
+[data-theme="dark"] select {
+  color-scheme: dark;
+}
+
+/* Options des selects : force le fond sombre */
+.dark select option,
+[data-theme="dark"] select option {
+  background: #1a1a1a;
+  color: #f0e5d0;
+}

@@ -1,0 +1,17 @@
+[
+  {
+    "id": 1,
+    "question": "Comment obtenir le pardon de Dieu?",
+    "versets_attendus": ["1 Jean 1:9", "Éphésiens 1:7", "Psaume 103:12"]
+  },
+  {
+    "id": 2,
+    "question": "Que faire face à l'anxiété et l'inquiétude?",
+    "versets_attendus": ["Philippiens 4:6-7", "Matthieu 6:34", "1 Pierre 5:7"]
+  },
+  {
+    "id": 3,
+    "question": "Comment surmonter la colère?",
+    "versets_attendus": ["Éphésiens 4:26-27", "Jacques 1:19-20", "Proverbes 15:1"]
+  }
+]
