@@ -2,7 +2,6 @@ fastapi
 uvicorn
 pydantic
 numpy
-scikit-learn
-google-generativeai
+google-genai
 python-multipart
 python-dotenv
