@@ -47,6 +47,9 @@ export default function ChatReader({
   compact = false,
   ephemeral = false,
 }: ChatReaderProps) {
+  // 🔧 Mets false quand Apollos sera prêt à répondre
+  const MAINTENANCE = true; 
+
   const { isOnline } = useOnlineStatus();
   const [messages, setMessages] = useState<Message[]>([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -199,6 +202,7 @@ export default function ChatReader({
 
   const handleSend = useCallback(
     async (question: string) => {
+      if (MAINTENANCE) return; // 🔒 Bloque si en maintenance
       if (isLoading) return;
 
       if (!isOnline) {
@@ -366,7 +370,7 @@ export default function ChatReader({
         } else if (err instanceof Error && err.name !== "AbortError") {
           if (err.message.includes("fetch")) {
             errorText =
-              "Impossible de contacter le serveur. Vérifie que le backend est bien lancé sur le port 8000.";
+              "Impossible de contacter le serveur. Vérifie ta connexion internet.";
           }
         }
 
@@ -521,7 +525,7 @@ export default function ChatReader({
 
       <ChatInput
         onSend={handleSend}
-        disabled={inputDisabled}
+        disabled={inputDisabled || MAINTENANCE} // 🔒 Bloque la barre
         offline={!isOnline}
         bibleContext={bibleRef}
       />
