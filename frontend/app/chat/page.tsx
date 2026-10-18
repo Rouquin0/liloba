@@ -544,6 +544,7 @@ import { useRouter } from "next/navigation";
 import { BRANDING } from "@/lib/branding";
 import { isOnboarded } from "@/lib/preferences";
 import ChatReader from "@/components/ChatReader";
+import ApollosMaintenanceBanner from "@/components/ApollosMaintenanceBanner";
 
 // ============================================================
 // ChatPage — Utilise ChatReader (rate limit inclus)
@@ -650,6 +651,9 @@ export default function ChatPage() {
         </button>
       </header>
 
+      <div className="px-3 pt-2 md:px-4">
+        <ApollosMaintenanceBanner compact />
+      </div>
       {/* Contenu du chat (avec rate limit inclus dans ChatReader) */}
       <div className="flex-1 overflow-hidden">
         <ChatReader compact={false} ephemeral={ephemeral} />

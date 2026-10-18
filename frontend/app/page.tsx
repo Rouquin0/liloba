@@ -6,6 +6,12 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { BRANDING } from "@/lib/branding";
 import { isOnboarded } from "@/lib/preferences";
+import ApollosMaintenanceBanner from "@/components/ApollosMaintenanceBanner";
+import DailyVerseCard from "@/components/DailyVerseCard";
+import StreakBadge from "@/components/StreakBadge";
+import InstallPwaButton from "@/components/InstallPwaButton";
+import HistoiresTeaser from "@/components/HistoiresTeaser";
+import OnlineBadge from "@/components/OnlineBadge";
 
 
 export default function HomePage() {
@@ -33,7 +39,11 @@ export default function HomePage() {
             </p>
           </div>
         </div>
-        
+        <div className="flex items-center gap-2">
+          <OnlineBadge />
+          <StreakBadge />
+          <InstallPwaButton />
+        </div>
       </header>
 
       {/* Contenu */}
@@ -89,20 +99,15 @@ export default function HomePage() {
               </span>
             </Link>
 
-            {/* Carte Histoires (à venir) */}
-            <div className="flex items-center gap-4 rounded-2xl border-2 border-dashed border-[var(--border)] bg-[var(--surface)] p-5 opacity-50">
-              <span className="text-4xl" aria-hidden="true">
-                📚
-              </span>
-              <div className="flex-1">
-                <div className="text-base font-bold text-[var(--muted)] md:text-lg">
-                  Histoires bibliques
-                </div>
-                <div className="text-xs text-[var(--muted)] md:text-sm">
-                  Bientôt disponible
-                </div>
-              </div>
-            </div>
+            <ApollosMaintenanceBanner />
+
+            <DailyVerseCard />
+
+            <HistoiresTeaser />
+
+            <p className="rounded-xl bg-green-500/10 px-4 py-2.5 text-center text-xs font-medium text-green-700 dark:text-green-300">
+              ✓ Bible disponible sans internet — 4.2 Mo déjà sur ton téléphone
+            </p>
           </div>
         </div>
       </main>
