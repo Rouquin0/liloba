@@ -28,7 +28,7 @@ export default function HomePage() {
     <div className="flex min-h-dvh flex-col bg-[var(--background)]">
       {/* Header */}
       <header className="flex items-center justify-between border-b border-[var(--border)] bg-[var(--surface)]/80 px-4 py-3 backdrop-blur-sm md:px-6">
-                <div className="flex items-center gap-3">
+        <div className="flex items-center gap-3">
           <Logo size={36} />
           <div className="flex flex-col">
             <h1 className="text-sm font-bold text-[var(--color-primary)] md:text-base">
@@ -46,8 +46,8 @@ export default function HomePage() {
         </div>
       </header>
 
-      {/* Contenu */}
-      <main className="flex flex-1 items-center justify-center px-4 py-8">
+      {/* Contenu - pb-24 ajouté pour l'espace en bas */}
+      <main className="flex flex-1 items-center justify-center px-4 pt-8 pb-24">
         <div className="w-full max-w-lg">
           <h2 className="mb-2 text-center text-xl font-bold text-[var(--color-primary)] md:text-2xl">
             Que veux-tu faire ?
@@ -62,9 +62,11 @@ export default function HomePage() {
               href="/bible"
               className="group flex items-center gap-4 rounded-2xl border-2 border-[var(--border)] bg-[var(--surface)] p-5 shadow-sm transition-all hover:-translate-y-1 hover:border-[var(--color-primary)] hover:shadow-lg"
             >
-              <span className="text-4xl" aria-hidden="true">
-                📖
-              </span>
+              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-[var(--color-primary)]/10 text-[var(--color-primary)]">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-6 w-6">
+                  <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"/>
+                </svg>
+              </div>
               <div className="flex-1">
                 <div className="text-base font-bold text-[var(--color-primary)] md:text-lg">
                   Lire la Bible
@@ -83,9 +85,11 @@ export default function HomePage() {
               href="/chat"
               className="group flex items-center gap-4 rounded-2xl border-2 border-[var(--border)] bg-[var(--surface)] p-5 shadow-sm transition-all hover:-translate-y-1 hover:border-[var(--color-accent)] hover:shadow-lg"
             >
-              <span className="text-4xl" aria-hidden="true">
-                💬
-              </span>
+              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-[var(--color-accent)]/10 text-[var(--color-accent)]">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-6 w-6">
+                  <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+                </svg>
+              </div>
               <div className="flex-1">
                 <div className="text-base font-bold text-[var(--color-accent)] md:text-lg">
                   Parler à {BRANDING.assistant.name}
@@ -106,11 +110,11 @@ export default function HomePage() {
             <HistoiresTeaser />
 
             <div className="flex items-center justify-center gap-2 rounded-xl bg-green-500/10 px-4 py-2.5 text-xs font-medium text-green-700 dark:text-green-300">
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4 shrink-0">
-    <path d="M20 6 9 17l-5-5"/>
-  </svg>
-  <span>Bible disponible sans internet — 4.2 Mo déjà sur ton téléphone</span>
-</div>
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4 shrink-0">
+                <path d="M20 6 9 17l-5-5"/>
+              </svg>
+              <span>Bible disponible sans internet — 4.2 Mo déjà sur ton téléphone</span>
+            </div>
           </div>
         </div>
       </main>
