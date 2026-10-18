@@ -25,7 +25,8 @@ export default function HomePage() {
   }, [router]);
 
   return (
-    <div className="flex min-h-dvh flex-col bg-[var(--background)]">
+    // On remplace min-h-dvh par min-h-screen pour permettre le défilement naturel
+    <div className="flex min-h-screen flex-col bg-[var(--background)]">
       {/* Header */}
       <header className="flex items-center justify-between border-b border-[var(--border)] bg-[var(--surface)]/80 px-4 py-3 backdrop-blur-sm md:px-6">
         <div className="flex items-center gap-3">
@@ -46,8 +47,8 @@ export default function HomePage() {
         </div>
       </header>
 
-      {/* Contenu - pb-24 ajouté pour l'espace en bas */}
-      <main className="flex flex-1 items-center justify-center px-4 pt-8 pb-24">
+      {/* Contenu : on retire items-center pour que ça commence en haut, et on laisse la place en bas */}
+      <main className="flex flex-1 flex-col items-center px-4 pt-8 pb-24">
         <div className="w-full max-w-lg">
           <h2 className="mb-2 text-center text-xl font-bold text-[var(--color-primary)] md:text-2xl">
             Que veux-tu faire ?
