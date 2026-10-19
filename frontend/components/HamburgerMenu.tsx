@@ -391,7 +391,7 @@ export default function HamburgerMenu({
             <Link
               href="/carnet"
               onClick={onClose}
-              className="group mb-4 flex items-center gap-3 rounded-xl px-3 py-1.5 transition-all hover:bg-[var(--surface-hover)]"
+              className="group flex items-center gap-3 rounded-xl px-3 py-1.5 transition-all hover:bg-[var(--surface-hover)]"
             >
               <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg text-[var(--muted)]">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4">
@@ -403,6 +403,29 @@ export default function HamburgerMenu({
               </span>
               <span className="flex-1 text-sm text-[var(--foreground)]">
                 Mon Carnet
+              </span>
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4 text-[var(--muted)] transition-transform group-hover:translate-x-0.5">
+                <path d="m9 18 6-6-6-6" />
+              </svg>
+            </Link>
+          )}
+
+          {/* ---------- LE MIROIR (NOUVEAU) ---------- */}
+          {!searchQuery && (
+            <Link
+              href="/miroir"
+              onClick={onClose}
+              className="group mb-4 flex items-center gap-3 rounded-xl px-3 py-1.5 transition-all hover:bg-[var(--surface-hover)]"
+            >
+              <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg text-[var(--muted)]">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4">
+                  <circle cx="12" cy="12" r="10" />
+                  <path d="M12 16v-4" />
+                  <path d="M12 8h.01" />
+                </svg>
+              </span>
+              <span className="flex-1 text-sm text-[var(--foreground)]">
+                Le Miroir
               </span>
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4 text-[var(--muted)] transition-transform group-hover:translate-x-0.5">
                 <path d="m9 18 6-6-6-6" />
