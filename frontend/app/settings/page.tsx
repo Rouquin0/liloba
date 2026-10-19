@@ -261,13 +261,14 @@ export default function SettingsPage() {
   const isDark = resolvedTheme === "dark";
 
   return (
-    // Ajout de w-full et overflow-x-hidden pour empêcher de dépasser à droite
-    <div className="flex h-full w-full flex-col overflow-x-hidden bg-[var(--background)]">
+    // w-0 + min-w-full : la page remplit 100 % du parent mais ne l'élargit jamais
+    // (un contenu large ne peut plus agrandir tout le layout au-delà de l'écran)
+    <div className="flex h-full w-0 min-w-full max-w-full flex-col overflow-x-hidden bg-[var(--background)]">
       {/* ==================== HEADER ==================== */}
       <header className="sticky top-0 z-30 flex items-center gap-3 border-b border-[var(--border)] bg-[var(--background)]/80 px-4 py-3 backdrop-blur-sm md:px-6 md:py-4">
         <Link
           href="/chat"
-          className="flex h-8 w-8 items-center justify-center rounded-lg text-[var(--muted)] transition-colors hover:bg-[var(--surface-hover)] hover:text-[var(--foreground)]"
+          className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-[var(--muted)] transition-colors hover:bg-[var(--surface-hover)] hover:text-[var(--foreground)]"
           aria-label="Retour"
         >
           <svg
@@ -285,15 +286,15 @@ export default function SettingsPage() {
           </svg>
         </Link>
 
-        <div className="flex flex-1 items-center gap-2">
+        <div className="flex min-w-0 flex-1 items-center gap-2">
           <Logo size={24} />
-          <h1 className="text-sm font-semibold text-[var(--foreground)] md:text-base">
+          <h1 className="truncate text-sm font-semibold text-[var(--foreground)] md:text-base">
             Paramètres
           </h1>
         </div>
 
         {saved && (
-          <span className="animate-fade-in flex items-center gap-1 text-xs font-medium text-green-600">
+          <span className="animate-fade-in flex shrink-0 items-center gap-1 text-xs font-medium text-green-600">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               viewBox="0 0 24 24"
@@ -312,19 +313,19 @@ export default function SettingsPage() {
       </header>
 
       {/* ==================== CONTENU ==================== */}
-      <div className="flex-1 overflow-y-auto">
-        <div className="mx-auto max-w-2xl px-4 py-4 md:px-6 md:py-6">
+      <div className="min-w-0 flex-1 overflow-y-auto overflow-x-hidden">
+        <div className="mx-auto w-full min-w-0 max-w-2xl px-4 py-4 md:px-6 md:py-6">
           {/* ========== 1. APPARENCE ========== */}
           <Section title="Apparence">
             <SettingRow>
-              <div className="flex items-center gap-3">
+              <div className="flex min-w-0 items-center gap-3">
                 <div
-                  className="flex h-7 w-7 items-center justify-center rounded-lg md:h-9 md:w-9"
+                  className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg md:h-9 md:w-9"
                   style={{ background: "var(--surface-hover)" }}
                 >
                   {isDark ? <IconMoon /> : <IconSun />}
                 </div>
-                <div className="flex flex-col">
+                <div className="flex min-w-0 flex-col">
                   <span className="text-sm font-medium text-[var(--foreground)]">
                     Mode {isDark ? "sombre" : "clair"}
                   </span>
@@ -337,14 +338,14 @@ export default function SettingsPage() {
             </SettingRow>
 
             <div className="border-b border-[var(--border)] py-3 md:py-4">
-              <div className="mb-3 flex items-center gap-3 md:mb-4">
+              <div className="mb-3 flex min-w-0 items-center gap-3 md:mb-4">
                 <div
-                  className="flex h-7 w-7 items-center justify-center rounded-lg md:h-9 md:w-9"
+                  className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg md:h-9 md:w-9"
                   style={{ background: "var(--surface-hover)" }}
                 >
                   <IconBrush />
                 </div>
-                <div className="flex flex-col">
+                <div className="flex min-w-0 flex-col">
                   <span className="text-sm font-medium text-[var(--foreground)]">
                     Couleur d&apos;accent
                   </span>
@@ -391,6 +392,7 @@ export default function SettingsPage() {
           {/* ========== 2. LANGUE (mobile uniquement) ========== */}
           <div className="md:hidden">
             <Section title="Langue">
+              <div className="min-w-0 max-w-full">
               <SettingSelect<DefaultTranslationId>
                 icon={<IconBook />}
                 title="Traduction par défaut"
@@ -404,12 +406,13 @@ export default function SettingsPage() {
                   flag: tr.flag,
                 }))}
               />
+              </div>
             </Section>
           </div>
 
           {/* ========== 3. ÂGE ========== */}
           <Section title="Mon âge">
-            <div className="flex flex-col">
+            <div className="flex min-w-0 flex-col">
               {AGE_OPTIONS.map((option, index) => {
                 const isSelected = age === option.value;
                 return (
@@ -436,7 +439,7 @@ export default function SettingsPage() {
                     >
                       {ROMAN_NUMERALS[index] ?? "•"}
                     </span>
-                    <div className="flex-1">
+                    <div className="min-w-0 flex-1">
                       <div
                         className={`text-sm transition-colors ${
                           isSelected
@@ -452,7 +455,7 @@ export default function SettingsPage() {
                     </div>
                     {isSelected && (
                       <span
-                        className="flex h-5 w-5 items-center justify-center rounded-full text-[10px] text-white"
+                        className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full text-[10px] text-white"
                         style={{ background: "var(--color-accent)" }}
                       >
                         <svg
@@ -479,14 +482,14 @@ export default function SettingsPage() {
           <Section title="Lecture & typographie">
             {/* Taille du texte */}
             <div className="border-b border-[var(--border)] py-3 md:py-4">
-              <div className="mb-3 flex items-center gap-3 md:mb-4">
+              <div className="mb-3 flex min-w-0 items-center gap-3 md:mb-4">
                 <div
-                  className="flex h-7 w-7 items-center justify-center rounded-lg md:h-9 md:w-9"
+                  className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg md:h-9 md:w-9"
                   style={{ background: "var(--surface-hover)" }}
                 >
                   <IconTextSize />
                 </div>
-                <div className="flex flex-col">
+                <div className="flex min-w-0 flex-col">
                   <span className="text-sm font-medium text-[var(--foreground)]">
                     Taille du texte
                   </span>
@@ -512,13 +515,13 @@ export default function SettingsPage() {
                 </button>
                 
                 {/* Les options (PETIT, MOYEN, etc) */}
-                <div className="flex w-full justify-between gap-1 rounded-lg border border-[var(--border)] p-1 md:flex-1 md:border-none md:p-0">
+                <div className="flex w-full min-w-0 justify-between gap-1 rounded-lg border border-[var(--border)] p-1 md:flex-1 md:border-none md:p-0">
                   {TEXT_SIZE_OPTIONS.map((opt) => (
                     <button
                       key={opt.value}
                       type="button"
                       onClick={() => handleTextSize(opt.value)}
-                      className={`flex-1 rounded-md py-1.5 text-[10px] font-medium uppercase tracking-wide transition-all md:rounded-lg md:py-2 ${
+                      className={`min-w-0 flex-1 rounded-md px-0.5 py-1.5 text-[10px] font-medium uppercase tracking-wide transition-all md:rounded-lg md:py-2 ${
                         textSize === opt.value
                           ? "bg-[var(--color-accent)] text-white shadow-sm"
                           : "text-[var(--muted)] hover:bg-[var(--surface-hover)]"
@@ -546,14 +549,14 @@ export default function SettingsPage() {
 
             {/* Police */}
             <div className="border-b border-[var(--border)] py-3 md:py-4">
-              <div className="mb-3 flex items-center gap-3 md:mb-4">
+              <div className="mb-3 flex min-w-0 items-center gap-3 md:mb-4">
                 <div
-                  className="flex h-7 w-7 items-center justify-center rounded-lg md:h-9 md:w-9"
+                  className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg md:h-9 md:w-9"
                   style={{ background: "var(--surface-hover)" }}
                 >
                   <IconFont />
                 </div>
-                <div className="flex flex-col">
+                <div className="flex min-w-0 flex-col">
                   <span className="text-sm font-medium text-[var(--foreground)]">
                     Style de police
                   </span>
@@ -622,14 +625,14 @@ export default function SettingsPage() {
 
             {/* Interligne */}
             <div className="border-b border-[var(--border)] py-3 md:py-4">
-              <div className="mb-3 flex items-center gap-3 md:mb-4">
+              <div className="mb-3 flex min-w-0 items-center gap-3 md:mb-4">
                 <div
-                  className="flex h-7 w-7 items-center justify-center rounded-lg md:h-9 md:w-9"
+                  className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg md:h-9 md:w-9"
                   style={{ background: "var(--surface-hover)" }}
                 >
                   <IconLineHeight />
                 </div>
-                <div className="flex flex-col">
+                <div className="flex min-w-0 flex-col">
                   <span className="text-sm font-medium text-[var(--foreground)]">
                     Espacement
                   </span>
@@ -658,14 +661,14 @@ export default function SettingsPage() {
 
             {/* Mode d'affichage */}
             <SettingRow>
-              <div className="flex items-center gap-3">
+              <div className="flex min-w-0 items-center gap-3">
                 <div
-                  className="flex h-7 w-7 items-center justify-center rounded-lg md:h-9 md:w-9"
+                  className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg md:h-9 md:w-9"
                   style={{ background: "var(--surface-hover)" }}
                 >
                   <IconLayout />
                 </div>
-                <div className="flex flex-col">
+                <div className="flex min-w-0 flex-col">
                   <span className="text-sm font-medium text-[var(--foreground)]">
                     Mode d&apos;affichage
                   </span>
@@ -691,14 +694,14 @@ export default function SettingsPage() {
           <Section title="Données & sauvegarde">
             {/* Export / Import */}
             <div className="border-b border-[var(--border)] py-3 md:py-4">
-              <div className="mb-3 flex items-center gap-3 md:mb-4">
+              <div className="mb-3 flex min-w-0 items-center gap-3 md:mb-4">
                 <div
-                  className="flex h-7 w-7 items-center justify-center rounded-lg md:h-9 md:w-9"
+                  className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg md:h-9 md:w-9"
                   style={{ background: "var(--surface-hover)" }}
                 >
                   <IconExchange />
                 </div>
-                <div className="flex flex-col">
+                <div className="flex min-w-0 flex-col">
                   <span className="text-sm font-medium text-[var(--foreground)]">
                     Exporter / Importer
                   </span>
@@ -737,14 +740,14 @@ export default function SettingsPage() {
 
             {/* Espace mémoire */}
             <div className="border-b border-[var(--border)] py-3 md:py-4">
-              <div className="mb-3 flex items-center gap-3 md:mb-4">
+              <div className="mb-3 flex min-w-0 items-center gap-3 md:mb-4">
                 <div
-                  className="flex h-7 w-7 items-center justify-center rounded-lg md:h-9 md:w-9"
+                  className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg md:h-9 md:w-9"
                   style={{ background: "var(--surface-hover)" }}
                 >
                   <IconHardDrive />
                 </div>
-                <div className="flex flex-col">
+                <div className="flex min-w-0 flex-col">
                   <span className="text-sm font-medium text-[var(--foreground)]">
                     Espace utilisé
                   </span>
@@ -775,14 +778,14 @@ export default function SettingsPage() {
 
             {/* Gestion cache hors-ligne */}
             <div className="py-3 md:py-4">
-              <div className="mb-3 flex items-center gap-3 md:mb-4">
+              <div className="mb-3 flex min-w-0 items-center gap-3 md:mb-4">
                 <div
-                  className="flex h-7 w-7 items-center justify-center rounded-lg md:h-9 md:w-9"
+                  className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg md:h-9 md:w-9"
                   style={{ background: "var(--surface-hover)" }}
                 >
                   <IconCloud />
                 </div>
-                <div className="flex flex-col">
+                <div className="flex min-w-0 flex-col">
                   <span className="text-sm font-medium text-[var(--foreground)]">
                     Bible hors ligne
                   </span>
@@ -826,7 +829,7 @@ export default function SettingsPage() {
               )}
               
               {/* 🛠️ VÉRIFICATEUR HORS LIGNE (NOUVEAU) */}
-              <div className="mt-4 md:ml-12">
+              <div className="mt-4 min-w-0 md:ml-12">
                 <OfflineCheckSection onChanged={refreshStorage} />
               </div>
             </div>
@@ -834,14 +837,16 @@ export default function SettingsPage() {
 
           {/* ========== 6. MES SURLIGNAGES ========== */}
           <Section title="Mes surlignages">
-            <HighlightsSection />
+            <div className="min-w-0 max-w-full">
+              <HighlightsSection />
+            </div>
           </Section>
 
           {/* ========== 7. À PROPOS ========== */}
           <Section title="À propos">
             <div className="flex items-center gap-3 border-b border-[var(--border)] py-3">
               <div
-                className="flex h-10 w-10 items-center justify-center rounded-full"
+                className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full"
                 style={{
                   background:
                     "color-mix(in srgb, var(--color-accent) 15%, transparent)",
@@ -851,7 +856,7 @@ export default function SettingsPage() {
               >
                 <Logo size={24} />
               </div>
-              <div>
+              <div className="min-w-0">
                 <div className="text-sm font-medium text-[var(--foreground)]">
                   {BRANDING.app.name}
                 </div>
@@ -875,7 +880,7 @@ export default function SettingsPage() {
               onClick={handleResetAll}
               className="flex w-full items-center justify-between gap-3 border-b border-[var(--border)] py-3 text-left transition-all hover:opacity-80"
             >
-              <div className="flex flex-col">
+              <div className="flex min-w-0 flex-col">
                 <span className="text-sm font-medium text-red-500">
                   Effacer toutes mes données
                 </span>
@@ -937,7 +942,7 @@ function Section({
 
 function SettingRow({ children }: { children: React.ReactNode }) {
   return (
-    <div className="flex items-center justify-between border-b border-[var(--border)] py-3 md:py-4">
+    <div className="flex items-center justify-between gap-3 border-b border-[var(--border)] py-3 md:py-4">
       {children}
     </div>
   );
