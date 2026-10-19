@@ -50,7 +50,7 @@ import {
 } from "@/lib/offline-bible";
 import { applyAccentColor } from "@/hooks/useCustomColors";
 import HighlightsSection from "@/components/HighlightsSection";
-import OfflineCheckSection from "@/components/OfflineCheckSection"; // 👈 NOUVEL IMPORT
+import OfflineCheckSection from "@/components/OfflineCheckSection";
 import SettingSelect from "@/components/SettingSelect";
 import Logo from "@/components/Logo";
 import { TRANSLATIONS } from "@/lib/translations";
@@ -261,7 +261,8 @@ export default function SettingsPage() {
   const isDark = resolvedTheme === "dark";
 
   return (
-    <div className="flex h-full flex-col bg-[var(--background)]">
+    // Ajout de w-full et overflow-x-hidden pour empêcher de dépasser à droite
+    <div className="flex h-full w-full flex-col overflow-x-hidden bg-[var(--background)]">
       {/* ==================== HEADER ==================== */}
       <header className="sticky top-0 z-30 flex items-center gap-3 border-b border-[var(--border)] bg-[var(--background)]/80 px-4 py-3 backdrop-blur-sm md:px-6 md:py-4">
         <Link
@@ -387,7 +388,7 @@ export default function SettingsPage() {
             </div>
           </Section>
 
-                    {/* ========== 2. LANGUE (mobile uniquement) ========== */}
+          {/* ========== 2. LANGUE (mobile uniquement) ========== */}
           <div className="md:hidden">
             <Section title="Langue">
               <SettingSelect<DefaultTranslationId>
@@ -417,9 +418,7 @@ export default function SettingsPage() {
                     type="button"
                     onClick={() => handleAgeChange(option.value)}
                     className={`group flex items-center gap-3 border-b border-[var(--border)] py-3 text-left transition-all last:border-b-0 ${
-                      isSelected
-                        ? ""
-                        : "hover:bg-[var(--surface-hover)]"
+                      isSelected ? "" : "hover:bg-[var(--surface-hover)]"
                     }`}
                   >
                     <span
@@ -492,35 +491,36 @@ export default function SettingsPage() {
                     Taille du texte
                   </span>
                   <span className="text-xs text-[var(--muted)]">
-                    {TEXT_SIZE_OPTIONS.find((o) => o.value === textSize)
-                      ?.label ?? "Moyen"}
+                    {TEXT_SIZE_OPTIONS.find((o) => o.value === textSize)?.label ?? "Moyen"}
                   </span>
                 </div>
               </div>
-              <div className="flex items-center gap-1.5 md:ml-12 md:gap-2">
+              
+              {/* Conteneur flex-col sur mobile, flex-row sur PC */}
+              <div className="flex flex-col gap-2 md:ml-12 md:flex-row md:items-center md:gap-2">
+                {/* Bouton - */}
                 <button
                   type="button"
                   onClick={() => {
-                    const idx = TEXT_SIZE_OPTIONS.findIndex(
-                      (o) => o.value === textSize
-                    );
-                    if (idx > 0)
-                      handleTextSize(TEXT_SIZE_OPTIONS[idx - 1].value);
+                    const idx = TEXT_SIZE_OPTIONS.findIndex((o) => o.value === textSize);
+                    if (idx > 0) handleTextSize(TEXT_SIZE_OPTIONS[idx - 1].value);
                   }}
                   disabled={textSize === "small"}
-                  className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-[var(--border)] text-xs font-bold text-[var(--foreground)] transition-all hover:border-[var(--color-accent)] hover:text-[var(--color-accent)] disabled:cursor-not-allowed disabled:opacity-30 md:h-9 md:w-9"
+                  className="hidden h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-[var(--border)] text-xs font-bold text-[var(--foreground)] transition-all hover:border-[var(--color-accent)] hover:text-[var(--color-accent)] disabled:cursor-not-allowed disabled:opacity-30 md:flex md:h-9 md:w-9"
                 >
                   A−
                 </button>
-                <div className="flex flex-1 justify-between gap-1">
+                
+                {/* Les options (PETIT, MOYEN, etc) */}
+                <div className="flex w-full justify-between gap-1 rounded-lg border border-[var(--border)] p-1 md:flex-1 md:border-none md:p-0">
                   {TEXT_SIZE_OPTIONS.map((opt) => (
                     <button
                       key={opt.value}
                       type="button"
                       onClick={() => handleTextSize(opt.value)}
-                      className={`flex-1 rounded-lg py-2 text-[10px] font-medium uppercase tracking-wide transition-all ${
+                      className={`flex-1 rounded-md py-1.5 text-[10px] font-medium uppercase tracking-wide transition-all md:rounded-lg md:py-2 ${
                         textSize === opt.value
-                          ? "bg-[var(--color-accent)] text-white"
+                          ? "bg-[var(--color-accent)] text-white shadow-sm"
                           : "text-[var(--muted)] hover:bg-[var(--surface-hover)]"
                       }`}
                     >
@@ -528,17 +528,16 @@ export default function SettingsPage() {
                     </button>
                   ))}
                 </div>
+
+                {/* Bouton + */}
                 <button
                   type="button"
                   onClick={() => {
-                    const idx = TEXT_SIZE_OPTIONS.findIndex(
-                      (o) => o.value === textSize
-                    );
-                    if (idx < TEXT_SIZE_OPTIONS.length - 1)
-                      handleTextSize(TEXT_SIZE_OPTIONS[idx + 1].value);
+                    const idx = TEXT_SIZE_OPTIONS.findIndex((o) => o.value === textSize);
+                    if (idx < TEXT_SIZE_OPTIONS.length - 1) handleTextSize(TEXT_SIZE_OPTIONS[idx + 1].value);
                   }}
                   disabled={textSize === "xlarge"}
-                  className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-[var(--border)] text-xs font-bold text-[var(--foreground)] transition-all hover:border-[var(--color-accent)] hover:text-[var(--color-accent)] disabled:cursor-not-allowed disabled:opacity-30 md:h-9 md:w-9"
+                  className="hidden h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-[var(--border)] text-xs font-bold text-[var(--foreground)] transition-all hover:border-[var(--color-accent)] hover:text-[var(--color-accent)] disabled:cursor-not-allowed disabled:opacity-30 md:flex md:h-9 md:w-9"
                 >
                   A+
                 </button>
