@@ -124,11 +124,30 @@ export async function loadTranslation(
   const translation = TRANSLATIONS.find((t) => t.id === id);
   if (!translation) return null;
 
+  // 1) IndexedDB d'abord (hors-ligne OK)
+  try {
+    const { getOfflineTranslation } = await import("./offline-bible");
+    const offline = await getOfflineTranslation(id);
+    if (offline) {
+      cache[id] = offline as Record<string, Record<string, Record<string, string>>>;
+      return cache[id] ?? null;
+    }
+  } catch {
+    // ignore, on tente le réseau
+  }
+
+  // 2) Réseau, puis mise en cache auto pour le hors-ligne
   try {
     const res = await fetch(translation.path);
     if (!res.ok) throw new Error(`Erreur ${res.status}`);
     const data = await res.json();
     cache[id] = data;
+    try {
+      const { saveOfflineTranslation } = await import("./offline-bible");
+      await saveOfflineTranslation(id, data);
+    } catch {
+      // cache auto optionnel : ne bloque pas la lecture
+    }
     return data;
   } catch (err) {
     console.error(`Erreur chargement ${id}:`, err);

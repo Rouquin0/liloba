@@ -7,9 +7,9 @@
 // - Données Bible (bible.json + API)
 // ============================================================
 
-const CACHE_NAME = "liloba-static-v2";
-const BIBLE_CACHE = "liloba-bible-v2";
-const RUNTIME_CACHE = "liloba-runtime-v2";
+const CACHE_NAME = "liloba-static-v3";
+const BIBLE_CACHE = "liloba-bible-v3";
+const RUNTIME_CACHE = "liloba-runtime-v3";
 
 // Assets pré-cachés au démarrage
 const PRECACHE_ASSETS = [
@@ -73,9 +73,14 @@ self.addEventListener("fetch", (event) => {
   }
 
     // ========================================================
-  // STRATÉGIE 1 : API Bible → Cache First (uniquement les JSON)
+  // STRATÉGIE 1 : Bible locale → Cache First (hors-ligne)
+  // /bible.json + /translations/*.json + /api/bible/*
   // ========================================================
-  if (url.pathname.startsWith("/api/bible/")) {
+  if (
+    url.pathname.startsWith("/api/bible/") ||
+    url.pathname === "/bible.json" ||
+    (url.pathname.startsWith("/translations/") && url.pathname.endsWith(".json"))
+  ) {
     event.respondWith(cacheFirstBible(request));
     return;
   }

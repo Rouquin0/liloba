@@ -2,11 +2,10 @@
 
 import { useEffect, useState } from "react";
 import {
-  downloadBible,
-  getOfflineStatus,
+  downloadAllBibles,
+  getOfflineDetailedStatus,
   formatSize,
   formatDownloadDate,
-  type OfflineStatus,
 } from "@/lib/offline-bible";
 import { useOnlineStatus } from "@/hooks/useOnlineStatus";
 
@@ -21,9 +20,10 @@ function isPWAInstalled(): boolean {
 
 export default function OfflineBibleSection() {
   const { isOnline } = useOnlineStatus();
-  const [status, setStatus] = useState<OfflineStatus | null>(null);
+  const [status, setStatus] = useState<Awaited<ReturnType<typeof getOfflineDetailedStatus>> | null>(null);
   const [isDownloading, setIsDownloading] = useState(false);
   const [progress, setProgress] = useState(0);
+  const [currentFile, setCurrentFile] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [isPWA, setIsPWA] = useState(false);
 
@@ -33,7 +33,7 @@ export default function OfflineBibleSection() {
 
   // Charge le statut au montage
   const loadStatus = async () => {
-    const s = await getOfflineStatus();
+    const s = await getOfflineDetailedStatus();
     setStatus(s);
   };
 
@@ -49,13 +49,18 @@ export default function OfflineBibleSection() {
 
     setIsDownloading(true);
     setProgress(0);
+    setCurrentFile("");
     setError(null);
 
     try {
-      await downloadBible((percent) => {
-        setProgress(percent);
+      const res = await downloadAllBibles((overall, currentId, index, total) => {
+        setProgress(overall);
+        setCurrentFile(`${index}/${total} · ${currentId}`);
       });
       await loadStatus();
+      if (res.failed.length > 0) {
+        setError(`Partiel : ${res.downloaded.length}/10 téléchargées. Échec : ${res.failed.join(", ")}. Réessaie.`);
+      }
     } catch (err) {
       setError(
         err instanceof Error
@@ -64,7 +69,7 @@ export default function OfflineBibleSection() {
       );
     } finally {
       setIsDownloading(false);
-      setProgress(0);
+      setCurrentFile("");
     }
   };
 
@@ -120,7 +125,9 @@ export default function OfflineBibleSection() {
 
           <div className="flex-1 min-w-0">
             <div className="text-sm font-semibold text-[var(--foreground)]">
-              Bible disponible hors ligne
+              {status.isComplete
+                ? "10 versions disponibles hors ligne"
+                : `${status.downloadedCount}/10 versions hors ligne`}
             </div>
             <div className="mt-0.5 text-xs text-[var(--muted)]">
               {formatSize(status.size)} · Téléchargée le{" "}
@@ -131,14 +138,33 @@ export default function OfflineBibleSection() {
           </div>
         </div>
 
-                <button
-          type="button"
-          onClick={handleDownload}
-          disabled={!isOnline || isDownloading}
-          className="mt-3 w-full rounded-lg border border-[var(--border)] px-3 py-2 text-xs font-medium text-[var(--muted)] transition-colors hover:border-[var(--color-accent)]/50 hover:text-[var(--color-accent)] disabled:opacity-40"
-        >
-          🔄 Mettre à jour
-        </button>
+        {isDownloading ? (
+          <div className="mt-3">
+            <div className="text-xs text-[var(--muted)]">
+              {progress}% · {currentFile} · Ne ferme pas cette page
+            </div>
+            <div className="mt-2 h-2 overflow-hidden rounded-full bg-[var(--surface-hover)]">
+              <div
+                className="h-full rounded-full transition-all duration-300"
+                style={{ width: `${progress}%`, background: "var(--color-accent)" }}
+              />
+            </div>
+          </div>
+        ) : (
+          <button
+            type="button"
+            onClick={handleDownload}
+            disabled={!isOnline || isDownloading}
+            className="mt-3 w-full rounded-lg border border-[var(--border)] px-3 py-2 text-xs font-medium text-[var(--muted)] transition-colors hover:border-[var(--color-accent)]/50 hover:text-[var(--color-accent)] disabled:opacity-40"
+          >
+            🔄 Mettre à jour les 10 versions
+          </button>
+        )}
+        {error && (
+          <div className="mt-2 rounded-lg border border-red-500/30 bg-red-500/5 p-2 text-xs text-red-500">
+            {error}
+          </div>
+        )}
       </div>
     );
   }
@@ -159,7 +185,7 @@ export default function OfflineBibleSection() {
               Téléchargement en cours…
             </div>
             <div className="mt-0.5 text-xs text-[var(--muted)]">
-              {progress}% · Ne ferme pas cette page
+              {progress}% · {currentFile} · Ne ferme pas cette page
             </div>
           </div>
         </div>
@@ -194,7 +220,7 @@ export default function OfflineBibleSection() {
             Bible hors ligne
           </div>
           <div className="mt-0.5 text-xs text-[var(--muted)]">
-            Toute la Bible (66 livres) en 4,7 Mo. Lecture garantie sans
+            Les 10 versions (66 livres chacune, ~45 Mo). Lecture garantie sans
             internet.
           </div>
         </div>

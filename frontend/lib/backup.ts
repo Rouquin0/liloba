@@ -122,10 +122,15 @@ export async function reloadOfflineBible(
   onProgress?: (percent: number) => void
 ): Promise<{ ok: boolean; message: string }> {
   try {
-    const { downloadBible } = await import("./offline-bible");
-    const size = await downloadBible(onProgress);
-    const { formatSize } = await import("./offline-bible");
-    return { ok: true, message: `Bible mise à jour (${formatSize(size)}).` };
+    const { downloadAllBibles, formatSize } = await import("./offline-bible");
+    const res = await downloadAllBibles((overall) => onProgress?.(overall));
+    if (res.failed.length === 0) {
+      return { ok: true, message: `Bible mise à jour : ${res.downloaded.length}/10 versions (${formatSize(res.totalSize)}), 100% hors ligne.` };
+    }
+    return {
+      ok: true,
+      message: `${res.downloaded.length}/10 versions à jour (${formatSize(res.totalSize)}). Échec : ${res.failed.join(", ")} — réessaie avec une bonne connexion.`,
+    };
   } catch (err) {
     return {
       ok: false,
