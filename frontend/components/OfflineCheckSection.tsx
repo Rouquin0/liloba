@@ -15,13 +15,6 @@ function label(id: string): string {
   return TRANSLATIONS.find((t) => t.id === id)?.shortName ?? id;
 }
 
-// ============================================================
-// LILOBA — Vérificateur Bible hors-ligne (Feature 1)
-// Affiche 10/10, détecte les versions manquantes / corrompues
-// (ex : 45 Mo affichés mais chapitre vide) et répare uniquement
-// celles qui manquent, sans tout retélécharger.
-// ============================================================
-
 export default function OfflineCheckSection({
   onChanged,
 }: {
@@ -40,7 +33,6 @@ export default function OfflineCheckSection({
     setLoading(true);
     try {
       const s = await getOfflineDetailedStatus();
-      // Vue rapide avant vérification profonde
       setReport({
         checks: [],
         okCount: s.downloadedCount,
@@ -119,20 +111,17 @@ export default function OfflineCheckSection({
 
   return (
     <div className="rounded-lg border border-[var(--border)] p-3">
-      <div className="flex items-center justify-between gap-2">
+      {/* Passage en flex-col sur mobile pour éviter le débordement */}
+      <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
         <div className="text-sm font-medium text-[var(--foreground)]">
           {report.checks.length > 0 ? (
-            <>
-              {report.okCount}/{report.totalCount} versions vérifiées
-            </>
+            <>{report.okCount}/{report.totalCount} versions vérifiées</>
           ) : (
-            <>
-              {report.okCount}/{report.totalCount} versions téléchargées
-            </>
+            <>{report.okCount}/{report.totalCount} versions téléchargées</>
           )}
         </div>
         <span
-          className={`rounded-full px-2 py-0.5 text-[10px] font-bold ${
+          className={`w-fit rounded-full px-2 py-0.5 text-[10px] font-bold ${
             isOk
               ? "bg-green-500/10 text-green-600"
               : "bg-orange-500/10 text-orange-600"
@@ -185,12 +174,13 @@ export default function OfflineCheckSection({
         <div className="mt-2 text-[11px] text-[var(--muted)]">{message}</div>
       )}
 
-      <div className="mt-2 grid grid-cols-2 gap-2">
+      {/* Boutons Vérifier / Réparer en pleine largeur */}
+      <div className="mt-3 flex flex-col gap-2 sm:grid sm:grid-cols-2">
         <button
           type="button"
           onClick={handleVerify}
           disabled={verifying || repairing}
-          className="rounded-lg border border-[var(--border)] py-2 text-xs font-medium text-[var(--foreground)] transition-all hover:border-[var(--color-accent)] hover:text-[var(--color-accent)] disabled:opacity-50"
+          className="w-full rounded-lg border border-[var(--border)] py-2 text-xs font-medium text-[var(--foreground)] transition-all hover:border-[var(--color-accent)] hover:text-[var(--color-accent)] disabled:opacity-50"
         >
           {verifying ? "Vérification…" : "🔍 Vérifier"}
         </button>
@@ -198,7 +188,7 @@ export default function OfflineCheckSection({
           type="button"
           onClick={handleRepair}
           disabled={repairing || verifying || toFix.length === 0 || !isOnline}
-          className="rounded-lg bg-[var(--color-accent)] py-2 text-xs font-semibold text-white transition-all hover:brightness-90 disabled:opacity-40"
+          className="w-full rounded-lg bg-[var(--color-accent)] py-2 text-xs font-semibold text-white transition-all hover:brightness-90 disabled:opacity-40"
         >
           {repairing ? "Réparation…" : `🛠 Réparer (${toFix.length})`}
         </button>
