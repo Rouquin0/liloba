@@ -23,29 +23,32 @@ export default function HomePage() {
   }, [router]);
 
   return (
+    // min-h-screen permet à la page de grandir avec le contenu et de scroller
     <div className="flex min-h-screen flex-col bg-[var(--background)]">
-      {/* Header plus aéré sur mobile */}
-      <header className="flex flex-col items-center gap-4 border-b border-[var(--border)] bg-[var(--surface)]/80 px-4 py-4 backdrop-blur-sm md:flex-row md:justify-between md:px-6 md:py-3">
-        <div className="flex items-center gap-3">
-          <Logo size={40} />
-          <div className="flex flex-col">
-            <h1 className="text-base font-bold text-[var(--color-primary)] md:text-lg">
+      
+      {/* Header : Logo centré, texte en dessous, et badges alignés */}
+      <header className="flex flex-col items-center border-b border-[var(--border)] bg-[var(--surface)]/80 px-4 py-5 backdrop-blur-sm">
+        <div className="flex flex-col items-center gap-2">
+          <Logo size={48} />
+          <div className="text-center">
+            <h1 className="text-lg font-bold text-[var(--color-primary)]">
               {BRANDING.app.name}
             </h1>
-            <p className="text-xs text-[var(--muted)] md:text-sm">
+            <p className="text-xs text-[var(--muted)]">
               {BRANDING.app.tagline}
             </p>
           </div>
         </div>
         
-        <div className="flex flex-wrap items-center justify-center gap-2">
+        {/* Badges (Hors ligne, Série, Installer) */}
+        <div className="mt-4 flex flex-wrap justify-center gap-2">
           <OnlineBadge />
           <StreakBadge />
           <InstallPwaButton />
         </div>
       </header>
 
-      {/* Contenu principal avec des marges plus généreuses sur mobile */}
+      {/* Contenu scrollable */}
       <main className="flex flex-1 flex-col items-center px-4 pt-6 pb-24">
         <div className="w-full max-w-lg">
           <h2 className="mb-1 text-center text-lg font-bold text-[var(--color-primary)] md:text-xl">
@@ -56,7 +59,7 @@ export default function HomePage() {
           </p>
 
           <div className="flex flex-col gap-4">
-            {/* Carte Bible - Plus grande, plus claire */}
+            {/* Carte Bible */}
             <Link
               href="/bible"
               className="group flex items-center gap-4 rounded-2xl border-2 border-[var(--border)] bg-[var(--surface)] p-5 shadow-sm transition-all hover:border-[var(--color-primary)] active:scale-[0.98]"
@@ -102,21 +105,17 @@ export default function HomePage() {
               </span>
             </Link>
 
-            {/* Bandeau de maintenance */}
             <ApollosMaintenanceBanner />
 
-            {/* Verset du jour */}
             <DailyVerseCard />
 
-            {/* Histoires */}
             <HistoiresTeaser />
 
-            {/* Statut hors ligne */}
             <div className="flex items-center justify-center gap-2 rounded-xl bg-green-500/10 px-4 py-3 text-xs font-medium text-green-700 dark:text-green-300">
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4 shrink-0">
                 <path d="M20 6 9 17l-5-5"/>
               </svg>
-              <span className="text-center">Bible disponible hors-ligne</span>
+              <span className="text-center">Bible disponible sans internet</span>
             </div>
           </div>
         </div>
