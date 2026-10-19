@@ -53,18 +53,22 @@ function AppShellContent({
     setMounted(true);
   }, []);
 
-  // 👇 AJOUT DE /read ICI
+  // 👇 On ajoute /miroir ici pour que le menu s'affiche sur cette page
   const showMenu =
-    pathname.startsWith("/chat") || pathname.startsWith("/bible") || pathname.startsWith("/read");
+    pathname.startsWith("/chat") || 
+    pathname.startsWith("/bible") || 
+    pathname.startsWith("/read") ||
+    pathname.startsWith("/miroir");
 
-  const isHomePage = pathname === "/";
+  // 👇 On autorise le scroll sur l'accueil ET sur la page Miroir
+  const allowScroll = pathname === "/" || pathname.startsWith("/miroir");
 
   const handleClose = useCallback(() => setIsMenuOpen(false), []);
   const handleOpen = useCallback(() => setIsMenuOpen(true), []);
 
   if (!showMenu) {
     return (
-      <div className={`flex h-dvh ${isHomePage ? "overflow-y-auto" : "overflow-hidden"} bg-[var(--background)]`}>
+      <div className={`flex h-dvh ${allowScroll ? "overflow-y-auto" : "overflow-hidden"} bg-[var(--background)]`}>
         <main className="flex-1">{children}</main>
       </div>
     );
