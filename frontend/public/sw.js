@@ -1,15 +1,24 @@
 // ============================================================
-// LILOBA — Service Worker v2
+// LILOBA — Service Worker v3 (fix retour accueil hors-ligne)
 // ============================================================
 // Cache :
 // - Assets statiques (CSS, JS, images)
 // - Pages HTML
 // - Données Bible (bible.json + API)
+//
+// FIX BUG : avant, quand on ouvrait un chapitre hors-ligne
+// (/bible/genese/1) sans réseau et que la page HTML n'était pas
+// encore en cache, le SW renvoyait "/" (accueil).
+// L'utilisateur avait l'impression d'être "ramené à l'accueil"
+// alors que la Bible (45 Mo) était bien dans IndexedDB.
+// Maintenant on renvoie la page /bible en fallback pour les
+// routes /bible/* et /read/*, ce qui laisse BibleReader charger
+// le chapitre depuis IndexedDB côté client.
 // ============================================================
 
-const CACHE_NAME = "liloba-static-v3";
-const BIBLE_CACHE = "liloba-bible-v3";
-const RUNTIME_CACHE = "liloba-runtime-v3";
+const CACHE_NAME = "liloba-static-v4";
+const BIBLE_CACHE = "liloba-bible-v4";
+const RUNTIME_CACHE = "liloba-runtime-v4";
 
 // Assets pré-cachés au démarrage
 const PRECACHE_ASSETS = [
@@ -93,10 +102,23 @@ self.addEventListener("fetch", (event) => {
     return;
   }
 
-    // ========================================================
-  // STRATÉGIE 3 : Pages HTML → Network First avec cache
   // ========================================================
-  if (request.headers.get("accept")?.includes("text/html")) {
+  // STRATÉGIE 3 : Pages HTML / navigations App Router (RSC) →
+  // Network First avec cache. SANS ÇA, une navigation client
+  // /bible → /bible/genese/1 hors-ligne échoue (RSC en 503),
+  // Next fait un hard reload, le SW renvoie "/" → "retour accueil".
+  // ========================================================
+  const accept = request.headers.get("accept") || "";
+  const isRsc =
+    request.headers.has("rsc") ||
+    request.headers.has("next-router-state-tree") ||
+    request.headers.has("next-url") ||
+    accept.includes("text/x-component");
+  const isHtml =
+    accept.includes("text/html") ||
+    request.mode === "navigate" ||
+    isRsc;
+  if (isHtml) {
     event.respondWith(networkFirstWithCache(request));
     return;
   }
@@ -146,9 +168,44 @@ async function cacheFirstBible(request) {
 
 /**
  * Network First (pages HTML).
+ * Fallback intelligent : on renvoie la page parente mise en cache
+ * (/bible pour /bible/*, /chat pour /chat/*) au lieu de toujours "/",
+ * pour ne jamais "ramener à l'accueil" quand la Bible est en IndexedDB.
  */
+async function offlineFallbackFor(url) {
+  const offlineCache = await caches.open(CACHE_NAME);
+  const runtimeCache = await caches.open(RUNTIME_CACHE);
+  const pathname = url.pathname;
+
+  // 1. La page exacte déjà visitée ?
+  const exact = await runtimeCache.match(url.pathname + url.search);
+  if (exact) return exact;
+
+  // 2. Routes Bible → fallback vers /bible (le shell sait lire IndexedDB)
+  if (pathname.startsWith("/bible") || pathname.startsWith("/read")) {
+    const bibleShell =
+      (await runtimeCache.match("/bible")) ||
+      (await offlineCache.match("/bible"));
+    if (bibleShell) return bibleShell;
+  }
+
+  // 3. Chat → fallback vers /chat
+  if (pathname.startsWith("/chat")) {
+    const chatShell =
+      (await runtimeCache.match("/chat")) ||
+      (await offlineCache.match("/chat"));
+    if (chatShell) return chatShell;
+  }
+
+  // 4. Dernier recours : accueil
+  const home = await offlineCache.match("/");
+  if (home) return home;
+  return null;
+}
+
 async function networkFirst(request) {
   const cache = await caches.open(RUNTIME_CACHE);
+  const url = new URL(request.url);
 
   try {
     const response = await fetch(request);
@@ -160,10 +217,12 @@ async function networkFirst(request) {
     const cached = await cache.match(request);
     if (cached) return cached;
 
-    if (request.headers.get("accept")?.includes("text/html")) {
-      const offlineCache = await caches.open(CACHE_NAME);
-      const offlinePage = await offlineCache.match("/");
-      if (offlinePage) return offlinePage;
+    if (
+      request.headers.get("accept")?.includes("text/html") ||
+      request.mode === "navigate"
+    ) {
+      const fallback = await offlineFallbackFor(url);
+      if (fallback) return fallback;
     }
 
     return new Response("Offline", { status: 503 });
@@ -195,9 +254,13 @@ async function cacheFirst(request) {
 /**
  * Network First avec cache systématique des pages HTML.
  * Cache TOUTES les pages visitées pour offline.
+ * En cas d'échec réseau + page jamais visitée, on renvoie le shell
+ * parent (/bible) plutôt que l'accueil, pour laisser IndexedDB afficher
+ * le chapitre demandé.
  */
 async function networkFirstWithCache(request) {
   const cache = await caches.open(RUNTIME_CACHE);
+  const url = new URL(request.url);
 
   try {
     const response = await fetch(request);
@@ -210,10 +273,9 @@ async function networkFirstWithCache(request) {
     const cached = await cache.match(request);
     if (cached) return cached;
 
-    // Fallback : page d'accueil
-    const offlineCache = await caches.open(CACHE_NAME);
-    const offlinePage = await offlineCache.match("/");
-    if (offlinePage) return offlinePage;
+    // Fallback intelligent (ne plus renvoyer "/" pour /bible/*)
+    const fallback = await offlineFallbackFor(url);
+    if (fallback) return fallback;
 
     return new Response("Offline", { status: 503 });
   }
