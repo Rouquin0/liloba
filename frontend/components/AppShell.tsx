@@ -55,12 +55,12 @@ function AppShellContent({
 
   // Applique les couleurs custom au démarrage
   useCustomColors();
-    // ⌨️ Raccourcis clavier (Cmd/Ctrl+B pour le split)
+  // ⌨️ Raccourcis clavier (Cmd/Ctrl+B pour le split)
   useSplitShortcuts();
 
   // 🔔 Vérifie et envoie la notif du verset du jour
   useDailyVerseNotification();
-    useReadingReminder();
+  useReadingReminder();
 
   // 🎯 Écoute l'événement custom pour ouvrir le menu
   useEffect(() => {
@@ -81,6 +81,9 @@ function AppShellContent({
   const showMenu =
     pathname.startsWith("/chat") || pathname.startsWith("/bible");
 
+  // On vérifie si on est sur la page d'accueil pour autoriser le scroll
+  const isHomePage = pathname === "/";
+
   const handleClose = useCallback(() => {
     setIsMenuOpen(false);
   }, []);
@@ -89,12 +92,12 @@ function AppShellContent({
     setIsMenuOpen(true);
   }, []);
 
-  // ⚠️ Ancien handleConversationChange supprimé — causait une boucle via key={...}
-
   if (!showMenu) {
     return (
-      <div className="flex h-dvh overflow-hidden bg-[var(--background)]">
-        <main className="flex-1 overflow-hidden">{children}</main>
+      // Si c'est la page d'accueil, on autorise le scroll (overflow-y-auto)
+      // Sinon, on garde le comportement normal (overflow-hidden)
+      <div className={`flex h-dvh ${isHomePage ? "overflow-y-auto" : "overflow-hidden"} bg-[var(--background)]`}>
+        <main className="flex-1">{children}</main>
       </div>
     );
   }
@@ -107,7 +110,7 @@ function AppShellContent({
       />
 
       <div className="relative flex flex-1 flex-col overflow-hidden md:pl-2">
-                {/* Bouton ☰ flottant (caché sur /chat qui a son propre header) */}
+        {/* Bouton ☰ flottant (caché sur /chat qui a son propre header) */}
         {!isMenuOpen && !pathname.startsWith("/chat") && (
           <MenuButton
             onClick={handleOpen}
