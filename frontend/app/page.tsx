@@ -13,11 +13,9 @@ import InstallPwaButton from "@/components/InstallPwaButton";
 import HistoiresTeaser from "@/components/HistoiresTeaser";
 import OnlineBadge from "@/components/OnlineBadge";
 
-
 export default function HomePage() {
   const router = useRouter();
 
-  // Redirection vers l'onboarding si l'utilisateur n'a pas choisi son âge
   useEffect(() => {
     if (!isOnboarded()) {
       router.replace("/onboarding");
@@ -25,46 +23,46 @@ export default function HomePage() {
   }, [router]);
 
   return (
-    // On remplace min-h-dvh par min-h-screen pour permettre le défilement naturel
     <div className="flex min-h-screen flex-col bg-[var(--background)]">
-      {/* Header */}
-      <header className="flex items-center justify-between border-b border-[var(--border)] bg-[var(--surface)]/80 px-4 py-3 backdrop-blur-sm md:px-6">
+      {/* Header plus aéré sur mobile */}
+      <header className="flex flex-col items-center gap-4 border-b border-[var(--border)] bg-[var(--surface)]/80 px-4 py-4 backdrop-blur-sm md:flex-row md:justify-between md:px-6 md:py-3">
         <div className="flex items-center gap-3">
-          <Logo size={36} />
+          <Logo size={40} />
           <div className="flex flex-col">
-            <h1 className="text-sm font-bold text-[var(--color-primary)] md:text-base">
+            <h1 className="text-base font-bold text-[var(--color-primary)] md:text-lg">
               {BRANDING.app.name}
             </h1>
-            <p className="text-[10px] text-[var(--muted)] md:text-xs">
+            <p className="text-xs text-[var(--muted)] md:text-sm">
               {BRANDING.app.tagline}
             </p>
           </div>
         </div>
-        <div className="flex items-center gap-2">
+        
+        <div className="flex flex-wrap items-center justify-center gap-2">
           <OnlineBadge />
           <StreakBadge />
           <InstallPwaButton />
         </div>
       </header>
 
-      {/* Contenu : on retire items-center pour que ça commence en haut, et on laisse la place en bas */}
-      <main className="flex flex-1 flex-col items-center px-4 pt-8 pb-24">
+      {/* Contenu principal avec des marges plus généreuses sur mobile */}
+      <main className="flex flex-1 flex-col items-center px-4 pt-6 pb-24">
         <div className="w-full max-w-lg">
-          <h2 className="mb-2 text-center text-xl font-bold text-[var(--color-primary)] md:text-2xl">
+          <h2 className="mb-1 text-center text-lg font-bold text-[var(--color-primary)] md:text-xl">
             Que veux-tu faire ?
           </h2>
-          <p className="mb-8 text-center text-sm text-[var(--muted)]">
+          <p className="mb-6 text-center text-xs text-[var(--muted)] md:text-sm">
             Choisis une option pour commencer
           </p>
 
           <div className="flex flex-col gap-4">
-            {/* Carte Bible */}
+            {/* Carte Bible - Plus grande, plus claire */}
             <Link
               href="/bible"
-              className="group flex items-center gap-4 rounded-2xl border-2 border-[var(--border)] bg-[var(--surface)] p-5 shadow-sm transition-all hover:-translate-y-1 hover:border-[var(--color-primary)] hover:shadow-lg"
+              className="group flex items-center gap-4 rounded-2xl border-2 border-[var(--border)] bg-[var(--surface)] p-5 shadow-sm transition-all hover:border-[var(--color-primary)] active:scale-[0.98]"
             >
-              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-[var(--color-primary)]/10 text-[var(--color-primary)]">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-6 w-6">
+              <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-xl bg-[var(--color-primary)]/10 text-[var(--color-primary)]">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-7 w-7">
                   <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"/>
                 </svg>
               </div>
@@ -84,10 +82,10 @@ export default function HomePage() {
             {/* Carte Apollos */}
             <Link
               href="/chat"
-              className="group flex items-center gap-4 rounded-2xl border-2 border-[var(--border)] bg-[var(--surface)] p-5 shadow-sm transition-all hover:-translate-y-1 hover:border-[var(--color-accent)] hover:shadow-lg"
+              className="group flex items-center gap-4 rounded-2xl border-2 border-[var(--border)] bg-[var(--surface)] p-5 shadow-sm transition-all hover:border-[var(--color-accent)] active:scale-[0.98]"
             >
-              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-[var(--color-accent)]/10 text-[var(--color-accent)]">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-6 w-6">
+              <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-xl bg-[var(--color-accent)]/10 text-[var(--color-accent)]">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-7 w-7">
                   <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
                 </svg>
               </div>
@@ -104,17 +102,21 @@ export default function HomePage() {
               </span>
             </Link>
 
+            {/* Bandeau de maintenance */}
             <ApollosMaintenanceBanner />
 
+            {/* Verset du jour */}
             <DailyVerseCard />
 
+            {/* Histoires */}
             <HistoiresTeaser />
 
-            <div className="flex items-center justify-center gap-2 rounded-xl bg-green-500/10 px-4 py-2.5 text-xs font-medium text-green-700 dark:text-green-300">
+            {/* Statut hors ligne */}
+            <div className="flex items-center justify-center gap-2 rounded-xl bg-green-500/10 px-4 py-3 text-xs font-medium text-green-700 dark:text-green-300">
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4 shrink-0">
                 <path d="M20 6 9 17l-5-5"/>
               </svg>
-              <span>Bible disponible sans internet — 4.2 Mo déjà sur ton téléphone</span>
+              <span className="text-center">Bible disponible hors-ligne</span>
             </div>
           </div>
         </div>
