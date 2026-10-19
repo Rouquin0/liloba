@@ -454,6 +454,147 @@ export async function deleteOfflineBible(): Promise<void> {
 }
 
 // ============================================================
+// VÉRIFICATION & RÉPARATION (Feature 1 — diagnostic 10/10)
+// ============================================================
+// Vérifie que chaque traduction est complète : 66 livres,
+// chapitres présents, verset témoin (Genèse 1:1).
+// Permet de détecter un téléchargement partiel qui affiche
+// "45 Mo" mais dont un chapitre est vide (= retour accueil).
+// ============================================================
+
+export interface TranslationCheck {
+  id: string;
+  ok: boolean;
+  status: "ok" | "missing" | "corrupted";
+  books: number;
+  chapters: number;
+  detail: string;
+}
+
+export interface VerifyReport {
+  checks: TranslationCheck[];
+  okCount: number;
+  totalCount: number;
+  missingIds: string[];
+  corruptedIds: string[];
+}
+
+function countChapters(data: BibleData): number {
+  let n = 0;
+  for (const livre of Object.values(data)) {
+    n += Object.keys(livre).length;
+  }
+  return n;
+}
+
+export async function verifyOfflineBibles(): Promise<VerifyReport> {
+  const checks: TranslationCheck[] = [];
+  const missingIds: string[] = [];
+  const corruptedIds: string[] = [];
+
+  for (const id of TRANSLATION_IDS) {
+    const data = await getOfflineTranslation(id);
+    if (!data) {
+      checks.push({
+        id,
+        ok: false,
+        status: "missing",
+        books: 0,
+        chapters: 0,
+        detail: "Non téléchargée",
+      });
+      missingIds.push(id);
+      continue;
+    }
+    const books = Object.keys(data).length;
+    const chapters = countChapters(data);
+    // Témoins : Genèse 1:1 doit exister, et volume global cohérent
+    // (Bible complète ≈ 1189 chapitres, on tolère ≥ 1000).
+    const gen1 = (data["Genèse"] as any)?.["1"];
+    const gen1ok = !!gen1 && !!gen1["1"] && Object.keys(gen1).length >= 5;
+    if (books >= 66 && chapters >= 1000 && gen1ok) {
+      checks.push({
+        id,
+        ok: true,
+        status: "ok",
+        books,
+        chapters,
+        detail: `${books} livres · ${chapters} chapitres`,
+      });
+    } else {
+      checks.push({
+        id,
+        ok: false,
+        status: "corrupted",
+        books,
+        chapters,
+        detail: `Incomplète (${books} livres · ${chapters} chapitres)`,
+      });
+      corruptedIds.push(id);
+    }
+  }
+
+  return {
+    checks,
+    okCount: checks.filter((c) => c.ok).length,
+    totalCount: TRANSLATION_IDS.length,
+    missingIds,
+    corruptedIds,
+  };
+}
+
+// Retélécharge UNIQUEMENT les versions manquantes / corrompues.
+// Beaucoup plus rapide que "Mettre à jour les 10 versions".
+export async function repairOfflineBibles(
+  ids: string[],
+  onProgress?: (overallPercent: number, currentId: string, index: number, total: number) => void
+): Promise<DownloadAllResult> {
+  await ensurePersisted();
+  const targets = ids.filter((id) => TRANSLATION_FILES[id]);
+  if (targets.length === 0) {
+    throw new Error("Rien à réparer.");
+  }
+  const downloaded: string[] = [];
+  const failed: string[] = [];
+  let sizes: Record<string, number> = {};
+  try {
+    const prev = (await idbGet(META_KEY)) as MetaRecord | undefined;
+    if (prev?.sizes) sizes = { ...prev.sizes };
+  } catch {
+    // ignore
+  }
+  for (let i = 0; i < targets.length; i++) {
+    const id = targets[i];
+    try {
+      const size = await downloadOne(id, (filePercent) => {
+        if (onProgress) {
+          const overall = Math.round(((i + filePercent / 100) / targets.length) * 100);
+          onProgress(overall, id, i + 1, targets.length);
+        }
+      });
+      sizes[id] = size;
+      downloaded.push(id);
+    } catch (e) {
+      console.error(`[Offline] échec réparation ${id}:`, e);
+      failed.push(id);
+    }
+    if (onProgress) {
+      onProgress(Math.round(((i + 1) / targets.length) * 100), id, i + 1, targets.length);
+    }
+  }
+  const totalSize = Object.values(sizes).reduce((a, b) => a + b, 0);
+  await idbPut(META_KEY, {
+    downloadedAt: Date.now(),
+    sizes,
+    totalSize,
+  } satisfies MetaRecord);
+  if (downloaded.length === 0) {
+    throw new Error("Réparation impossible. Vérifie ta connexion.");
+  }
+  return { totalSize, downloaded, failed };
+}
+
+// ============================================================
 // HELPERS
 // ============================================================
 

@@ -50,6 +50,7 @@ import {
 } from "@/lib/offline-bible";
 import { applyAccentColor } from "@/hooks/useCustomColors";
 import HighlightsSection from "@/components/HighlightsSection";
+import OfflineCheckSection from "@/components/OfflineCheckSection"; // 👈 NOUVEL IMPORT
 import SettingSelect from "@/components/SettingSelect";
 import Logo from "@/components/Logo";
 import { TRANSLATIONS } from "@/lib/translations";
@@ -824,6 +825,11 @@ export default function SettingsPage() {
                   d&apos;accueil.
                 </p>
               )}
+              
+              {/* 🛠️ VÉRIFICATEUR HORS LIGNE (NOUVEAU) */}
+              <div className="mt-4 md:ml-12">
+                <OfflineCheckSection onChanged={refreshStorage} />
+              </div>
             </div>
           </Section>
 

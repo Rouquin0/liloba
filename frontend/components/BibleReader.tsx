@@ -34,6 +34,7 @@ import { toggleFavorite } from "@/lib/notes";
 import NoteModal from "@/components/NoteModal";
 import VerseCardModal from "@/components/VerseCardModal";
 import TranslationCompare from "@/components/TranslationCompare";
+import AudioReader from "@/components/AudioReader"; // 👈 NOUVEL IMPORT
 import {
   type TranslationId,
   getChapter,
@@ -65,8 +66,6 @@ interface BibleReaderProps {
   /**
    * Traduction à afficher (optionnel).
    * Si non fourni, utilise la traduction par défaut des préférences.
-   * ⚠️ Passer "lsg" explicitement pour forcer le LSG (utilisé par exemple
-   * par la route /read/[translation]/... ou pour figer une traduction).
    */
   translationId?: TranslationId;
   /** Callback quand on navigue vers un autre chapitre */
@@ -107,7 +106,7 @@ export default function BibleReader({
   const [error, setError] = useState<string | null>(null);
   const [isOffline, setIsOffline] = useState(false);
 
-    // Traduction active (peut venir du prop OU de la préférence)
+  // Traduction active (peut venir du prop OU de la préférence)
   const [activeTranslation, setActiveTranslation] = useState<TranslationId>(
     translationId ?? "lsg"
   );
@@ -161,7 +160,7 @@ export default function BibleReader({
   // CHARGEMENT DU CHAPITRE
   // ============================================================
 
-    useEffect(() => {
+  useEffect(() => {
     setMounted(true);
     setDisplayMode(getDisplayMode());
 
@@ -173,11 +172,7 @@ export default function BibleReader({
     return () => mq.removeEventListener("change", handler);
   }, []);
 
-    // 🔑 Synchronise activeTranslation :
-  //  - Si le prop est fourni : on l'utilise (route /read/...)
-  //  - Sinon :
-  //      • Sur MOBILE : on lit la préférence
-  //      • Sur DESKTOP : on force LSG (le comparateur et BEN servent à ça)
+  // 🔑 Synchronise activeTranslation :
   useEffect(() => {
     if (translationId) {
       setActiveTranslation(translationId);
@@ -190,9 +185,7 @@ export default function BibleReader({
     }
   }, [translationId, isDesktop]);
 
-    // 🔑 Écoute l'événement "default-translation-updated"
-  // Seulement si le prop translationId n'est PAS fourni
-  // ET qu'on est sur MOBILE (sur desktop on reste en LSG)
+  // 🔑 Écoute l'événement "default-translation-updated"
   useEffect(() => {
     if (translationId) return;
     if (isDesktop) return;
@@ -359,7 +352,7 @@ export default function BibleReader({
     addJournalEntry("verse_marked", reference, {
       detail: texte.replace(/<CM>/g, "").trim().slice(0, 80),
       reference,
-      href: `/bible/${slug}/${chapitre}#v${numero}`,
+      href: `/read/${activeTranslation}/${slug}/${chapitre}#v${numero}`,
     });
   };
 
@@ -387,7 +380,7 @@ export default function BibleReader({
       addJournalEntry("verse_marked", reference, {
         detail: texte.replace(/<CM>/g, "").trim().slice(0, 80),
         reference,
-        href: `/bible/${slug}/${chapitre}#v${numero}`,
+        href: `/read/${activeTranslation}/${slug}/${chapitre}#v${numero}`,
       });
     }, 500);
   };
@@ -647,6 +640,14 @@ export default function BibleReader({
           {!isLoading && !error && versets && (
             <article>
               {translationBadge}
+
+              {/* 🎧 LECTEUR AUDIO (NOUVEAU) */}
+              <AudioReader
+                bookName={bookName as string}
+                chapitre={chapitre}
+                versets={versets}
+                translationId={activeTranslation}
+              />
 
               <h2
                 className="mb-6 border-b border-[var(--border)] pb-3 text-2xl font-bold text-[var(--color-primary)] md:text-3xl"
