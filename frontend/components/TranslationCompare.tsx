@@ -363,11 +363,11 @@ export default function TranslationCompare({
 
     return (
       <button
-        type="button"
-        onClick={() => {
-          const slug = slugify(bookName);
-          router.push(`/read/${rightTranslation}/${slug}/${chapitre}`);
-        }}
+  type="button"
+  onClick={() => {
+    const slug = slugify(bookName);
+    window.location.href = `/read/${rightTranslation}/${slug}/${chapitre}`;
+  }}
         className="group fixed bottom-6 right-6 z-30 flex items-center gap-3 overflow-hidden rounded-2xl border-2 border-[var(--color-accent)]/40 bg-[var(--surface)] py-2 pl-2 pr-2.5 shadow-2xl backdrop-blur-md transition-all duration-300 hover:-translate-y-1 hover:border-[var(--color-accent)]"
         style={{
           boxShadow:
