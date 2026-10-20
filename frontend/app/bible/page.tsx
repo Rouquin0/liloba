@@ -12,6 +12,7 @@ import {
   CHAPTERS_COUNT,
 } from "@/lib/bible-utils";
 import BibleHeader from "@/components/BibleHeader";
+import BibleReader from "@/components/BibleReader";
 
 type Testament = "all" | "at" | "nt";
 
@@ -37,7 +38,11 @@ function BibleContent() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-    useEffect(() => {
+  // 🆕 État pour gérer le livre/chapitre sélectionné (mode Shell)
+  const [selectedBook, setSelectedBook] = useState<string | null>(null);
+  const [selectedChapter, setSelectedChapter] = useState<number>(1);
+
+  useEffect(() => {
     let cancelled = false;
 
     async function load() {
@@ -72,6 +77,26 @@ function BibleContent() {
       cancelled = true;
     };
   }, []);
+
+  // 🔥 NOUVEAU : Si un livre est sélectionné, on affiche le lecteur (100% hors-ligne)
+  if (selectedBook) {
+    return (
+      <div className="flex h-full flex-col">
+        <BibleReader
+          livre={slugify(selectedBook)}
+          chapitre={selectedChapter}
+          onNavigate={(livreSlug, chap) => {
+            // On retrouve le nom du livre à partir du slug pour l'affichage
+            const bookName = livres.find((b) => slugify(b) === livreSlug) || livreSlug;
+            setSelectedBook(bookName);
+            setSelectedChapter(chap);
+          }}
+          onBackToList={() => setSelectedBook(null)}
+          showMenuButton
+        />
+      </div>
+    );
+  }
 
   const subtitle =
     testament === "at"
@@ -117,6 +142,10 @@ function BibleContent() {
                   title="Ancien Testament"
                   books={ANCIEN_TESTAMENT}
                   available={livres}
+                  onSelectBook={(book) => {
+                    setSelectedBook(book);
+                    setSelectedChapter(1);
+                  }}
                 />
               )}
               {(testament === "all" || testament === "nt") && (
@@ -124,6 +153,10 @@ function BibleContent() {
                   title="Nouveau Testament"
                   books={NOUVEAU_TESTAMENT}
                   available={livres}
+                  onSelectBook={(book) => {
+                    setSelectedBook(book);
+                    setSelectedChapter(1);
+                  }}
                 />
               )}
             </div>
@@ -172,10 +205,12 @@ function TestamentSection({
   title,
   books,
   available,
+  onSelectBook, // 🆕 Nouvelle prop
 }: {
   title: string;
   books: string[];
   available: string[];
+  onSelectBook: (book: string) => void; // 🆕
 }) {
   return (
     <section>
@@ -189,7 +224,6 @@ function TestamentSection({
       <div className="grid grid-cols-1 gap-x-6 sm:grid-cols-2">
         {books.map((book) => {
           const isAvailable = available.includes(book);
-          const slug = slugify(book);
           const chapterCount = CHAPTERS_COUNT[book] ?? 0;
 
           if (!isAvailable) {
@@ -204,11 +238,13 @@ function TestamentSection({
             );
           }
 
+          // 🆕 Remplacer le <Link> par un <button> pour éviter la navigation Next.js
           return (
-            <Link
+            <button
               key={book}
-              href={`/bible/${slug}`}
-              className="group relative flex items-center gap-3 border-b border-[var(--border)] px-2 py-3 text-sm transition-all hover:bg-[var(--surface-hover)] hover:pl-4"
+              type="button"
+              onClick={() => onSelectBook(book)}
+              className="group relative flex w-full items-center gap-3 border-b border-[var(--border)] px-2 py-3 text-left text-sm transition-all hover:bg-[var(--surface-hover)] hover:pl-4"
             >
               <BookIcon />
               <span className="flex-1 font-medium text-[var(--foreground)] transition-colors group-hover:text-[var(--color-accent)]">
@@ -217,7 +253,7 @@ function TestamentSection({
               <span className="rounded-md border border-[var(--border)] px-2 py-0.5 font-mono text-[10px] font-semibold text-[var(--muted)]">
                 {chapterCount} ch.
               </span>
-            </Link>
+            </button>
           );
         })}
       </div>
