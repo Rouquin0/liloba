@@ -53,15 +53,18 @@ function AppShellContent({
     setMounted(true);
   }, []);
 
-  // Le menu s'affiche sur ces routes
   const showMenu =
     pathname.startsWith("/chat") || 
     pathname.startsWith("/bible") || 
     pathname.startsWith("/read") ||
     pathname.startsWith("/selah");
 
-  // On autorise le scroll sur l'accueil, Selah ET Histoires
   const allowScroll = pathname === "/" || pathname.startsWith("/selah") || pathname.startsWith("/histoires");
+
+  // 👇 NOUVEAU : on n'affiche le bouton hamburger que sur /chat et /bible
+  const showHamburgerButton = 
+    pathname.startsWith("/chat") || 
+    pathname === "/bible";
 
   const handleClose = useCallback(() => setIsMenuOpen(false), []);
   const handleOpen = useCallback(() => setIsMenuOpen(true), []);
@@ -78,7 +81,7 @@ function AppShellContent({
     <div className="flex h-dvh overflow-hidden bg-[var(--background)]">
       <HamburgerMenu isOpen={isMenuOpen} onClose={handleClose} />
       <div className="relative flex flex-1 flex-col overflow-hidden md:pl-2">
-        {!isMenuOpen && !pathname.startsWith("/chat") && (
+        {!isMenuOpen && showHamburgerButton && (
           <div className="md:hidden">
             <MenuButton onClick={handleOpen} className="fixed top-3 left-3 z-30" />
           </div>
