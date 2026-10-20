@@ -100,7 +100,6 @@ function BibleContent() {
             setSelectedChapter(chap);
           }}
           onBackToList={() => setSelectedBook(null)}
-          showMenuButton
         />
       </div>
     );

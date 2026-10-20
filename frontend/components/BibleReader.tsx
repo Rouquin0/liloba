@@ -109,6 +109,7 @@ export default function BibleReader({
   const touchEndX = useRef<number | null>(null);
   const touchEndY = useRef<number | null>(null);
   const isSwipingRef = useRef(false);
+  const scrollRef = useRef<HTMLDivElement | null>(null);
 
   const bookName = findBookBySlug(slug);
   const totalChapters = bookName ? (CHAPTERS_COUNT[bookName] ?? 0) : 0;
@@ -257,6 +258,11 @@ export default function BibleReader({
     }
     setHighlights(initialHighlights);
   }, [versets, bookName, chapitre]);
+
+  // Remonte en haut à chaque changement de chapitre / livre
+  useEffect(() => {
+    scrollRef.current?.scrollTo({ top: 0 });
+  }, [slug, chapitre]);
 
   const hasPrev = chapitre > 1;
   const hasNext = chapitre < totalChapters;
@@ -456,6 +462,26 @@ export default function BibleReader({
     </div>
   ) : null;
 
+  // 📱 Sélecteur de chapitre (mobile uniquement, via le slot du header).
+  // totalChapters vient de CHAPTERS_COUNT (constante locale) : aucun réseau,
+  // donc utilisable en mode avion. Le chargement IndexedDB reste dans l'effet
+  // [bookName, chapitre, ...] qui se redéclenche après onNavigate.
+  const chapterSelect =
+    totalChapters > 1 ? (
+      <select
+        aria-label="Choisir le chapitre"
+        value={chapitre}
+        onChange={(e) => onNavigate(slug, parseInt(e.target.value, 10))}
+        className="h-9 w-[4.75rem] rounded-lg border border-[var(--border)] bg-[var(--background)] px-2 text-sm text-[var(--foreground)] outline-none focus:border-[var(--color-accent)]"
+      >
+        {Array.from({ length: totalChapters }, (_, i) => i + 1).map((n) => (
+          <option key={n} value={n}>
+            Ch. {n}
+          </option>
+        ))}
+      </select>
+    ) : null;
+
   return (
     <div className={`flex h-full flex-col ${embeddedMenus ? "relative" : ""}`}>
       {showHeader && (
@@ -466,26 +492,9 @@ export default function BibleReader({
           backHref={onBackToList ? undefined : `/bible/${slug}`}
           showSplitButton={showSplitButton}
           showMenuButton={showMenuButton}
+          mobileRightSlot={chapterSelect}
         />
       )}
-
-      {/* 📱 NOUVEAU : Sélecteur de chapitre sur mobile */}
-      <div className="md:hidden border-b border-[var(--border)] bg-[var(--surface)] px-4 py-2">
-        <div className="flex items-center gap-2">
-          <span className="text-xs font-semibold text-[var(--muted)]">Chapitre :</span>
-          <select
-            value={chapitre}
-            onChange={(e) => onNavigate(slug, parseInt(e.target.value, 10))}
-            className="flex-1 rounded-lg border border-[var(--border)] bg-[var(--background)] px-3 py-1.5 text-sm text-[var(--foreground)] outline-none focus:border-[var(--color-accent)]"
-          >
-            {Array.from({ length: totalChapters }, (_, i) => i + 1).map((n) => (
-              <option key={n} value={n}>
-                {n}
-              </option>
-            ))}
-          </select>
-        </div>
-      </div>
 
       {mounted && !compact && (
         <button type="button" onClick={() => setShowCompare(true)} className="fixed bottom-6 right-6 z-30 hidden items-center gap-2 rounded-xl border border-[var(--border)] bg-[var(--surface)] px-4 py-3 text-sm font-medium text-[var(--foreground)] shadow-lg transition-all hover:border-[var(--color-accent)] hover:text-[var(--color-accent)] hover:shadow-xl md:flex" aria-label="Comparer les traductions">
@@ -494,7 +503,7 @@ export default function BibleReader({
         </button>
       )}
 
-      <div className="flex-1 overflow-y-auto" style={{ touchAction: "pan-y" }} onTouchStart={handleTouchStartSwipe} onTouchMove={handleTouchMoveSwipe} onTouchEnd={handleTouchEndSwipe}>
+      <div ref={scrollRef} className="flex-1 overflow-y-auto" style={{ touchAction: "pan-y" }} onTouchStart={handleTouchStartSwipe} onTouchMove={handleTouchMoveSwipe} onTouchEnd={handleTouchEndSwipe}>
         <div className={`mx-auto ${maxWidth} ${contentPadding}`}>
           {mounted && isOffline && !isLoading && (
             <div className="mb-3 flex items-center gap-2 text-xs text-[var(--muted)]" title="Chapitre chargé hors ligne">
