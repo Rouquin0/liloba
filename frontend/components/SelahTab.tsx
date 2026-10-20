@@ -27,6 +27,60 @@ import {
   type SoulState,
 } from "@/lib/selah";
 
+// ------------------------------------------------------------
+// ICONES SVG POUR LES ETATS
+// ------------------------------------------------------------
+
+const IconPeace = () => (
+  <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+  </svg>
+);
+const IconJoy = () => (
+  <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/>
+  </svg>
+);
+const IconTired = () => (
+  <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/>
+  </svg>
+);
+const IconAnxious = () => (
+  <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M2 6c.6.5 1.2 1 2.5 1C7 7 7 5 9.5 5c2.6 0 2.4 2 5 2 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1"/><path d="M2 12c.6.5 1.2 1 2.5 1 2.5 0 2.5-2 5-2 2.6 0 2.4 2 5 2 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1"/><path d="M2 18c.6.5 1.2 1 2.5 1 2.5 0 2.5-2 5-2 2.6 0 2.4 2 5 2 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1"/>
+  </svg>
+);
+const IconAngry = () => (
+  <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/>
+  </svg>
+);
+const IconGuilty = () => (
+  <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M12 22a7 7 0 0 0 7-7c0-2-1-3.9-3-5.5s-3.5-4-4-6.5c-.5 2.5-2 4.9-4 6.5C6 11.1 5 13 5 15a7 7 0 0 0 7 7z"/>
+  </svg>
+);
+const IconDry = () => (
+  <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M12 22v-5"/><path d="M9 8V2"/><path d="M15 8V2"/><path d="M18 8v5a4 4 0 0 1-4 4h-4a4 4 0 0 1-4-4V8Z"/>
+  </svg>
+);
+
+const STATE_ICONS: Record<string, () => React.ReactNode> = {
+  paix: IconPeace,
+  joie: IconJoy,
+  fatigue: IconTired,
+  angoisse: IconAnxious,
+  colere: IconAngry,
+  culpabilite: IconGuilty,
+  secheresse: IconDry,
+};
+
+// ------------------------------------------------------------
+// TEXTES UI
+// ------------------------------------------------------------
+
 const UI = {
   fr: {
     title: "Selah",
@@ -88,9 +142,9 @@ const UI = {
     clearAll: "Effacer tout mon parcours",
     confirmClear: "Effacer tout ton parcours Selah ? Cette action est irréversible.",
     startFirst: "Commence par choisir ton état ci-dessus.",
-    chapters: (n: number) => `📖 ${n} chapitre${n > 1 ? "s" : ""} lu${n > 1 ? "s" : ""} ces dernières 24 h`,
-    noChapter: "📖 Pas encore de lecture aujourd'hui : un chapitre avant de dormir ?",
-    verses: (n: number) => `✦ ${n} verset${n > 1 ? "s" : ""} gardé${n > 1 ? "s" : ""} aujourd'hui`,
+    chapters: (n: number) => `${n} chapitre${n > 1 ? "s" : ""} lu${n > 1 ? "s" : ""} ces dernières 24 h`,
+    noChapter: "Pas encore de lecture aujourd'hui : un chapitre avant de dormir ?",
+    verses: (n: number) => `${n} verset${n > 1 ? "s" : ""} gardé${n > 1 ? "s" : ""} aujourd'hui`,
     streakRead: (n: number) => `🔥 ${n} jours de lecture de suite`,
     locale: "fr-FR",
     journalLabel: "Selah",
@@ -155,9 +209,9 @@ const UI = {
     clearAll: "Erase my whole journey",
     confirmClear: "Erase your whole Selah journey? This cannot be undone.",
     startFirst: "Start by choosing your state above.",
-    chapters: (n: number) => `📖 ${n} chapter${n > 1 ? "s" : ""} read in the last 24h`,
-    noChapter: "📖 No reading yet today: a chapter before bed?",
-    verses: (n: number) => `✦ ${n} verse${n > 1 ? "s" : ""} kept today`,
+    chapters: (n: number) => `${n} chapter${n > 1 ? "s" : ""} read in the last 24h`,
+    noChapter: "No reading yet today: a chapter before bed?",
+    verses: (n: number) => `${n} verse${n > 1 ? "s" : ""} kept today`,
     streakRead: (n: number) => `🔥 ${n}-day reading streak`,
     locale: "en-US",
     journalLabel: "Selah",
@@ -382,7 +436,7 @@ export default function SelahTab() {
                   <p className="mb-1 text-xs font-bold uppercase tracking-widest text-[var(--muted)]">
                     {l.yesterday}
                   </p>
-                  <p className="text-sm text-[var(--foreground)]">🎯 {yesterday.pas}</p>
+                  <p className="text-sm text-[var(--foreground)]">{yesterday.pas}</p>
                   {yesterday.pasDone === true ? (
                     <p className="mt-2 text-xs font-medium text-green-600">✓ {l.yesterdayYes}</p>
                   ) : (
@@ -410,25 +464,23 @@ export default function SelahTab() {
                 <p className="mb-3 text-sm font-semibold text-[var(--foreground)]">{l.step0}</p>
                 <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
                   {SELAH_STATES.map((s, index) => {
-                    // Pour que le dernier bouton prenne toute la largeur s'il est seul sur sa ligne
                     const isLast = index === SELAH_STATES.length - 1;
                     const spanClass = isLast ? "col-span-2 sm:col-span-3" : "";
+                    const Icon = STATE_ICONS[s.id];
 
                     return (
                       <button
                         key={s.id}
                         type="button"
                         onClick={() => setEtat(s.id)}
-                        className={`${spanClass} min-w-0 rounded-xl border px-3 py-3 text-sm transition-all active:scale-95 ${
+                        className={`${spanClass} flex min-w-0 items-center gap-2 rounded-xl border px-3 py-3 text-sm transition-all active:scale-95 ${
                           etat === s.id
                             ? "border-[var(--color-accent)] bg-[var(--color-accent)]/10 font-semibold text-[var(--color-accent)]"
                             : "border-[var(--border)] text-[var(--foreground)] hover:border-[var(--color-accent)]/40"
                         }`}
                       >
-                        <span className="mr-1" aria-hidden="true">
-                          {s.emoji}
-                        </span>
-                        {lang === "en" ? s.en : s.fr}
+                        <span className="shrink-0">{Icon && <Icon />}</span>
+                        <span className="truncate">{lang === "en" ? s.en : s.fr}</span>
                       </button>
                     );
                   })}
@@ -493,7 +545,7 @@ export default function SelahTab() {
                     href={chapterLink}
                     className="mt-3 inline-flex items-center gap-1 text-xs font-semibold text-[var(--color-accent)] underline-offset-2 hover:underline"
                   >
-                    📖 {l.readChapter}
+                    {l.readChapter}
                   </Link>
                 )}
               </section>
@@ -597,7 +649,7 @@ export default function SelahTab() {
                 {l.pas}
               </p>
               <p className="text-base font-medium leading-relaxed text-[var(--foreground)]">
-                🎯 {rx.pas}
+                {rx.pas}
               </p>
             </section>
           )}
@@ -657,7 +709,7 @@ export default function SelahTab() {
               onClick={share}
               className="rounded-xl border border-[var(--border)] bg-[var(--surface)] py-3 text-sm font-semibold text-[var(--foreground)] transition-all hover:border-[var(--color-accent)]"
             >
-              {copied ? l.copied : `📤 ${l.share}`}
+              {copied ? l.copied : l.share}
             </button>
             <button
               type="button"
@@ -673,13 +725,12 @@ export default function SelahTab() {
             onClick={goApollos}
             className="rounded-xl border border-dashed border-[var(--color-accent)]/60 py-3 text-sm font-semibold text-[var(--color-accent)] transition-all hover:bg-[var(--color-accent)]/5"
           >
-            ✨ {l.apollos}
+            {l.apollos}
           </button>
           {apollosMsg && (
             <p className="text-center text-xs text-[var(--muted)]">{l.apollosCopied}</p>
           )}
 
-          {/* BOUTON RECOMMENCER PLUS BEAU */}
           <button
             type="button"
             onClick={restart}
@@ -713,7 +764,9 @@ export default function SelahTab() {
             <>
               <section className="grid grid-cols-3 gap-2">
                 <div className="min-w-0 rounded-2xl border border-[var(--color-accent)]/40 bg-[var(--color-accent)]/5 p-3 text-center">
-                  <p className="text-2xl font-bold text-[var(--color-accent)]">🌿 {stats.current}</p>
+                  <p className="text-2xl font-bold text-[var(--color-accent)]">
+                    🌿 {stats.current}
+                  </p>
                   <p className="mt-0.5 text-[10px] uppercase tracking-wide text-[var(--muted)]">
                     {stats.current === 1 ? l.streakOne : l.streak}
                   </p>
@@ -748,7 +801,7 @@ export default function SelahTab() {
                               : "border-[var(--border)]"
                         }`}
                       >
-                        {d.entry ? getStateMeta(d.entry.state).emoji : ""}
+                        {d.entry ? "🌿" : ""}
                       </span>
                       <span
                         className={`text-[10px] uppercase ${
@@ -778,7 +831,7 @@ export default function SelahTab() {
                         <div className="min-w-0">
                           <p className="text-xs capitalize text-[var(--muted)]">{fmtDate(e.date)}</p>
                           <p className="mt-0.5 text-sm font-semibold text-[var(--foreground)]">
-                            <span aria-hidden="true">{m.emoji}</span> {lang === "en" ? m.en : m.fr}
+                            {lang === "en" ? m.en : m.fr}
                           </p>
                         </div>
                         <button
@@ -827,7 +880,7 @@ export default function SelahTab() {
 
                       {e.pas && (
                         <p className="mt-2 break-words text-xs text-[var(--muted)]">
-                          🎯 {e.pas}{" "}
+                          {e.pas}{" "}
                           <span
                             className={
                               e.pasDone === true ? "font-semibold text-green-600" : "text-[var(--muted)]"

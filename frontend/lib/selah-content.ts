@@ -1,9 +1,6 @@
 // ============================================================
 // LILOBA — SELAH · contenus (états du cœur + versets)
 // ============================================================
-// Textes bibliques : Louis Segond 1910 (domaine public), extraits
-// automatiquement de public/bible.json (aucune recopie à la main).
-// ============================================================
 
 export type SoulState =
   | "paix"
@@ -16,7 +13,6 @@ export type SoulState =
 
 export interface SoulMeta {
   id: SoulState;
-  emoji: string;
   fr: string;
   en: string;
 }
@@ -30,13 +26,13 @@ export interface Prescription {
 }
 
 export const SELAH_STATES: SoulMeta[] = [
-  { id: "paix", emoji: "🕊️", fr: "En paix", en: "At peace" },
-  { id: "joie", emoji: "☀️", fr: "Joyeux(se)", en: "Joyful" },
-  { id: "fatigue", emoji: "🌙", fr: "Fatigué(e)", en: "Weary" },
-  { id: "angoisse", emoji: "🌊", fr: "Inquiet(ète)", en: "Anxious" },
-  { id: "colere", emoji: "🔥", fr: "En colère", en: "Angry" },
-  { id: "culpabilite", emoji: "💧", fr: "Besoin de pardon", en: "Needing forgiveness" },
-  { id: "secheresse", emoji: "🏜️", fr: "Dans le désert", en: "In a dry season" },
+  { id: "paix", fr: "En paix", en: "At peace" },
+  { id: "joie", fr: "Joyeux(se)", en: "Joyful" },
+  { id: "fatigue", fr: "Fatigué(e)", en: "Weary" },
+  { id: "angoisse", fr: "Inquiet(ète)", en: "Anxious" },
+  { id: "colere", fr: "En colère", en: "Angry" },
+  { id: "culpabilite", fr: "Besoin de pardon", en: "Needing forgiveness" },
+  { id: "secheresse", fr: "Dans le désert", en: "In a dry season" },
 ];
 
 export const SELAH_RX: Record<SoulState, Prescription[]> = {
