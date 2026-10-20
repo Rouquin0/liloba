@@ -39,16 +39,21 @@ export default function HomePage() {
         </div>
         
         <div className="mt-4 flex flex-wrap items-center justify-center gap-2 md:mt-0 md:gap-3">
-          <OnlineBadge />
+          {/* Badges "En ligne" / "App installée" : desktop uniquement */}
+          <div className="hidden md:contents">
+            <OnlineBadge />
+          </div>
           <StreakBadge />
-          <InstallPwaButton />
+          <div className="hidden md:contents">
+            <InstallPwaButton />
+          </div>
         </div>
       </header>
 
       {/* Contenu principal */}
       <main className="flex flex-1 flex-col items-center px-4 pt-6 pb-24 md:px-10 md:pt-12">
         <div className="w-full max-w-5xl">
-          <div className="mb-6 text-center md:mb-10 md:text-left">
+          <div className="mb-6 hidden text-center md:mb-10 md:block md:text-left">
             <h2 className="text-xl font-bold text-[var(--color-primary)] md:text-3xl">
               Que veux-tu faire ?
             </h2>
@@ -88,7 +93,7 @@ export default function HomePage() {
               {/* Carte Apollos */}
               <Link
                 href="/chat"
-                className="group flex items-center gap-5 rounded-2xl border-2 border-[var(--border)] bg-[var(--surface)] p-6 shadow-sm transition-all hover:border-[var(--color-accent)] active:scale-[0.99] md:p-8"
+                className="group hidden items-center gap-5 rounded-2xl border-2 border-[var(--border)] bg-[var(--surface)] p-6 shadow-sm transition-all hover:border-[var(--color-accent)] active:scale-[0.99] md:flex md:p-8"
               >
                 <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl bg-[var(--color-accent)]/10 text-[var(--color-accent)] md:h-20 md:w-20">
                   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-8 w-8 md:h-10 md:w-10">
@@ -113,8 +118,14 @@ export default function HomePage() {
 
             {/* Colonne de droite : Modules (prend 1 colonne sur 3) */}
             <div className="flex flex-col gap-6">
-              <DailyVerseCard />
-              <HistoiresTeaser />
+              {/* Verset du jour : desktop uniquement */}
+              <div className="hidden md:block">
+                <DailyVerseCard />
+              </div>
+              {/* Teaser Histoires : mobile uniquement (retiré du desktop) */}
+              <div className="md:hidden">
+                <HistoiresTeaser />
+              </div>
               
               <div className="flex items-center justify-center gap-2 rounded-xl bg-green-500/10 px-4 py-3 text-xs font-medium text-green-700 dark:text-green-300 md:text-sm">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4 shrink-0">

@@ -482,6 +482,60 @@ export default function BibleReader({
       </select>
     ) : null;
 
+  // 📍 Saut direct à un verset (mobile). Aucune requête : on se base sur les
+  // versets déjà chargés (IndexedDB ou réseau), donc OK en mode avion.
+  const verseNumbers = versets
+    ? Object.keys(versets).sort((a, b) => parseInt(a, 10) - parseInt(b, 10))
+    : [];
+
+  const jumpToVerse = (numero: string) => {
+    const container = scrollRef.current;
+    if (!container || !numero) return;
+    const el = container.querySelector<HTMLElement>(`[data-verse="${numero}"]`);
+    if (!el) return;
+    const top =
+      el.getBoundingClientRect().top -
+      container.getBoundingClientRect().top +
+      container.scrollTop -
+      8;
+    container.scrollTo({ top: Math.max(0, top), behavior: "smooth" });
+    el.animate(
+      [
+        { backgroundColor: "color-mix(in srgb, var(--color-accent) 28%, transparent)" },
+        { backgroundColor: "transparent" },
+      ],
+      { duration: 1800, easing: "ease-out" }
+    );
+  };
+
+  const verseJumpBar =
+    showHeader && !compact ? (
+      <div className="flex items-center gap-2 border-b border-[var(--border)] bg-[var(--surface)] px-4 py-1.5 md:hidden">
+        <label
+          htmlFor="liloba-verse-jump"
+          className="shrink-0 text-xs font-medium text-[var(--muted)]"
+        >
+          Aller au verset
+        </label>
+        <select
+          id="liloba-verse-jump"
+          value=""
+          disabled={isLoading || !!error || verseNumbers.length < 2}
+          onChange={(e) => jumpToVerse(e.target.value)}
+          className="h-8 min-w-0 flex-1 rounded-lg border border-[var(--border)] bg-[var(--background)] px-2 text-sm text-[var(--foreground)] outline-none focus:border-[var(--color-accent)] disabled:opacity-50"
+        >
+          <option value="" disabled>
+            Verset…
+          </option>
+          {verseNumbers.map((n) => (
+            <option key={n} value={n}>
+              Verset {n}
+            </option>
+          ))}
+        </select>
+      </div>
+    ) : null;
+
   return (
     <div className={`flex h-full flex-col ${embeddedMenus ? "relative" : ""}`}>
       {showHeader && (
@@ -495,6 +549,8 @@ export default function BibleReader({
           mobileRightSlot={chapterSelect}
         />
       )}
+
+      {verseJumpBar}
 
       {mounted && !compact && (
         <button type="button" onClick={() => setShowCompare(true)} className="fixed bottom-6 right-6 z-30 hidden items-center gap-2 rounded-xl border border-[var(--border)] bg-[var(--surface)] px-4 py-3 text-sm font-medium text-[var(--foreground)] shadow-lg transition-all hover:border-[var(--color-accent)] hover:text-[var(--color-accent)] hover:shadow-xl md:flex" aria-label="Comparer les traductions">
@@ -544,7 +600,7 @@ export default function BibleReader({
                     const phrasesASurligner = isAnimating ? animatedCount : highlightColor ? phrases.length : 0;
                     const isFocused = focusedVerse === reference;
                     return (
-                      <span key={numero} onClick={(e) => { if (!longPressTriggered) { handleVerseClick(e, reference); } setLongPressTriggered(false); }} onDoubleClick={() => handleVerseDoubleClick(reference)} onTouchStart={() => handleVerseTouchStart(reference)} onTouchEnd={handleVerseTouchEnd} onTouchCancel={handleVerseTouchEnd} className={`cursor-pointer rounded transition-all duration-300 ${isFocused ? "relative z-50 inline-block scale-[1.02] bg-[var(--surface)] px-2 py-1 shadow-lg ring-2" : "hover:bg-[var(--surface-hover)]"}`} style={isFocused ? { "--tw-ring-color": "color-mix(in srgb, var(--color-accent) 40%, transparent)", boxShadow: "0 4px 20px color-mix(in srgb, var(--color-accent) 15%, transparent)" } as any : undefined}>
+                      <span key={numero} data-verse={numero} onClick={(e) => { if (!longPressTriggered) { handleVerseClick(e, reference); } setLongPressTriggered(false); }} onDoubleClick={() => handleVerseDoubleClick(reference)} onTouchStart={() => handleVerseTouchStart(reference)} onTouchEnd={handleVerseTouchEnd} onTouchCancel={handleVerseTouchEnd} className={`cursor-pointer rounded transition-all duration-300 ${isFocused ? "relative z-50 inline-block scale-[1.02] bg-[var(--surface)] px-2 py-1 shadow-lg ring-2" : "hover:bg-[var(--surface-hover)]"}`} style={isFocused ? { "--tw-ring-color": "color-mix(in srgb, var(--color-accent) 40%, transparent)", boxShadow: "0 4px 20px color-mix(in srgb, var(--color-accent) 15%, transparent)" } as any : undefined}>
                         <sup className="mr-1 select-none font-sans text-[0.65em] font-bold" style={{ color: "var(--color-accent)", verticalAlign: "super", lineHeight: 0 }}>{numero}</sup>
                         {phrases.map((phrase, idx) => {
                           const isHighlighted = idx < phrasesASurligner && colorConfig;
@@ -573,7 +629,7 @@ export default function BibleReader({
                     const phrases = decouperEnPhrases(texteClean);
                     const phrasesASurligner = isAnimating ? animatedCount : highlightColor ? phrases.length : 0;
                     return (
-                      <p key={numero} onClick={(e) => { if (!longPressTriggered) { handleVerseClick(e, reference); } setLongPressTriggered(false); }} onDoubleClick={() => handleVerseDoubleClick(reference)} onTouchStart={() => handleVerseTouchStart(reference)} onTouchEnd={handleVerseTouchEnd} onTouchCancel={handleVerseTouchEnd} className={`group flex cursor-pointer gap-2 rounded-lg px-3 py-1.5 text-[var(--foreground)] transition-transform duration-300 ease-out ${focusedVerse === reference ? "relative z-50 scale-[1.03] bg-[var(--surface)] shadow-xl" : "hover:bg-[var(--surface-hover)]"}`} style={mounted ? getVerseStyles() : undefined}>
+                      <p key={numero} data-verse={numero} onClick={(e) => { if (!longPressTriggered) { handleVerseClick(e, reference); } setLongPressTriggered(false); }} onDoubleClick={() => handleVerseDoubleClick(reference)} onTouchStart={() => handleVerseTouchStart(reference)} onTouchEnd={handleVerseTouchEnd} onTouchCancel={handleVerseTouchEnd} className={`group flex cursor-pointer gap-2 rounded-lg px-3 py-1.5 text-[var(--foreground)] transition-transform duration-300 ease-out ${focusedVerse === reference ? "relative z-50 scale-[1.03] bg-[var(--surface)] shadow-xl" : "hover:bg-[var(--surface-hover)]"}`} style={mounted ? getVerseStyles() : undefined}>
                         <span className="mt-1 h-fit shrink-0 select-none rounded-md bg-[var(--surface-hover)] px-1.5 py-0.5 text-xs font-semibold text-[var(--muted)] md:text-sm">{numero}</span>
                         <span className="flex-1">
                           {phrases.map((phrase, idx) => {
