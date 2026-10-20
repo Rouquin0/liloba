@@ -410,28 +410,29 @@ export default function HamburgerMenu({
             </Link>
           )}
 
-          {/* ---------- LE MIROIR (NOUVEAU) ---------- */}
+                    {/* ---------- SELAH (pause du soir) ---------- */}
           {!searchQuery && (
             <Link
-              href="/miroir"
+              href="/selah"
               onClick={onClose}
               className="group mb-4 flex items-center gap-3 rounded-xl px-3 py-1.5 transition-all hover:bg-[var(--surface-hover)]"
             >
               <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg text-[var(--muted)]">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4">
-                  <circle cx="12" cy="12" r="10" />
-                  <path d="M12 16v-4" />
-                  <path d="M12 8h.01" />
+                  <path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z" />
+                  <path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12" />
                 </svg>
               </span>
-              <span className="flex-1 text-sm text-[var(--foreground)]">
-                Le Miroir
+              <span className="min-w-0 flex-1 text-sm text-[var(--foreground)]">
+                Selah
+                <span className="ml-1.5 text-xs text-[var(--muted)]">pause du soir</span>
               </span>
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4 text-[var(--muted)] transition-transform group-hover:translate-x-0.5">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4 shrink-0 text-[var(--muted)] transition-transform group-hover:translate-x-0.5">
                 <path d="m9 18 6-6-6-6" />
               </svg>
             </Link>
           )}
+
 
           {/* ---------- LA BIBLE ---------- */}
           <section className="mb-6">

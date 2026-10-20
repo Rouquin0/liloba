@@ -58,10 +58,10 @@ function AppShellContent({
     pathname.startsWith("/chat") || 
     pathname.startsWith("/bible") || 
     pathname.startsWith("/read") ||
-    pathname.startsWith("/miroir");
+    pathname.startsWith("/selah");
 
   // 👇 On autorise le scroll sur l'accueil ET sur la page Miroir
-  const allowScroll = pathname === "/" || pathname.startsWith("/miroir");
+  const allowScroll = pathname === "/" || pathname.startsWith("/selah");
 
   const handleClose = useCallback(() => setIsMenuOpen(false), []);
   const handleOpen = useCallback(() => setIsMenuOpen(true), []);

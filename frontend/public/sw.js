@@ -32,7 +32,7 @@ const RUNTIME_CACHE = "liloba-runtime-v6";
 const BIBLE_CACHE = "liloba-bible-v4";
 const KEEP_CACHES = [STATIC_CACHE, RUNTIME_CACHE, BIBLE_CACHE];
 
-const PRECACHE_URLS = ["/", "/chat", "/bible", "/manifest.webmanifest"];
+const PRECACHE_URLS = ["/", "/chat", "/bible", "/selah", "/manifest.webmanifest"];
 
 const IS_LOCAL = ["localhost", "127.0.0.1", "[::1]"].includes(
   self.location.hostname

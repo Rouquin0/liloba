@@ -1,0 +1,26 @@
+SELAH — A FAIRE A LA MAIN (3 petites modifications + 1 suppression)
+====================================================================
+
+0) Dezipper ce dossier a la RACINE de ton projet (la ou se trouve le dossier "frontend").
+   Accepte le remplacement de frontend/app/miroir/page.tsx (il devient une simple redirection).
+
+1) frontend/components/AppShell.tsx  (3 remplacements)
+   a) Remplace :   pathname.startsWith("/miroir");
+      par :        pathname.startsWith("/selah");
+   b) Remplace :   const allowScroll = pathname === "/" || pathname.startsWith("/miroir");
+      par :        const allowScroll = pathname === "/" || pathname.startsWith("/selah");
+   (les 2 commentaires "Miroir" juste au-dessus sont facultatifs)
+
+2) frontend/components/HamburgerMenu.tsx
+   Cherche (Ctrl+F) :   LE MIROIR (NOUVEAU)
+   Tu tombes sur un bloc  {!searchQuery && ( <Link href="/miroir" ... </Link> )}
+   Remplace TOUT ce bloc (de {/* ---------- LE MIROIR ... jusqu'au )} qui ferme, juste avant
+   {/* ---------- LA BIBLE ---------- */}) par le contenu du fichier  BLOC-HamburgerMenu.txt
+
+3) Supprime le fichier :  frontend/components/MiroirTab.tsx
+   (plus utilise ; si tu le laisses, rien ne casse, mais il contient encore l'ancien vocabulaire)
+
+4) Remplace aussi frontend/public/sw.js par le sw.js fourni a part (il precharge /selah
+   pour que la page marche hors ligne).
+
+Ensuite :  git add -A  ;  git commit -m "feat: Selah (pause du soir) remplace Le Miroir"  ;  git push
