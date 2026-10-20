@@ -3,8 +3,6 @@
 // ============================================================
 // Textes bibliques : Louis Segond 1910 (domaine public), extraits
 // automatiquement de public/bible.json (aucune recopie à la main).
-// Ajouter un verset : ajoute un objet dans l'état voulu, avec
-// ref, texte (exact), meditation, pas, priere.
 // ============================================================
 
 export type SoulState =
@@ -24,15 +22,10 @@ export interface SoulMeta {
 }
 
 export interface Prescription {
-  /** Référence affichée, ex : "Psaumes 23:1" */
   ref: string;
-  /** Texte du verset (LSG 1910) */
   texte: string;
-  /** Courte méditation */
   meditation: string;
-  /** Un pas concret pour demain */
   pas: string;
-  /** Prière à dire */
   priere: string;
 }
 
@@ -50,9 +43,9 @@ export const SELAH_RX: Record<SoulState, Prescription[]> = {
   paix: [
     {
       ref: "Psaumes 23:1",
-      texte: "L'Éternel est mon berger : je ne manquerai de rien.",
+      texte: "L'Éternel est mon berger : je ne manquerai de rien.",
       meditation: "Garde cette paix comme on garde une flamme : ne la disperse pas ce soir. Rends grâce pour un bien précis avant de dormir.",
-      pas: "Écris demain matin 3 sujets de reconnaissance avant de prendre ton téléphone.",
+      pas: "Écris demain matin 3 sujets de reconnaissance avant de prendre ton appareil.",
       priere: "Merci, Berger fidèle, pour ta paix. Garde mon cœur tranquille. Amen.",
     },
     {
@@ -71,7 +64,7 @@ export const SELAH_RX: Record<SoulState, Prescription[]> = {
     },
     {
       ref: "Psaumes 4:8",
-      texte: "Je me couche et je m'endors en paix, Car toi seul, ô Éternel ! tu me donnes la sécurité dans ma demeure.",
+      texte: "Je me couche et je m'endors en paix, Car toi seul, ô Éternel ! tu me donnes la sécurité dans ma demeure.",
       meditation: "Dormir en paix est un acte de confiance : tu remets ta journée entre les mains de celui qui veille. Tu peux lâcher prise.",
       pas: "Ce soir, remets à Dieu la liste de demain avant de fermer les yeux.",
       priere: "Je me couche en paix, Seigneur, car tu me gardes. Amen.",
@@ -80,21 +73,21 @@ export const SELAH_RX: Record<SoulState, Prescription[]> = {
   joie: [
     {
       ref: "Philippiens 4:4",
-      texte: "Réjouissez-vous toujours dans le Seigneur ; je le répète, réjouissez-vous.",
+      texte: "Réjouissez-vous toujours dans le Seigneur ; je le répète, réjouissez-vous.",
       meditation: "Ta joie est un témoignage. Ne la garde pas pour toi : la joie partagée devient louange.",
       pas: "Chante ou lis à voix haute un psaume de louange demain.",
       priere: "Je me réjouis en toi, Seigneur, aujourd'hui et demain. Amen.",
     },
     {
       ref: "Psaumes 118:24",
-      texte: "C'est ici la journée que l'Éternel a faite : Qu'elle soit pour nous un sujet d'allégresse et de joie !",
+      texte: "C'est ici la journée que l'Éternel a faite : Qu'elle soit pour nous un sujet d'allégresse et de joie !",
       meditation: "Chaque jour vient de Dieu. Demain est déjà un cadeau : ouvre-le avec confiance.",
       pas: "Commence demain par ces mots : « ce jour est un cadeau ».",
       priere: "Merci pour ce jour que tu as fait. Amen.",
     },
     {
       ref: "Psaumes 126:3",
-      texte: "L'Éternel a fait pour nous de grandes choses ; Nous sommes dans la joie.",
+      texte: "L'Éternel a fait pour nous de grandes choses ; Nous sommes dans la joie.",
       meditation: "Fais mémoire des bienfaits de Dieu : ce que tu as reçu aujourd'hui mérite d'être nommé à voix haute.",
       pas: "Raconte demain à quelqu'un une chose que Dieu a faite pour toi.",
       priere: "Merci pour les grandes choses que tu as faites pour moi. Amen.",
@@ -112,26 +105,26 @@ export const SELAH_RX: Record<SoulState, Prescription[]> = {
       ref: "Matthieu 11:28",
       texte: "Venez à moi, vous tous qui êtes fatigués et chargés, et je vous donnerai du repos.",
       meditation: "Tu n'as pas à tout porter ce soir. Pose ce fardeau devant Jésus : lui ne dort pas, toi si. Le repos est un acte de foi.",
-      pas: "Couche-toi 30 minutes plus tôt, téléphone hors de la chambre.",
+      pas: "Couche-toi 30 minutes plus tôt, appareil hors de la chambre.",
       priere: "Jésus, je te donne ma fatigue. Donne-moi ton repos. Amen.",
     },
     {
       ref: "Ésaïe 40:31",
-      texte: "Mais ceux qui se confient en l'Éternel renouvellent leur force. Ils prennent le vol comme les aigles ; Ils courent, et ne se lassent point, Ils marchent, et ne se fatiguent point.",
+      texte: "Mais ceux qui se confient en l'Éternel renouvellent leur force. Ils prennent le vol comme les aigles ; Ils courent, et ne se lassent point, Ils marchent, et ne se fatiguent point.",
       meditation: "Ta force ne vient pas seulement de ton sommeil, mais de ta confiance. Attends-toi à Dieu avant de t'attendre à toi-même.",
       pas: "Demain, prends 5 minutes de silence avant tout effort.",
       priere: "Renouvelle ma force, Seigneur, comme celle de l'aigle. Amen.",
     },
     {
       ref: "Psaumes 127:2",
-      texte: "En vain vous levez-vous matin, vous couchez-vous tard, Et mangez-vous le pain de douleur ; Il en donne autant à ses bien-aimés pendant leur sommeil.",
+      texte: "En vain vous levez-vous matin, vous couchez-vous tard, Et mangez-vous le pain de douleur ; Il en donne autant à ses bien-aimés pendant leur sommeil.",
       meditation: "Dieu donne du repos à ceux qu'il aime. Ton travail compte, mais ta valeur ne dépend pas de tout ce que tu as accompli aujourd'hui.",
       pas: "Demain, prévois une vraie pause de 15 minutes, sans écran.",
       priere: "Père, je te confie ce que je n'ai pas pu terminer. Donne-moi un sommeil paisible. Amen.",
     },
     {
       ref: "Psaumes 121:3-4",
-      texte: "Il ne permettra point que ton pied chancelle ; Celui qui te garde ne sommeillera point. Voici, il ne sommeille ni ne dort, Celui qui garde Israël.",
+      texte: "Il ne permettra point que ton pied chancelle ; Celui qui te garde ne sommeillera point. Voici, il ne sommeille ni ne dort, Celui qui garde Israël.",
       meditation: "Pendant que tu dors, celui qui te garde reste éveillé. Tu peux te reposer sans craindre que quelque chose lui échappe.",
       pas: "Ce soir, nomme à Dieu une chose qui te pèse, puis laisse-la entre ses mains.",
       priere: "Merci de veiller sur moi cette nuit. Je me repose en toi. Amen.",
@@ -140,14 +133,14 @@ export const SELAH_RX: Record<SoulState, Prescription[]> = {
   angoisse: [
     {
       ref: "Ésaïe 41:10",
-      texte: "Ne crains rien, car je suis avec toi ; Ne promène pas des regards inquiets, car je suis ton Dieu ; Je te fortifie, je viens à ton secours, Je te soutiens de ma droite triomphante.",
+      texte: "Ne crains rien, car je suis avec toi ; Ne promène pas des regards inquiets, car je suis ton Dieu ; Je te fortifie, je viens à ton secours, Je te soutiens de ma droite triomphante.",
       meditation: "Dis ta peur à Dieu telle qu'elle est : elle pèse moins quand elle est nommée devant lui. Il est avec toi au milieu de ce qui t'inquiète, pas seulement après.",
       pas: "Écris ta peur sur un papier, puis recopie ce verset en dessous.",
       priere: "Je ne crains rien, car tu es avec moi. Amen.",
     },
     {
       ref: "Philippiens 4:6",
-      texte: "Ne vous inquiétez de rien ; mais en toute chose faites connaître vos besoins à Dieu par des prières et des supplications, avec des actions de grâces.",
+      texte: "Ne vous inquiétez de rien ; mais en toute chose faites connaître vos besoins à Dieu par des prières et des supplications, avec des actions de grâces.",
       meditation: "Transforme chaque « et si… » en prière concrète. L'inquiétude est une prière qui n'a pas encore trouvé son destinataire.",
       pas: "Demain, chaque inquiétude devient une prière de 30 secondes, tout de suite.",
       priere: "Je te confie mes besoins, un par un. Amen.",
@@ -170,7 +163,7 @@ export const SELAH_RX: Record<SoulState, Prescription[]> = {
   colere: [
     {
       ref: "Éphésiens 4:26",
-      texte: "Si vous vous mettez en colère, ne péchez point ; que le soleil ne se couche pas sur votre colère.",
+      texte: "Si vous vous mettez en colère, ne péchez point ; que le soleil ne se couche pas sur votre colère.",
       meditation: "Ta colère signale souvent une blessure ou une injustice : écoute-la sans lui obéir. Règle cela avant la nuit.",
       pas: "Avant de dormir, pardonne à une personne, à voix haute, même de loin.",
       priere: "Apprends-moi la colère lente et le pardon rapide. Amen.",
@@ -184,7 +177,7 @@ export const SELAH_RX: Record<SoulState, Prescription[]> = {
     },
     {
       ref: "Jacques 1:19-20",
-      texte: "Que tout homme soit prompt à écouter, lent à parler, lent à se mettre en colère ; car la colère de l'homme n'accomplit pas la justice de Dieu.",
+      texte: "Que tout homme soit prompt à écouter, lent à parler, lent à se mettre en colère ; car la colère de l'homme n'accomplit pas la justice de Dieu.",
       meditation: "Écouter avant de parler ralentit la colère. Ce soir, demande-toi ce que tu n'as pas écouté aujourd'hui.",
       pas: "Lors de la prochaine discussion tendue, attends trois secondes avant de répondre.",
       priere: "Apprends-moi à écouter, à parler lentement et à ne pas m'emporter. Amen.",
@@ -207,7 +200,7 @@ export const SELAH_RX: Record<SoulState, Prescription[]> = {
     },
     {
       ref: "Psaumes 51:10",
-      texte: "O Dieu ! crée en moi un cœur pur, Renouvelle en moi un esprit bien disposé.",
+      texte: "O Dieu ! crée en moi un cœur pur, Renouvelle en moi un esprit bien disposé.",
       meditation: "Ne demande pas seulement pardon : demande un cœur neuf. Dieu ne se contente pas de réparer, il renouvelle.",
       pas: "Demain, pose un acte concret qui montre ce cœur neuf (réparer, rendre, appeler).",
       priere: "Crée en moi un cœur pur, ô Dieu. Amen.",
@@ -230,14 +223,14 @@ export const SELAH_RX: Record<SoulState, Prescription[]> = {
   secheresse: [
     {
       ref: "Psaumes 42:1",
-      texte: "Comme une biche soupire après des courants d'eau, Ainsi mon âme soupire après toi, ô Dieu !",
+      texte: "Comme une biche soupire après des courants d'eau, Ainsi mon âme soupire après toi, ô Dieu !",
       meditation: "Ta soif est déjà une prière. Les saisons sèches précèdent souvent les sources. Reviens au puits : un chapitre, lentement.",
       pas: "Demain, lis un psaume lentement, sans objectif de quantité.",
       priere: "Mon âme a soif de toi. Viens. Amen.",
     },
     {
       ref: "Lamentations 3:22-23",
-      texte: "Les bontés de l'Éternel ne sont pas épuisées, Ses compassions ne sont pas à leur terme ; Elles se renouvellent chaque matin. Oh ! que ta fidélité est grande !",
+      texte: "Les bontés de l'Éternel ne sont pas épuisées, Ses compassions ne sont pas à leur terme ; Elles se renouvellent chaque matin. Oh ! que ta fidélité est grande !",
       meditation: "La fidélité de Dieu ne dépend pas de tes sentiments. Demain matin, tout est renouvelé, toi aussi.",
       pas: "Demain matin, lis ce verset avant de regarder un écran.",
       priere: "Tes bontés se renouvellent, même pour moi. Amen.",

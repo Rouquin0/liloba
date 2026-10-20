@@ -1,18 +1,5 @@
 "use client";
 
-// ============================================================
-// LILOBA — SELAH · ta pause du soir avec la Parole
-// ============================================================
-// Un temps guidé en 5 étapes, 100 % hors ligne :
-//   1. Cœur    → comment vas-tu ce soir ?
-//   2. Parole  → un verset (LSG) + une courte méditation
-//   3. Merci   → jusqu'à 3 motifs de reconnaissance
-//   4. Prière  → une prière + une minute de silence
-//   5. Demain  → un pas concret, puis enregistrement
-// + « Mon parcours » : série de jours, semaine, journal de gratitude.
-// Aucune donnée ne quitte le téléphone.
-// ============================================================
-
 import { useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -40,16 +27,12 @@ import {
   type SoulState,
 } from "@/lib/selah";
 
-// ------------------------------------------------------------
-// TEXTES
-// ------------------------------------------------------------
-
 const UI = {
   fr: {
     title: "Selah",
     subtitle: "Ta pause du soir avec la Parole",
     tagline:
-      "Quelques minutes pour t'arrêter, lire un verset, remercier Dieu et préparer demain. Tout reste sur ton téléphone.",
+      "Quelques minutes pour t'arrêter, lire un verset, remercier Dieu et préparer demain. Tout reste sur ton appareil.",
     meaning:
       "Selah : mot qui revient dans les Psaumes, souvent compris comme une invitation à faire une pause et à méditer.",
     tabTonight: "Ce soir",
@@ -81,7 +64,7 @@ const UI = {
     pas: "Ton pas pour demain",
     finish: "Terminer ma pause",
     doneTitle: "Pause enregistrée",
-    doneText: "Tu as pris un temps avec Dieu ce soir. Reviens demain. 🌿",
+    doneText: "Tu as pris un temps avec Dieu ce soir. Reviens demain.",
     share: "Partager",
     copied: "Copié !",
     apollos: "Approfondir avec Apollos",
@@ -116,7 +99,7 @@ const UI = {
     title: "Selah",
     subtitle: "Your evening pause with the Word",
     tagline:
-      "A few minutes to stop, read a verse, thank God and prepare for tomorrow. Everything stays on your phone.",
+      "A few minutes to stop, read a verse, thank God and prepare for tomorrow. Everything stays on your device.",
     meaning:
       "Selah: a word found in the Psalms, often understood as an invitation to pause and reflect.",
     tabTonight: "Tonight",
@@ -148,7 +131,7 @@ const UI = {
     pas: "Your step for tomorrow",
     finish: "Finish my pause",
     doneTitle: "Pause saved",
-    doneText: "You spent time with God tonight. Come back tomorrow. 🌿",
+    doneText: "You spent time with God tonight. Come back tomorrow.",
     share: "Share",
     copied: "Copied!",
     apollos: "Go deeper with Apollos",
@@ -187,10 +170,6 @@ type Silence = "idle" | "running" | "done";
 const SILENCE_SECONDS = 60;
 const LAST_STEP = 4;
 
-// ------------------------------------------------------------
-// COMPOSANT
-// ------------------------------------------------------------
-
 export default function SelahTab() {
   const { lang } = useAppLanguage();
   const l = lang === "en" ? UI.en : UI.fr;
@@ -220,7 +199,6 @@ export default function SelahTab() {
 
   const meta = etat ? getStateMeta(etat) : null;
 
-  // ---- Minute de silence : basée sur l'heure réelle (fiable même si l'onglet ralentit)
   useEffect(() => {
     if (silence !== "running") return;
     const id = setInterval(() => {
@@ -234,7 +212,6 @@ export default function SelahTab() {
     return () => clearInterval(id);
   }, [silence]);
 
-  // ---- Actions
   const begin = () => {
     if (!etat) return;
     setRx(pickPrescription(etat, entries));
@@ -264,7 +241,6 @@ export default function SelahTab() {
       gratitudes,
       pas: rx.pas,
     });
-    // Trace aussi dans le journal spirituel (Carnet)
     const merci = gratitudes.map((g) => g.trim()).filter(Boolean);
     addJournalEntry("private_note_added", `${l.journalLabel} — ${meta.fr}`, {
       detail: `${rx.ref} · ${rx.texte} | Pas : ${rx.pas}${
@@ -332,10 +308,6 @@ export default function SelahTab() {
       parseDateKey(key)
     );
 
-  // ----------------------------------------------------------
-  // RENDU
-  // ----------------------------------------------------------
-
   return (
     <div className="mx-auto w-full min-w-0 max-w-2xl px-4 py-6 md:px-6">
       <style>{`
@@ -348,7 +320,6 @@ export default function SelahTab() {
         }
       `}</style>
 
-      {/* ---------- En-tête ---------- */}
       <header className="mb-5 text-center">
         <p className="text-3xl" aria-hidden="true">
           🌿
@@ -365,7 +336,6 @@ export default function SelahTab() {
         </p>
       </header>
 
-      {/* ---------- Onglets ---------- */}
       <div className="mb-5 grid grid-cols-2 gap-1 rounded-xl border border-[var(--border)] bg-[var(--surface)] p-1">
         {(["tonight", "path"] as const).map((id) => (
           <button
@@ -384,10 +354,8 @@ export default function SelahTab() {
         ))}
       </div>
 
-      {/* ====================== CE SOIR ====================== */}
       {tab === "tonight" && !finished && (
         <div className="flex flex-col gap-4">
-          {/* Progression */}
           <ol className="flex items-center justify-between gap-1 px-1" aria-label="Progression">
             {l.steps.map((label, i) => (
               <li key={label} className="flex min-w-0 flex-1 flex-col items-center gap-1">
@@ -407,7 +375,6 @@ export default function SelahTab() {
             ))}
           </ol>
 
-          {/* ----- Étape 0 : Cœur ----- */}
           {step === 0 && (
             <>
               {yesterday && (
@@ -442,23 +409,29 @@ export default function SelahTab() {
               <section className="rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-4">
                 <p className="mb-3 text-sm font-semibold text-[var(--foreground)]">{l.step0}</p>
                 <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
-                  {SELAH_STATES.map((s) => (
-                    <button
-                      key={s.id}
-                      type="button"
-                      onClick={() => setEtat(s.id)}
-                      className={`min-w-0 rounded-xl border px-3 py-3 text-sm transition-all active:scale-95 ${
-                        etat === s.id
-                          ? "border-[var(--color-accent)] bg-[var(--color-accent)]/10 font-semibold text-[var(--color-accent)]"
-                          : "border-[var(--border)] text-[var(--foreground)] hover:border-[var(--color-accent)]/40"
-                      }`}
-                    >
-                      <span className="mr-1" aria-hidden="true">
-                        {s.emoji}
-                      </span>
-                      {lang === "en" ? s.en : s.fr}
-                    </button>
-                  ))}
+                  {SELAH_STATES.map((s, index) => {
+                    // Pour que le dernier bouton prenne toute la largeur s'il est seul sur sa ligne
+                    const isLast = index === SELAH_STATES.length - 1;
+                    const spanClass = isLast ? "col-span-2 sm:col-span-3" : "";
+
+                    return (
+                      <button
+                        key={s.id}
+                        type="button"
+                        onClick={() => setEtat(s.id)}
+                        className={`${spanClass} min-w-0 rounded-xl border px-3 py-3 text-sm transition-all active:scale-95 ${
+                          etat === s.id
+                            ? "border-[var(--color-accent)] bg-[var(--color-accent)]/10 font-semibold text-[var(--color-accent)]"
+                            : "border-[var(--border)] text-[var(--foreground)] hover:border-[var(--color-accent)]/40"
+                        }`}
+                      >
+                        <span className="mr-1" aria-hidden="true">
+                          {s.emoji}
+                        </span>
+                        {lang === "en" ? s.en : s.fr}
+                      </button>
+                    );
+                  })}
                 </div>
 
                 <p className="mb-2 mt-5 text-sm font-semibold text-[var(--foreground)]">
@@ -491,7 +464,6 @@ export default function SelahTab() {
             </>
           )}
 
-          {/* ----- Étape 1 : Parole ----- */}
           {step === 1 && rx && signals && (
             <>
               <section className="rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-4">
@@ -540,7 +512,6 @@ export default function SelahTab() {
             </>
           )}
 
-          {/* ----- Étape 2 : Merci ----- */}
           {step === 2 && (
             <section className="rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-4">
               <p className="text-sm font-semibold text-[var(--foreground)]">{l.thanks}</p>
@@ -562,7 +533,6 @@ export default function SelahTab() {
             </section>
           )}
 
-          {/* ----- Étape 3 : Prière + silence ----- */}
           {step === 3 && rx && (
             <>
               <section className="rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-4">
@@ -621,7 +591,6 @@ export default function SelahTab() {
             </>
           )}
 
-          {/* ----- Étape 4 : Demain ----- */}
           {step === 4 && rx && (
             <section className="rounded-2xl border border-[var(--color-accent)]/40 bg-[var(--color-accent)]/5 p-4">
               <p className="mb-1 text-xs font-bold uppercase tracking-widest text-[var(--color-accent)]">
@@ -633,7 +602,6 @@ export default function SelahTab() {
             </section>
           )}
 
-          {/* ----- Navigation ----- */}
           {step > 0 && (
             <div className="grid grid-cols-[auto_1fr] gap-2">
               <button
@@ -665,7 +633,6 @@ export default function SelahTab() {
         </div>
       )}
 
-      {/* ====================== PAUSE TERMINÉE ====================== */}
       {tab === "tonight" && finished && rx && (
         <div className="flex flex-col gap-4">
           <section className="rounded-2xl border border-[var(--color-accent)]/40 bg-[var(--color-accent)]/5 p-5 text-center">
@@ -712,17 +679,23 @@ export default function SelahTab() {
             <p className="text-center text-xs text-[var(--muted)]">{l.apollosCopied}</p>
           )}
 
+          {/* BOUTON RECOMMENCER PLUS BEAU */}
           <button
             type="button"
             onClick={restart}
-            className="py-1 text-center text-xs text-[var(--muted)] underline-offset-2 hover:underline"
+            className="mx-auto mt-2 flex items-center gap-2 rounded-full border border-[var(--border)] bg-[var(--surface)] px-5 py-2.5 text-xs font-medium text-[var(--muted)] transition-all hover:border-[var(--color-accent)] hover:text-[var(--color-accent)]"
           >
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-3.5 w-3.5">
+              <path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
+              <path d="M3 3v5h5" />
+              <path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16" />
+              <path d="M16 21h5v-5" />
+            </svg>
             {l.again}
           </button>
         </div>
       )}
 
-      {/* ====================== MON PARCOURS ====================== */}
       {tab === "path" && (
         <div className="flex flex-col gap-4">
           {entries.length === 0 ? (
