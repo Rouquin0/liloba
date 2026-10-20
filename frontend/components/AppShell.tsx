@@ -79,7 +79,9 @@ function AppShellContent({
       <HamburgerMenu isOpen={isMenuOpen} onClose={handleClose} />
       <div className="relative flex flex-1 flex-col overflow-hidden md:pl-2">
         {!isMenuOpen && !pathname.startsWith("/chat") && (
-          <MenuButton onClick={handleOpen} className="fixed top-3 left-3 z-30 md:hidden" />
+          <div className="md:hidden">
+  <MenuButton onClick={handleOpen} className="fixed top-3 left-3 z-30" />
+</div>
         )}
         <main className="flex-1 overflow-hidden">{children}</main>
       </div>
