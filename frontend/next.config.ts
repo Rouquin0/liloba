@@ -24,7 +24,7 @@ const SECURITY_HEADERS = [
       "script-src 'self' 'unsafe-inline' 'unsafe-eval'",
       "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
       "font-src 'self' https://fonts.gstatic.com data:",
-      "img-src 'self' data: blob:",
+      "img-src 'self' data: blob: https://images.unsplash.com", // 👈 ajout de unsplash
       "connect-src 'self' http://localhost:8000 https://*.onrender.com ws://localhost:3000",
       "media-src 'self' blob:",
       "object-src 'none'",
@@ -36,6 +36,11 @@ const SECURITY_HEADERS = [
 ];
 
 const nextConfig: NextConfig = {
+  images: {
+    remotePatterns: [
+      { protocol: "https", hostname: "images.unsplash.com", pathname: "/**" },
+    ],
+  },
   experimental: {
     agentFeedback: true,
   },
@@ -52,7 +57,6 @@ const nextConfig: NextConfig = {
 
   async headers() {
     return [
-      // 👇 AJOUT POUR LE SERVICE WORKER (évite le cache Vercel)
       {
         source: "/sw.js",
         headers: [

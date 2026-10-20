@@ -12,6 +12,7 @@ interface NavItem {
 const NAV_ITEMS: NavItem[] = [
   { href: "/chat", label: "Apollos", icon: "💬" },
   { href: "/bible", label: "Bible", icon: "📖" },
+  { href: "/histoires", label: "Histoires", icon: "📚" },
 ];
 
 export function BottomNav() {
@@ -51,7 +52,6 @@ export function Sidebar() {
 
   return (
     <aside className="hidden w-56 shrink-0 border-r border-[var(--border)] bg-[var(--surface)] md:flex md:flex-col">
-      {/* Logo */}
       <div className="flex items-center gap-2 border-b border-[var(--border)] px-4 py-4">
         <span className="text-2xl" aria-hidden="true">
           📖
@@ -66,7 +66,6 @@ export function Sidebar() {
         </div>
       </div>
 
-      {/* Navigation */}
       <nav className="flex flex-col gap-1 p-3">
         {NAV_ITEMS.map((item) => {
           const isActive = pathname.startsWith(item.href);

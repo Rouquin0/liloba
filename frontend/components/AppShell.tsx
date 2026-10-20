@@ -53,15 +53,15 @@ function AppShellContent({
     setMounted(true);
   }, []);
 
-  // 👇 On ajoute /miroir ici pour que le menu s'affiche sur cette page
+  // Le menu s'affiche sur ces routes
   const showMenu =
     pathname.startsWith("/chat") || 
     pathname.startsWith("/bible") || 
     pathname.startsWith("/read") ||
     pathname.startsWith("/selah");
 
-  // 👇 On autorise le scroll sur l'accueil ET sur la page Miroir
-  const allowScroll = pathname === "/" || pathname.startsWith("/selah");
+  // On autorise le scroll sur l'accueil, Selah ET Histoires
+  const allowScroll = pathname === "/" || pathname.startsWith("/selah") || pathname.startsWith("/histoires");
 
   const handleClose = useCallback(() => setIsMenuOpen(false), []);
   const handleOpen = useCallback(() => setIsMenuOpen(true), []);
@@ -80,8 +80,8 @@ function AppShellContent({
       <div className="relative flex flex-1 flex-col overflow-hidden md:pl-2">
         {!isMenuOpen && !pathname.startsWith("/chat") && (
           <div className="md:hidden">
-  <MenuButton onClick={handleOpen} className="fixed top-3 left-3 z-30" />
-</div>
+            <MenuButton onClick={handleOpen} className="fixed top-3 left-3 z-30" />
+          </div>
         )}
         <main className="flex-1 overflow-hidden">{children}</main>
       </div>
