@@ -12,9 +12,9 @@ import {
 // useSplitShortcuts — Raccourcis clavier pour le split view
 // ============================================================
 // Ctrl / Cmd + B          → ouvrir / fermer le split
-// Alt + Shift + B         → échanger les panneaux (swap)
-//   (Alt+Shift est utilisé au lieu de Ctrl+Shift car Chrome
-//    réserve Ctrl+Shift+B pour la barre de favoris)
+// Alt + S                 → échanger les panneaux (swap)
+//   (Alt+Shift a été changé en Alt+S car Alt+Shift change
+//    la langue du clavier sous Windows et casse le raccourci)
 // ============================================================
 
 export function useSplitShortcuts() {
@@ -33,10 +33,9 @@ export function useSplitShortcuts() {
       }
 
       const key = e.key.toLowerCase();
-      if (key !== "b") return;
 
-      // Alt + Shift + B → swap
-      if (e.altKey && e.shiftKey && !e.ctrlKey && !e.metaKey) {
+      // Alt + S → swap
+      if (e.altKey && !e.shiftKey && !e.ctrlKey && !e.metaKey && key === "s") {
         e.preventDefault();
         if (isSplitEnabled()) {
           swapPanes();
@@ -45,15 +44,17 @@ export function useSplitShortcuts() {
       }
 
       // Ctrl / Cmd + B → toggle split
-      const isMod = e.metaKey || e.ctrlKey;
-      if (isMod && !e.shiftKey && !e.altKey) {
-        e.preventDefault();
-        if (isSplitEnabled()) {
-          disableSplit();
-        } else {
-          enableSplit();
+      if (key === "b") {
+        const isMod = e.metaKey || e.ctrlKey;
+        if (isMod && !e.shiftKey && !e.altKey) {
+          e.preventDefault();
+          if (isSplitEnabled()) {
+            disableSplit();
+          } else {
+            enableSplit();
+          }
+          return;
         }
-        return;
       }
     };
 
