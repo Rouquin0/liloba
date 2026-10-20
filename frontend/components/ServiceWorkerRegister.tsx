@@ -11,7 +11,18 @@ export default function ServiceWorkerRegister() {
     if (typeof window === "undefined") return;
     if (!("serviceWorker" in navigator)) return;
 
+    // En développement (npm run dev) : aucun service worker.
+    // On désinscrit ceux déjà installés pour éviter les pages/chunks périmés.
+    if (process.env.NODE_ENV !== "production") {
+      navigator.serviceWorker
+        .getRegistrations()
+        .then((regs) => regs.forEach((r) => r.unregister()))
+        .catch(() => {});
+      return;
+    }
+
     let cancelled = false;
+    let onFocus: (() => void) | null = null;
 
     const register = async () => {
       try {
@@ -21,10 +32,10 @@ export default function ServiceWorkerRegister() {
         });
 
         // Vérifie les mises à jour à chaque focus (retour dans la PWA)
-        const checkUpdate = () => {
+        onFocus = () => {
           registration.update().catch(() => {});
         };
-        window.addEventListener("focus", checkUpdate);
+        window.addEventListener("focus", onFocus);
 
         // Quand un nouveau SW (v5) est prêt, on le promeut immédiatement
         // au lieu de laisser l'ancien servir des shells cassés.
@@ -69,7 +80,7 @@ export default function ServiceWorkerRegister() {
 
     return () => {
       cancelled = true;
-      window.removeEventListener("focus", () => {});
+      if (onFocus) window.removeEventListener("focus", onFocus);
     };
   }, []);
 
