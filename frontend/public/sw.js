@@ -1,5 +1,5 @@
 // ============================================================
-// LILOBA — Service Worker v6
+// LILOBA — Service Worker v7
 // ============================================================
 // Pourquoi cette version :
 //  - Le fichier public/sw.js contenait par erreur le composant React
@@ -26,13 +26,14 @@
 // avec "next build && next start" sur localhost.
 const ENABLE_ON_LOCALHOST = false;
 
-const STATIC_CACHE = "liloba-static-v6";
-const RUNTIME_CACHE = "liloba-runtime-v6";
+const STATIC_CACHE = "liloba-static-v7";
+const RUNTIME_CACHE = "liloba-runtime-v7";
 // Inchangé volontairement : évite de retélécharger la Bible (45 Mo).
 const BIBLE_CACHE = "liloba-bible-v4";
 const KEEP_CACHES = [STATIC_CACHE, RUNTIME_CACHE, BIBLE_CACHE];
 
-const PRECACHE_URLS = ["/", "/chat", "/bible", "/selah", "/manifest.webmanifest"];
+// Ajout de /histoires pour le pré-cache
+const PRECACHE_URLS = ["/", "/chat", "/bible", "/histoires", "/selah", "/manifest.webmanifest"];
 
 const IS_LOCAL = ["localhost", "127.0.0.1", "[::1]"].includes(
   self.location.hostname
@@ -61,7 +62,7 @@ self.addEventListener("install", (event) => {
 });
 
 // ============================================================
-// ACTIVATION : supprime les anciens caches (v3/v4/v5...)
+// ACTIVATION : supprime les anciens caches (v3/v4/v5/v6...)
 // ============================================================
 
 self.addEventListener("activate", (event) => {
