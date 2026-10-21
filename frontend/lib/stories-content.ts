@@ -290,6 +290,392 @@ export const STORIES: BibleStory[] = [
       ref: "Luc 10,37",
     },
   },
+  // ============================================================
+  // Histoires 9 à 20
+  // ============================================================
+  {
+    slug: "jonas-seconde-chance",
+    title: "Jonas et la seconde chance",
+    reference: "Jonas 1–4",
+    referenceDetail: "Livre de Jonas, chapitres 1 à 4",
+    theme: "Obéissance",
+    age: "6+",
+    durationMin: 7,
+    gradient: "from-cyan-600 via-blue-700 to-slate-900",
+    emoji: "🐋",
+    image: "/images/stories/jonas.jpg",
+    unsplash:
+      "https://unsplash.com/s/photos/ocean-waves-storm (océan agité sous un ciel d'orage)",
+    excerpt:
+      "Dieu lui demande d'aller parler à ses ennemis ; Jonas prend le premier bateau dans l'autre direction. Au fond de la mer, dans le ventre d'un grand poisson, il découvre que Dieu ne lâche jamais personne.",
+    paragraphs: [
+      "Jonas était prophète, et un matin, Dieu lui parla clairement : « Lève-toi, va à Ninive, la grande ville, et annonce-leur que leur méchanceté est montée jusqu'à moi. » Ninive était la capitale des Assyriens, un peuple puissant et cruel qui terrorisait Israël. Aller leur parler ? Jonas n'en avait aucune envie. Alors, au lieu de partir vers l'est, il descendit au port de Joppé, paya son billet et embarqua sur un bateau qui filait dans la direction exactement opposée : Tarsis, au bout du monde connu. Il pensait ainsi échapper à Dieu. Puis, épuisé, il descendit dans la cale et s'endormit.",
+      "Mais on ne s'échappe pas de Dieu. L'Éternel lança un vent violent sur la mer, et la tempête devint si terrible que le bateau menaçait de se briser. Les marins, terrifiés, jetaient la cargaison par-dessus bord et priaient chacun leur dieu. Le capitaine secoua Jonas : « Comment peux-tu dormir ? Lève-toi et prie ! » Quand le sort désigna Jonas comme responsable de ce malheur, il avoua tout : « Je fuis mon Dieu. Jetez-moi à la mer, et la tempête s'apaisera. » Les marins ramèrent d'abord de toutes leurs forces pour l'épargner. Puis, en suppliant Dieu de leur pardonner, ils le jetèrent dans les flots. Aussitôt, la mer se calma.",
+      "Jonas coula. Mais Dieu avait préparé un grand poisson, qui l'avala tout entier. Pendant trois jours et trois nuits, dans le noir et le silence, Jonas eut tout le temps de réfléchir. Alors il pria du fond de sa détresse : « Dans mon angoisse, j'ai crié vers l'Éternel, et il m'a répondu. » Dieu parla au poisson, qui rejeta Jonas sur la plage, vivant. Une seconde fois, Dieu lui dit : « Lève-toi, va à Ninive. » Cette fois, Jonas obéit. Il traversa l'immense ville en criant : « Dans quarante jours, Ninive sera détruite ! »",
+      "Ce qui se passa ensuite dépassa tout ce que Jonas imaginait. Les habitants crurent le message de Dieu. Du plus grand au plus petit, ils jeûnèrent et se couvrirent de vêtements de deuil, et même le roi descendit de son trône pour s'asseoir dans la cendre. Dieu vit qu'ils changeaient vraiment de vie, et il renonça à punir la ville. Jonas, lui, fut furieux : il aurait voulu voir Ninive détruite ! Dieu fit pousser une plante pour lui donner de l'ombre, puis la fit faner, et lui demanda : « Tu as pitié de cette plante… et moi, je n'aurais pas pitié de Ninive, cette grande ville ? » Dieu est plus patient et plus tendre que nous : il offre à tous une seconde chance.",
+    ],
+    lesson: {
+      title: "Dieu donne toujours une seconde chance",
+      text: "Jonas a fui, et Dieu ne l'a pas abandonné. Ninive avait mal agi, et Dieu a pardonné. Quand tu as raté quelque chose, désobéi ou fui une tâche difficile, la porte n'est pas fermée : Dieu te redit « Lève-toi ». Et la seconde chance que tu reçois, tu es invité à la donner aussi aux autres, même à ceux que tu trouves difficiles à aimer.",
+      action:
+        "Pense à une chose que tu repousses, ou à quelqu'un à qui tu refuses de redonner sa chance. Fais le premier pas aujourd'hui.",
+    },
+    keyVerse: {
+      text: "Et moi, je n'aurais pas pitié de Ninive, cette grande ville ?",
+      ref: "Jonas 4,11",
+    },
+  },
+  {
+    slug: "abraham-confiance",
+    title: "Abraham et les étoiles",
+    reference: "Genèse 12–21",
+    referenceDetail: "Livre de la Genèse, chapitres 12 à 21",
+    theme: "Foi",
+    age: "7+",
+    durationMin: 8,
+    gradient: "from-indigo-500 via-violet-700 to-slate-900",
+    emoji: "⭐",
+    image: "/images/stories/abraham.jpg",
+    unsplash:
+      "https://unsplash.com/s/photos/starry-night-desert (ciel étoilé au-dessus du désert)",
+    excerpt:
+      "Partir sans connaître la destination, attendre vingt-cinq ans une promesse impossible… Abraham a compté les étoiles et a choisi de croire que Dieu tient parole.",
+    paragraphs: [
+      "Abram avait soixante-quinze ans, une famille, des troupeaux, une maison à Harân. Une vie tranquille. Un jour, Dieu lui dit : « Quitte ton pays, ta famille et la maison de ton père, et va vers le pays que je te montrerai. Je ferai de toi une grande nation. » Quel pays ? Dieu ne donna ni nom, ni carte. Abram n'avait qu'une promesse. Il plia donc ses tentes, rassembla sa femme Saraï, son neveu Lot, ses serviteurs et ses bêtes, et se mit en marche. Il partit sans savoir où il allait, simplement parce que Dieu l'avait demandé.",
+      "Les années passèrent dans le pays de Canaan, et la promesse tardait. Abram et Saraï n'avaient toujours pas d'enfant. Un soir, il laissa éclater sa peine : « Seigneur, que peux-tu me donner ? Je m'en vais sans enfant. » Alors Dieu le fit sortir de sa tente, en pleine nuit. Au-dessus de lui, le ciel du désert, sans lune, brillait de milliers d'étoiles. « Regarde le ciel, dit Dieu, et compte les étoiles, si tu le peux. Telle sera ta descendance. » Abram leva la tête, regarda longtemps, et il crut Dieu. Rien n'avait encore changé, mais il lui faisait confiance.",
+      "Il fallut encore attendre longtemps. Abram avait quatre-vingt-dix-neuf ans quand Dieu lui renouvela sa promesse et lui donna un nouveau nom : Abraham, « père d'une multitude ». Peu après, trois visiteurs s'arrêtèrent devant sa tente, au chêne de Mamré. Abraham leur offrit l'eau, le pain et un veau tendre. L'un d'eux annonça : « L'an prochain, Sara aura un fils. » Derrière la tente, Sara, qui avait quatre-vingt-dix ans, éclata de rire. Mais la réponse fut douce : « Y a-t-il quelque chose de trop difficile pour l'Éternel ? »",
+      "Un an plus tard, dans la tente d'Abraham, un bébé pleurait. Abraham avait cent ans. Il l'appela Isaac, ce qui veut dire « il rit », et Sara dit, émerveillée : « Dieu m'a fait rire, et tous ceux qui l'apprendront riront avec moi ! » Vingt-cinq ans après l'appel, la promesse devenait un enfant dans ses bras. Abraham n'avait jamais eu de preuve : il avait eu la parole de Dieu. Et c'est elle qui a tenu.",
+    ],
+    lesson: {
+      title: "Faire confiance à Dieu, même quand on ne voit pas encore",
+      text: "Abraham n'a pas reçu de plan détaillé : il a reçu une promesse, et il a avancé. La foi, ce n'est pas tout comprendre à l'avance, c'est faire le prochain pas en croyant que Dieu est fiable. Il y a des choses que tu attends : une amitié, une réponse, une guérison, un rêve. L'attente n'est pas du temps perdu quand on la vit en confiance.",
+      action:
+        "Écris une chose que tu attends de Dieu, et prie chaque soir cette semaine : « Je te fais confiance, même si je ne vois pas encore. »",
+    },
+    keyVerse: {
+      text: "Abraham crut à l'Éternel, et cela lui fut compté comme justice.",
+      ref: "Genèse 15,6",
+    },
+  },
+  {
+    slug: "moise-mer-rouge",
+    title: "Moïse et la traversée de la mer Rouge",
+    reference: "Exode 3–14",
+    referenceDetail: "Livre de l'Exode, chapitres 3 à 14",
+    theme: "Courage",
+    age: "8+",
+    durationMin: 9,
+    gradient: "from-sky-400 via-blue-700 to-slate-900",
+    emoji: "🌊",
+    image: "/images/stories/moise.jpg",
+    unsplash:
+      "https://unsplash.com/s/photos/red-sea-water (mer d'un bleu profond au lever du jour)",
+    excerpt:
+      "Un berger de quatre-vingts ans, un buisson qui brûle sans se consumer, et une mer qui s'ouvre devant un peuple en fuite. Moïse a eu peur, lui aussi, mais il a avancé.",
+    paragraphs: [
+      "Pendant des siècles, les Hébreux furent esclaves en Égypte. Ils fabriquaient des briques sous les coups de fouet, et leurs cris montaient vers Dieu. Moïse, lui, était devenu berger dans le désert de Madian, après avoir fui l'Égypte. Un jour, il vit un buisson qui brûlait sans jamais se consumer. Il s'approcha, et une voix l'appela : « Moïse ! Retire tes sandales, car le lieu où tu te tiens est saint. J'ai vu la souffrance de mon peuple. Je t'envoie vers le pharaon pour libérer les Hébreux. » Moïse eut peur : « Qui suis-je ? Je n'ai pas la parole facile ! » Dieu répondit : « Je serai avec toi. »",
+      "Avec son frère Aaron, Moïse se présenta devant le pharaon, le plus puissant des hommes : « Laisse partir mon peuple. » Le roi refusa, encore et encore. Dix fléaux s'abattirent alors sur l'Égypte, jusqu'à ce que le pharaon cède. Dans la nuit de la Pâque, chaque famille hébreue mangea le repas, vêtue pour le voyage, et au matin, des milliers d'hommes, de femmes et d'enfants quittèrent l'Égypte, avec leurs troupeaux, derrière Moïse. Après des siècles d'esclavage, ils marchaient enfin libres.",
+      "Mais le pharaon changea d'avis. Avec ses chars, ses cavaliers et toute son armée, il se lança à leur poursuite. Les Hébreux se retrouvèrent coincés entre le désert et la mer Rouge, avec l'armée égyptienne dans leur dos. La panique éclata : « Nous aurions mieux fait de rester esclaves ! » Moïse, pourtant tremblant lui aussi, leva la voix : « N'ayez pas peur ! Tenez bon, et vous verrez comment l'Éternel vous délivrera aujourd'hui. L'Éternel combattra pour vous ; vous, gardez le calme. »",
+      "Alors Moïse étendit son bâton sur la mer. Pendant toute la nuit, un vent puissant souffla, et les eaux se fendirent : un mur d'eau à droite, un mur d'eau à gauche, et au milieu un chemin sec. Le peuple s'engagea, l'enfant par la main, le vieillard sur le dos. À l'aube, quand les Égyptiens s'élancèrent derrière eux, Moïse étendit de nouveau la main : la mer reprit sa place. De l'autre côté, les Hébreux regardaient, stupéfaits et libres. Ils chantèrent à Dieu, et Myriam, la sœur de Moïse, prit son tambourin et dansa.",
+    ],
+    lesson: {
+      title: "Le courage, c'est avancer même avec la peur",
+      text: "Moïse n'était ni sûr de lui, ni éloquent, ni confiant : il a répondu « je ne peux pas » plusieurs fois. Et pourtant il a obéi, un pas après l'autre. Devant la mer, personne ne voyait de chemin. Le chemin s'est ouvert quand le peuple a marché. Parfois, la solution n'apparaît que lorsqu'on commence à avancer.",
+      action:
+        "Qu'est-ce qui te fait peur en ce moment ? Fais aujourd'hui un tout petit pas dans cette direction, puis demande à Dieu d'être avec toi.",
+    },
+    keyVerse: {
+      text: "L'Éternel combattra pour vous ; gardez le calme.",
+      ref: "Exode 14,14",
+    },
+  },
+  {
+    slug: "salomon-sagesse",
+    title: "Salomon et le choix de la sagesse",
+    reference: "1 Rois 3",
+    referenceDetail: "Premier livre des Rois, chapitre 3",
+    theme: "Sagesse",
+    age: "8+",
+    durationMin: 7,
+    gradient: "from-yellow-400 via-amber-600 to-yellow-900",
+    emoji: "⚖️",
+    image: "/images/stories/salomon.jpg",
+    unsplash:
+      "https://unsplash.com/s/photos/golden-light-palace (lumière dorée sur une architecture ancienne)",
+    excerpt:
+      "Dieu lui offre n'importe quoi : richesse, gloire, longue vie. Le jeune roi Salomon demande autre chose. Et sa réponse change tout, jusqu'au jour où deux mères viennent réclamer le même bébé.",
+    paragraphs: [
+      "À la mort de son père David, Salomon devint roi d'Israël. Il était très jeune, et le peuple était nombreux comme le sable de la mer. Une nuit, à Gabaon, après avoir offert un sacrifice, il fit un rêve : Dieu lui apparut et lui dit : « Demande ce que tu veux que je te donne. » Imagine la proposition : des trésors, une armée invincible, une vie très longue ! Salomon réfléchit, puis répondit humblement : « Seigneur, je suis un tout jeune homme, je ne sais pas comment me conduire. Donne-moi un cœur plein de discernement pour juger ton peuple et distinguer le bien du mal. »",
+      "Cette réponse fit plaisir à Dieu. « Puisque tu n'as demandé ni de longs jours, ni la richesse, ni la mort de tes ennemis, mais la sagesse pour rendre la justice, je te donne un cœur sage et intelligent, comme il n'y en a jamais eu avant toi. Et ce que tu n'as pas demandé, je te le donne aussi : la richesse et la gloire. » Salomon se réveilla, retourna à Jérusalem et offrit un grand repas à tous ses serviteurs pour remercier Dieu.",
+      "Peu après, deux femmes se présentèrent devant lui, la voix tremblante de colère. « Mon seigneur, nous habitons la même maison. Nous avons eu chacune un bébé à trois jours d'intervalle. Cette nuit, son enfant est mort, et elle a pris le mien pendant que je dormais ! » « Non ! Le vivant est à moi ! » cria l'autre. Elles se disputaient devant le roi, sans témoin ni preuve. Salomon écouta, puis dit : « Apportez-moi une épée. Coupez l'enfant vivant en deux, et donnez une moitié à chacune. »",
+      "Un silence glacé tomba. L'une des femmes, le cœur brisé, s'écria : « Non, mon seigneur ! Donnez-lui l'enfant vivant, mais ne le tuez pas ! » L'autre déclara froidement : « Il ne sera ni à moi ni à toi. Qu'on le partage ! » Salomon sourit : « Donnez l'enfant à la première. C'est elle, la vraie mère. » Tout Israël apprit le jugement, et les gens comprirent que Dieu avait donné à leur roi une sagesse extraordinaire. Il avait demandé le bon trésor, et le reste était venu avec.",
+    ],
+    lesson: {
+      title: "Demander d'abord ce qui compte vraiment",
+      text: "Salomon avait le droit de tout demander, et il a choisi la sagesse : savoir bien écouter, bien juger, bien aimer. La sagesse, ce n'est pas être le plus intelligent, c'est savoir ce qui est important et agir en conséquence. Cela s'apprend en demandant à Dieu, en écoutant les autres, et en prenant le temps de réfléchir avant de réagir.",
+      action:
+        "Avant ta prochaine décision importante, prends cinq minutes pour prier : « Seigneur, donne-moi un cœur sage. » Puis écoute avant de répondre.",
+    },
+    keyVerse: {
+      text: "Donne à ton serviteur un cœur plein de discernement.",
+      ref: "1 Rois 3,9",
+    },
+  },
+  {
+    slug: "jesus-tempete",
+    title: "Jésus calme la tempête",
+    reference: "Marc 4,35–41",
+    referenceDetail: "Évangile selon Marc, chapitre 4, versets 35 à 41",
+    theme: "Foi",
+    age: "6+",
+    durationMin: 6,
+    gradient: "from-slate-500 via-blue-700 to-indigo-900",
+    emoji: "⛵",
+    image: "/images/stories/tempete.jpg",
+    unsplash:
+      "https://unsplash.com/s/photos/boat-storm-lake (barque sur un lac sous un ciel d'orage)",
+    excerpt:
+      "Une barque, un lac qui se déchaîne, des pêcheurs expérimentés qui paniquent… et Jésus qui dort. Quand la tempête devient trop grande, une seule parole suffit.",
+    paragraphs: [
+      "La journée avait été longue. Jésus avait enseigné la foule au bord du lac de Galilée, assis dans une barque pour que tout le monde l'entende. Le soir venu, il dit à ses disciples : « Passons sur l'autre rive. » Ils quittèrent la foule et partirent. Plusieurs d'entre eux étaient pêcheurs, ils connaissaient ce lac comme leur poche. Jésus, épuisé, s'allongea à l'arrière de la barque, la tête sur un coussin, et s'endormit presque aussitôt.",
+      "Soudain, un vent furieux se leva. Le lac de Galilée est connu pour ses tempêtes brutales, qui descendent des collines en quelques minutes. Les vagues se jetaient contre la barque et l'eau y entrait de partout. Les pêcheurs ramaient, écopaient, criaient des ordres. Mais plus ils luttaient, plus la barque se remplissait. Et Jésus, à l'arrière, dormait toujours. La peur gagna les disciples. Ils le secouèrent : « Maître, cela ne te fait rien que nous soyons en train de mourir ? »",
+      "Jésus se réveilla. Il se leva, regarda le vent et la mer, et dit simplement : « Silence ! Tais-toi ! » Aussitôt, le vent tomba. Le lac, une seconde plus tôt déchaîné, devint lisse comme un miroir. Dans la barque, plus un bruit. Seul le clapotis de l'eau contre la coque brisait le calme, et les disciples n'en croyaient pas leurs yeux.",
+      "Jésus se tourna vers eux, sans colère mais avec douceur : « Pourquoi avez-vous si peur ? N'avez-vous pas encore de foi ? » Les disciples, stupéfaits, se murmuraient : « Qui est donc cet homme, pour que même le vent et la mer lui obéissent ? » Ils avaient découvert que Jésus était dans la barque avec eux, et qu'avec lui, aucune tempête n'a le dernier mot.",
+    ],
+    lesson: {
+      title: "Dans la tempête, Jésus est dans la barque avec toi",
+      text: "Les disciples avaient cru que Jésus ne se souciait pas d'eux, parce qu'il dormait. Mais il était là, et il avait le pouvoir de calmer la tempête. Dans les moments où tout va mal (une dispute, une mauvaise note, une peur, un deuil), tu n'es pas seul dans la barque. Tu peux l'appeler, comme eux, même si ta prière tient en une phrase.",
+      action:
+        "La prochaine fois que tu auras peur, respire et dis simplement : « Jésus, aide-moi. » Puis raconte-lui ce qui t'inquiète.",
+    },
+    keyVerse: {
+      text: "Pourquoi avez-vous si peur ? N'avez-vous pas encore de foi ?",
+      ref: "Marc 4,40",
+    },
+  },
+  {
+    slug: "zachee-sycomore",
+    title: "Zachée, l'homme dans l'arbre",
+    reference: "Luc 19,1–10",
+    referenceDetail: "Évangile selon Luc, chapitre 19, versets 1 à 10",
+    theme: "Pardon de Dieu",
+    age: "6+",
+    durationMin: 6,
+    gradient: "from-lime-500 via-green-600 to-emerald-800",
+    emoji: "🌳",
+    image: "/images/stories/zachee.jpg",
+    unsplash:
+      "https://unsplash.com/s/photos/old-tree-sunlight (grand arbre dans la lumière du matin)",
+    excerpt:
+      "Petit de taille, riche, détesté de tous… Zachée est monté dans un arbre pour voir Jésus de loin. Il ne s'attendait pas à ce que Jésus s'arrête juste en dessous et l'appelle par son nom.",
+    paragraphs: [
+      "Dans la ville de Jéricho vivait un homme que tout le monde connaissait, et que presque personne n'aimait : Zachée. Il était chef des collecteurs d'impôts, un métier détesté, car ces hommes travaillaient pour les Romains et prenaient souvent plus d'argent que nécessaire. Zachée était devenu très riche, mais il était seul. Quand il passait dans la rue, les gens détournaient le regard. Et ce jour-là, la ville entière était dehors : Jésus de Nazareth traversait Jéricho.",
+      "Zachée voulait voir qui était Jésus, mais il était tout petit, et la foule formait un mur devant lui. Sauter ne servait à rien. Alors, sans se soucier du ridicule, cet homme important courut en avant et grimpa dans un sycomore, un grand arbre au bord du chemin, pour voir passer Jésus de loin. Les passants ricanèrent peut-être en voyant le grand chef des impôts perché dans les branches comme un enfant. Mais lui ne pensait qu'à une chose : voir Jésus.",
+      "Quand Jésus arriva sous l'arbre, il s'arrêta. Il leva les yeux, croisa le regard de Zachée et dit : « Zachée, descends vite, car aujourd'hui il faut que je demeure chez toi. » Zachée faillit tomber de l'arbre ! Il descendit en hâte, le cœur plein de joie. Dans la foule, des voix murmurèrent : « Il va loger chez un homme malhonnête ! » Mais Jésus ne regardait pas la réputation de Zachée : il regardait Zachée.",
+      "À table, quelque chose se brisa en Zachée. Il se leva et dit : « Seigneur, je donne la moitié de mes biens aux pauvres, et si j'ai pris trop à quelqu'un, je lui rends quatre fois plus. » Personne ne le lui avait demandé : l'accueil de Jésus avait suffi à changer son cœur. Jésus sourit : « Aujourd'hui, le salut est entré dans cette maison. Car le Fils de l'homme est venu chercher et sauver ce qui était perdu. »",
+    ],
+    lesson: {
+      title: "Jésus nous voit tels que nous sommes, et il nous aime déjà",
+      text: "Zachée avait mal agi, et tout le monde le savait. Pourtant, c'est lui que Jésus a choisi d'appeler par son nom. Le changement n'est pas venu de reproches, mais d'un accueil. Quand quelqu'un nous accepte tel que nous sommes, on a envie de devenir meilleur. Jésus te regarde comme il a regardé Zachée, avec un regard qui relève, et il peut aussi t'apprendre à regarder les autres ainsi.",
+      action:
+        "Pense à quelqu'un que tout le monde met de côté. Sois la personne qui lui parle ou qui l'invite aujourd'hui.",
+    },
+    keyVerse: {
+      text: "Le Fils de l'homme est venu chercher et sauver ce qui était perdu.",
+      ref: "Luc 19,10",
+    },
+  },
+  {
+    slug: "cinq-pains-deux-poissons",
+    title: "Le petit garçon et les cinq pains",
+    reference: "Jean 6,1–13",
+    referenceDetail: "Évangile selon Jean, chapitre 6, versets 1 à 13",
+    theme: "Amour du prochain",
+    age: "6+",
+    durationMin: 6,
+    gradient: "from-orange-400 via-amber-600 to-yellow-800",
+    emoji: "🍞",
+    image: "/images/stories/cinq-pains.jpg",
+    unsplash:
+      "https://unsplash.com/s/photos/bread-basket-fish (panier de pain et de poissons sur une table simple)",
+    excerpt:
+      "Cinq mille hommes, des femmes, des enfants, et presque rien à manger. Mais un petit garçon avait un panier de provisions, et il a accepté de le donner.",
+    paragraphs: [
+      "Des foules entières suivaient Jésus. Ce jour-là, elles l'avaient suivi de l'autre côté du lac de Galilée, jusque sur une colline couverte d'herbe. Plus de cinq mille hommes étaient là, sans compter les femmes et les enfants. Le soir approchait, et personne n'avait rien mangé. Jésus regarda la foule, puis se tourna vers son disciple Philippe : « Où pourrions-nous acheter du pain pour tous ces gens ? » Il savait déjà ce qu'il allait faire, mais il voulait voir ce que Philippe répondrait.",
+      "Philippe fit un calcul rapide : « Même avec deux cents pièces d'argent, il n'y aurait pas assez de pain pour que chacun en ait un petit morceau ! » Les disciples cherchèrent partout. Seul André trouva quelque chose : « Il y a ici un garçon qui a cinq pains d'orge et deux poissons. Mais qu'est-ce que c'est pour tant de monde ? » C'était le repas d'un enfant, très simple, du pain d'orge, le pain des pauvres. Mais le garçon, lui, n'avait pas dit non. Il avait accepté de le donner.",
+      "Jésus dit : « Faites asseoir tout le monde. » Les gens s'installèrent sur l'herbe, par groupes. Jésus prit les pains, remercia Dieu, et commença à les distribuer. Puis il fit de même avec les poissons. Les disciples passaient de rang en rang, et à chaque fois qu'ils revenaient, le panier était encore plein. Tout le monde mangea à sa faim, jusqu'au dernier. Personne ne comprit comment, mais personne ne repartit le ventre vide.",
+      "Quand tout le monde fut rassasié, Jésus dit : « Ramassez les morceaux qui restent, afin que rien ne soit perdu. » Les disciples remplirent douze paniers de morceaux de pain. Avec le repas d'un seul enfant, Jésus avait nourri des milliers de personnes et il en restait encore. Le garçon est reparti avec une histoire qu'il n'oublierait jamais : ce qu'on donne à Jésus, même petit, peut devenir beaucoup.",
+    ],
+    lesson: {
+      title: "Ce que tu donnes, même petit, peut devenir grand",
+      text: "Le garçon n'avait pas beaucoup, et il aurait pu garder son repas pour lui. Mais il l'a donné, et Dieu a fait le reste. Tu n'as pas besoin d'être riche, fort ou important pour aider : ton goûter, ton temps, un sourire, une prière peuvent devenir une grande bénédiction quand ils sont offerts avec un cœur généreux.",
+      action:
+        "Donne aujourd'hui quelque chose de simple (ton goûter, une heure, un mot gentil) à quelqu'un qui en a besoin, sans rien attendre en retour.",
+    },
+    keyVerse: {
+      text: "Il y a ici un garçon qui a cinq pains d'orge et deux poissons.",
+      ref: "Jean 6,9",
+    },
+  },
+  {
+    slug: "veuve-offrande",
+    title: "La veuve et ses deux petites pièces",
+    reference: "Marc 12,41–44",
+    referenceDetail: "Évangile selon Marc, chapitre 12, versets 41 à 44",
+    theme: "Générosité",
+    age: "6+",
+    durationMin: 5,
+    gradient: "from-stone-500 via-amber-700 to-yellow-900",
+    emoji: "🪙",
+    image: "/images/stories/veuve.jpg",
+    unsplash:
+      "https://unsplash.com/s/photos/old-coins-hands (deux petites pièces dans une main)",
+    excerpt:
+      "Des riches donnent beaucoup, avec bruit et fierté. Une pauvre veuve glisse deux minuscules pièces, sans un mot. Jésus, lui, a tout vu, et il a dit que c'était elle qui avait donné le plus.",
+    paragraphs: [
+      "Jésus était assis dans le Temple de Jérusalem, face à la salle du trésor où l'on déposait les offrandes. Des troncs en forme de trompette recevaient les pièces, et plus la somme était grosse, plus le bruit était fort. Jésus observait la foule. De riches personnages passaient, l'un après l'autre, et laissaient tomber de grosses sommes d'argent dans un grand fracas. Tout le monde les regardait avec admiration. Ils donnaient beaucoup, c'était vrai, mais seulement une petite partie de leur fortune.",
+      "Puis une femme arriva, discrète, vêtue de façon très simple. C'était une veuve pauvre, sans mari pour la protéger, sans revenus. Elle s'approcha d'un des troncs, sortit de sa main deux toutes petites pièces de cuivre, les plus petites qui existaient, qui valaient presque rien, et les laissa tomber. Clic, clic. Pas un bruit. Personne ne se retourna. Elle repartit aussi silencieusement qu'elle était venue.",
+      "Jésus appela alors ses disciples et leur dit : « Je vous le dis, cette pauvre veuve a mis plus que tous les autres. Eux ont donné de leur superflu. Elle, dans sa pauvreté, a donné tout ce qu'elle avait pour vivre. » Les disciples la regardèrent partir. Pour Dieu, la valeur d'un don ne se mesure pas à son montant, mais à l'amour et à la confiance qu'il y a dedans. Cette femme avait donné tout son avenir entre les mains de Dieu.",
+    ],
+    lesson: {
+      title: "Dieu regarde le cœur, pas la taille du don",
+      text: "Tu n'as peut-être pas grand-chose à donner, mais Dieu ne compare pas. Ce qui compte pour lui, c'est la sincérité, et ce que le don te coûte vraiment. Un petit geste fait de tout son cœur, comme aider un camarade, partager du temps ou prier pour quelqu'un, vaut plus qu'un grand geste fait pour être vu.",
+      action:
+        "Fais aujourd'hui un geste généreux que personne ne verra : un service rendu en cachette, une pièce donnée, un mot d'encouragement.",
+    },
+    keyVerse: {
+      text: "Cette pauvre veuve a mis plus que tous les autres.",
+      ref: "Marc 12,43",
+    },
+  },
+  {
+    slug: "samuel-ecoute",
+    title: "Samuel entend son nom dans la nuit",
+    reference: "1 Samuel 3",
+    referenceDetail: "Premier livre de Samuel, chapitre 3",
+    theme: "Prière",
+    age: "6+",
+    durationMin: 6,
+    gradient: "from-violet-500 via-purple-700 to-indigo-900",
+    emoji: "🕯️",
+    image: "/images/stories/samuel.jpg",
+    unsplash:
+      "https://unsplash.com/s/photos/candle-night-dark (petite flamme dans la nuit)",
+    excerpt:
+      "Trois fois, un enfant se lève en pleine nuit, convaincu que son maître l'appelle. Il faudra l'aide d'un vieil homme pour comprendre que c'est Dieu qui lui parle.",
+    paragraphs: [
+      "Le petit Samuel vivait à Silo, dans le sanctuaire de Dieu, auprès du vieux prêtre Éli. Sa mère Anne l'avait confié à Dieu quand il était tout petit, et chaque jour il rendait de petits services : ouvrir les portes, allumer les lampes, aider Éli, dont la vue baissait. À cette époque, il était rare que Dieu parle. Presque personne n'écoutait vraiment. Une nuit, Samuel dormait près du coffre de l'alliance, quand il entendit une voix l'appeler : « Samuel ! »",
+      "« Me voici ! » répondit-il, et il courut chez Éli. « Tu m'as appelé ? » « Non, mon enfant, je ne t'ai pas appelé. Retourne te coucher. » Samuel retourna se coucher. Quelques instants plus tard : « Samuel ! » Il se releva et courut encore : « Me voici, tu m'as bien appelé ! » « Non, mon fils, retourne dormir. » Samuel ne savait pas encore que cette voix venait de Dieu. À la troisième fois, il courut de nouveau chez Éli, tout essoufflé.",
+      "Cette fois, Éli comprit. Il dit à Samuel : « Va te coucher. Et si on t'appelle encore, tu répondras : Parle, Éternel, car ton serviteur écoute. » Samuel retourna s'étendre, le cœur battant. Et Dieu l'appela de nouveau : « Samuel ! Samuel ! » Samuel répondit exactement comme Éli le lui avait appris : « Parle, car ton serviteur écoute. » Alors Dieu lui confia un message difficile, mais important pour tout le peuple.",
+      "Le lendemain matin, Samuel avait peur de répéter ce qu'il avait entendu. Mais Éli l'appela : « Samuel, mon fils, ne me cache rien. » Alors Samuel dit toute la vérité, sans rien omettre. Éli répondit avec humilité : « C'est l'Éternel. Qu'il fasse ce qui lui semblera bon. » Samuel grandit, Dieu était avec lui, et aucune de ses paroles ne tomba à terre. De Dan à Beer-Schéba, tout Israël sut qu'il avait un vrai messager de Dieu, cet enfant que Dieu avait appelé par son nom.",
+    ],
+    lesson: {
+      title: "Dieu parle à ceux qui écoutent, même aux plus jeunes",
+      text: "Samuel était un enfant, et c'est lui que Dieu a appelé. Mais il fallait un adulte, Éli, pour l'aider à reconnaître la voix. Prier, ce n'est pas seulement parler : c'est aussi se taire pour écouter. Et quand on ne sait pas comment faire, on peut demander de l'aide à quelqu'un de plus expérimenté dans la foi.",
+      action:
+        "Ce soir, avant de dormir, prends deux minutes de silence et dis : « Parle, Seigneur, ton serviteur écoute. » Puis écoute, sans rien demander.",
+    },
+    keyVerse: {
+      text: "Parle, car ton serviteur écoute.",
+      ref: "1 Samuel 3,10",
+    },
+  },
+  {
+    slug: "dix-lepreux",
+    title: "Les dix lépreux et le seul qui est revenu",
+    reference: "Luc 17,11–19",
+    referenceDetail: "Évangile selon Luc, chapitre 17, versets 11 à 19",
+    theme: "Gratitude",
+    age: "7+",
+    durationMin: 6,
+    gradient: "from-emerald-400 via-teal-600 to-cyan-800",
+    emoji: "🙏",
+    image: "/images/stories/lepreux.jpg",
+    unsplash:
+      "https://unsplash.com/s/photos/road-village-sunrise (chemin de village au lever du soleil)",
+    excerpt:
+      "Dix hommes exclus de tous, un cri vers Jésus, dix guérisons… et un seul qui fait demi-tour pour dire merci. Et c'était l'étranger.",
+    paragraphs: [
+      "Jésus marchait vers Jérusalem, entre la Samarie et la Galilée. À l'entrée d'un village, dix hommes l'attendaient, tout au bord du chemin, à distance. Ils étaient lépreux. À cette époque, cette maladie de la peau rendait « impur » : on devait vivre loin des autres, ne toucher personne, et crier « Impur ! » en passant. Les dix vivaient seuls, loin de leur famille, loin de leurs amis, sans rien pouvoir espérer. Mais ils avaient entendu parler de Jésus.",
+      "Dès qu'ils le virent approcher, ils élevèrent la voix tous ensemble : « Jésus, maître, aie pitié de nous ! » Jésus les regarda et dit simplement : « Allez vous montrer aux prêtres. » Selon la loi, seul un prêtre pouvait déclarer quelqu'un guéri. Pourtant, ils n'étaient pas encore guéris ! Mais les dix obéirent et se mirent en route. Et en chemin, leur peau devint nette. Imagine leur joie : plus de taches, plus de douleur, plus d'exclusion !",
+      "Neuf d'entre eux continuèrent de courir vers les prêtres, vers leurs familles, vers leur nouvelle vie. Un seul s'arrêta. C'était un Samaritain, un étranger que beaucoup de gens méprisaient. Il fit demi-tour en courant, louant Dieu à pleine voix, et se jeta aux pieds de Jésus pour le remercier. Le visage contre terre, il ne trouvait pas assez de mots pour dire sa joie.",
+      "Jésus regarda autour de lui et demanda : « Les dix n'ont-ils pas été guéris ? Où sont les neuf autres ? Il n'y a que cet étranger qui soit revenu pour rendre gloire à Dieu ? » Puis il dit à l'homme : « Lève-toi et va. Ta foi t'a sauvé. » Les neuf avaient reçu un cadeau. Le dixième avait reçu bien plus : une rencontre avec celui qui l'avait guéri, et un cœur guéri avec son corps.",
+    ],
+    lesson: {
+      title: "Un simple merci change un cadeau en rencontre",
+      text: "On oublie facilement de remercier, surtout quand les choses vont bien. Les neuf n'étaient pas méchants, ils étaient simplement pressés d'en profiter. Le Samaritain, lui, a pris le temps de revenir. Dire merci, c'est reconnaître que ce qu'on a est un don, et cela rend le cœur plus heureux, à Dieu comme aux personnes qui nous ont aidés.",
+      action:
+        "Écris ou dis merci à trois personnes aujourd'hui, et remercie Dieu pour trois choses précises de ta journée.",
+    },
+    keyVerse: {
+      text: "Les dix n'ont-ils pas été guéris ? Où sont les neuf autres ?",
+      ref: "Luc 17,17",
+    },
+  },
+  {
+    slug: "nehemie-muraille",
+    title: "Néhémie rebâtit la muraille",
+    reference: "Néhémie 1–6",
+    referenceDetail: "Livre de Néhémie, chapitres 1 à 6",
+    theme: "Persévérance",
+    age: "9+",
+    durationMin: 9,
+    gradient: "from-stone-500 via-orange-700 to-red-900",
+    emoji: "🧱",
+    image: "/images/stories/nehemie.jpg",
+    unsplash:
+      "https://unsplash.com/s/photos/ancient-stone-wall-jerusalem (ancienne muraille de pierre au soleil couchant)",
+    excerpt:
+      "Une ville en ruines, des moqueries, des menaces… et un échanson du roi de Perse qui répond : « Je fais un grand travail, je ne peux pas descendre. » En cinquante-deux jours, la muraille était debout.",
+    paragraphs: [
+      "Néhémie était un Juif exilé en Perse, devenu l'échanson du roi Artaxerxès, celui qui goûtait et servait le vin du roi. Un jour, son frère arriva de Jérusalem avec de mauvaises nouvelles : « Les habitants vivent dans la détresse. Les murailles de la ville sont en ruine, et ses portes ont été brûlées. » Néhémie s'assit et pleura. Pendant plusieurs jours, il jeûna et pria : « Seigneur, accorde-moi la faveur du roi. » Il ne pouvait pas oublier sa ville détruite.",
+      "Quelques mois plus tard, le roi remarqua son visage triste, ce qui était dangereux devant un roi : « Pourquoi as-tu mauvaise mine ? » Néhémie, terrifié, murmura une courte prière au Dieu du ciel, puis répondit : « Ma ville natale est en ruine. Permets-moi d'aller la rebâtir. » Contre toute attente, le roi accepta ! Il lui donna des lettres de protection et du bois pour les portes. Néhémie partit pour Jérusalem, où il inspecta les murailles de nuit, en secret, avant de parler au peuple : « Venez, rebâtissons la muraille ! »",
+      "Tout le monde se mit au travail : prêtres, marchands, orfèvres, familles entières, chacun réparait la portion devant sa maison. Mais les ennemis arrivèrent. Sanballat et Tobiya se moquèrent : « Que font ces pauvres Juifs ? Si un renard monte sur leur muraille, il la fera tomber ! » Puis ils menacèrent d'attaquer. Néhémie organisa le chantier autrement : la moitié des hommes bâtissait, l'autre moitié montait la garde, la lance à la main. Même les maçons travaillaient avec une épée à la ceinture.",
+      "Les ennemis tentèrent un dernier piège : « Viens nous rencontrer dans la plaine. » C'était une ruse pour lui faire du mal. Néhémie répondit : « Je fais un grand travail, je ne peux pas descendre. » Quatre fois ils insistèrent, quatre fois il refusa. Et la muraille fut terminée en cinquante-deux jours. Ses ennemis, voyant cela, perdirent courage : ils comprirent que ce travail avait été accompli avec l'aide de Dieu.",
+    ],
+    lesson: {
+      title: "On avance mieux quand on ne lâche pas, même sous les moqueries",
+      text: "Néhémie a prié, puis il s'est mis au travail. Quand on se moquait de lui, il n'a pas répondu à chaque insulte : il a continué à bâtir. Quand il était menacé, il a prévu des gardes sans arrêter le chantier. La persévérance, ce n'est pas ne jamais avoir peur, c'est refuser de se laisser détourner de ce qu'on sait être bon.",
+      action:
+        "Choisis un projet que tu as laissé tomber, et travaille-y quinze minutes aujourd'hui. Réponds aux découragements par : « Je fais un grand travail. »",
+    },
+    keyVerse: {
+      text: "Levons-nous et bâtissons !",
+      ref: "Néhémie 2,18",
+    },
+  },
+  {
+    slug: "anne-priere",
+    title: "Anne et la prière exaucée",
+    reference: "1 Samuel 1–2",
+    referenceDetail: "Premier livre de Samuel, chapitres 1 et 2",
+    theme: "Prière",
+    age: "8+",
+    durationMin: 7,
+    gradient: "from-pink-500 via-rose-600 to-fuchsia-800",
+    emoji: "🕊️",
+    image: "/images/stories/anne.jpg",
+    unsplash:
+      "https://unsplash.com/s/photos/woman-praying-light (silhouette en prière dans la lumière douce)",
+    excerpt:
+      "Elle pleurait tant que le prêtre l'a prise pour une femme ivre. Mais Anne ne faisait que parler à Dieu du fond du cœur. Et Dieu l'a entendue.",
+    paragraphs: [
+      "Chaque année, Anne montait avec son mari Elkana au sanctuaire de Silo pour adorer Dieu. Mais ce voyage lui faisait mal : elle n'avait pas d'enfant, alors que l'autre épouse d'Elkana, Peninna, en avait plusieurs, et ne manquait pas une occasion de se moquer d'elle. Anne pleurait au point de ne plus pouvoir manger. Elkana essayait de la consoler : « Anne, pourquoi pleures-tu ? Ne suis-je pas pour toi mieux que dix fils ? » Mais son cœur restait lourd.",
+      "Un jour, après le repas, Anne se leva et alla dans le sanctuaire. Là, le cœur brisé, elle pria Dieu en pleurant : « Seigneur, regarde ma détresse. Si tu me donnes un fils, je te le donnerai pour toute sa vie. » Elle priait en silence, seules ses lèvres bougeaient. Le prêtre Éli, qui l'observait, crut qu'elle était ivre : « Jusqu'à quand resteras-tu dans cet état ? » Anne répondit avec douceur : « Non, mon seigneur, je suis une femme qui souffre. Je répandais mon cœur devant l'Éternel. »",
+      "Éli comprit son erreur. Il lui dit avec bonté : « Va en paix, et que le Dieu d'Israël t'accorde ce que tu lui as demandé. » Anne repartit, mangea, et son visage n'était plus le même. Elle n'avait pas encore reçu de réponse visible, mais elle avait déposé son fardeau. Quelque temps plus tard, elle donna naissance à un fils. Elle l'appela Samuel, ce qui évoque « Dieu a entendu », parce que, disait-elle, « je l'ai demandé à l'Éternel ».",
+      "Anne tint sa promesse. Quand Samuel eut quelques années, elle l'amena à Silo auprès d'Éli : « C'est pour cet enfant que je priais, et l'Éternel m'a accordé ce que je lui demandais. À mon tour, je le donne à l'Éternel. » Puis elle chanta, le cœur débordant de joie : « Mon cœur se réjouit en l'Éternel ! » Et Dieu continua de bénir Anne : elle eut encore trois fils et deux filles. Elle avait prié du fond de sa douleur, et Dieu avait changé ses larmes en chant.",
+    ],
+    lesson: {
+      title: "Tu peux tout dire à Dieu, même quand tu n'as pas de mots",
+      text: "Anne a prié avec ses larmes, sans phrases parfaites, et Dieu l'a entendue. Il n'y a pas de mauvaise façon de prier : tu peux lui parler de ta tristesse, de ta colère, de ce que tu désires. Et Anne nous montre aussi que ce qu'on reçoit de Dieu ne s'accapare pas : elle a donné à Dieu ce qu'elle avait de plus précieux.",
+      action:
+        "Prends dix minutes ce soir pour raconter à Dieu ce que tu as sur le cœur, avec tes propres mots, sans te retenir.",
+    },
+    keyVerse: {
+      text: "C'est pour cet enfant que je priais, et l'Éternel m'a accordé ma demande.",
+      ref: "1 Samuel 1,27",
+    },
+  },
 ];
 
 export function getStory(slug: string): BibleStory | undefined {
