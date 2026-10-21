@@ -5,6 +5,8 @@ import BiblePane from "./panes/BiblePane";
 import ChatPane from "./panes/ChatPane";
 import SearchPane from "./panes/SearchPane";
 import ComparePane from "./panes/ComparePane";
+import SelahPane from "./panes/SelahPane";
+import StoriesPane from "./panes/StoriesPane";
 
 interface PanePanelProps {
   side: "left" | "right";
@@ -14,7 +16,7 @@ interface PanePanelProps {
   onSwap?: () => void;
 }
 
-const TABS: PaneTab[] = ["bible", "chat", "search", "compare"];
+const TABS: PaneTab[] = ["bible", "chat", "search", "compare", "selah", "stories"];
 
 function TabIcon({ tab }: { tab: PaneTab }) {
   const cls = "h-4 w-4";
@@ -46,6 +48,22 @@ function TabIcon({ tab }: { tab: PaneTab }) {
           <path d="m15 9-3 3 3 3" />
         </svg>
       );
+    case "selah":
+      return (
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={cls}>
+          <path d="M7 20h10" />
+          <path d="M10 20c5.5-2.5.8-6.4 3-10" />
+          <path d="M9.5 9.4c1.1.8 1.8 2.2 2.3 3.7-2 .4-3.5.4-4.8-.3-1.2-.6-2.3-1.9-3-4.2 2.8-.5 4.4 0 5.5.8z" />
+          <path d="M14.1 6a7 7 0 0 0-1.1 4c1.9-.1 3.3-.6 4.3-1.4 1-1 1.6-2.3 1.7-4.6-2.7.1-4 1-4.9 2z" />
+        </svg>
+      );
+    case "stories":
+      return (
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={cls}>
+          <path d="M12 7v14" />
+          <path d="M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z" />
+        </svg>
+      );
     default:
       return null;
   }
@@ -61,6 +79,10 @@ function renderContent(tab: PaneTab) {
       return <SearchPane />;
     case "compare":
       return <ComparePane />;
+    case "selah":
+      return <SelahPane />;
+    case "stories":
+      return <StoriesPane />;
     default:
       return null;
   }
@@ -79,7 +101,7 @@ export default function PanePanel({
       style={side === "right" ? { borderLeftWidth: 1 } : undefined}
     >
       {/* Barre d'onglets */}
-      <div className="flex shrink-0 items-center gap-1 border-b border-[var(--border)] bg-[var(--surface)] px-2 py-1.5">
+      <div className="flex shrink-0 items-center gap-1 overflow-x-auto border-b border-[var(--border)] bg-[var(--surface)] px-2 py-1.5 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
         {TABS.map((tab) => {
           const isActive = currentTab === tab;
           return (
@@ -87,7 +109,7 @@ export default function PanePanel({
               key={tab}
               type="button"
               onClick={() => onChangeTab(tab)}
-              className={`flex items-center gap-1.5 rounded-md px-3 py-1.5 text-xs font-medium transition-colors ${
+              className={`flex shrink-0 items-center gap-1.5 rounded-md px-2.5 py-1.5 text-xs font-medium transition-colors ${
                 isActive
                   ? "bg-[color-mix(in_srgb,var(--color-accent)_15%,transparent)] text-[var(--color-accent)]"
                   : "text-[var(--muted)] hover:bg-[var(--surface-hover)] hover:text-[var(--foreground)]"
@@ -95,12 +117,14 @@ export default function PanePanel({
               title={getTabLabel(tab)}
             >
               <TabIcon tab={tab} />
-              <span className="hidden md:inline">{getTabLabel(tab)}</span>
+              <span className={isActive ? "inline" : "hidden xl:inline"}>
+                {getTabLabel(tab)}
+              </span>
             </button>
           );
         })}
 
-        <div className="flex-1" />
+        <div className="min-w-2 flex-1" />
 
         {/* Bouton échanger gauche ↔ droite */}
         {onSwap && (

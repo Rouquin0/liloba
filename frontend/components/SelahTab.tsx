@@ -5,7 +5,9 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useAppLanguage } from "@/hooks/useAppLanguage";
 import { addJournalEntry } from "@/lib/journal";
-import { SELAH_STATES } from "@/lib/selah-content";
+import { SELAH_RX, SELAH_STATES } from "@/lib/selah-content";
+import { openInOtherPane, openStoryInOtherPane } from "@/lib/split-view";
+import { pickStoryForState } from "@/lib/selah-stories";
 import {
   chapterHref,
   clearSelah,
@@ -16,6 +18,7 @@ import {
   getStateMeta,
   lastDays,
   parseDateKey,
+  pickAnotherPrescription,
   pickPrescription,
   previousPas,
   readDaySignals,
@@ -138,6 +141,14 @@ const UI = {
     stepDone: "Pas fait",
     stepTodo: "Pas prévu",
     remove: "Supprimer",
+    another: "Un autre verset",
+    storyTitle: "Une histoire pour ton cœur",
+    storyRead: "Lire l'histoire",
+    noteLabel: "Ce que je retiens ce soir (optionnel)",
+    notePh: "Une phrase, une prise de conscience, un engagement…",
+    noteFor: "Ma note",
+    wall: "Mur de reconnaissance",
+    wallHint: "Tes derniers mercis, réunis au même endroit.",
     confirmRemove: "Supprimer cette pause ?",
     clearAll: "Effacer tout mon parcours",
     confirmClear: "Effacer tout ton parcours Selah ? Cette action est irréversible.",
@@ -205,6 +216,14 @@ const UI = {
     stepDone: "Step done",
     stepTodo: "Step planned",
     remove: "Delete",
+    another: "Another verse",
+    storyTitle: "A story for your heart",
+    storyRead: "Read the story",
+    noteLabel: "What I take away tonight (optional)",
+    notePh: "A sentence, an insight, a commitment…",
+    noteFor: "My note",
+    wall: "Wall of thanks",
+    wallHint: "Your latest thank-yous, all in one place.",
     confirmRemove: "Delete this pause?",
     clearAll: "Erase my whole journey",
     confirmClear: "Erase your whole Selah journey? This cannot be undone.",
@@ -224,7 +243,7 @@ type Silence = "idle" | "running" | "done";
 const SILENCE_SECONDS = 60;
 const LAST_STEP = 4;
 
-export default function SelahTab() {
+export default function SelahTab({ compact = false }: { compact?: boolean }) {
   const { lang } = useAppLanguage();
   const l = lang === "en" ? UI.en : UI.fr;
   const router = useRouter();
@@ -240,6 +259,7 @@ export default function SelahTab() {
 
   const [etat, setEtat] = useState<SoulState | null>(null);
   const [topic, setTopic] = useState("");
+  const [note, setNote] = useState("");
   const [rx, setRx] = useState<Prescription | null>(null);
   const [signals, setSignals] = useState<DaySignals | null>(null);
   const [gratitudes, setGratitudes] = useState<string[]>(["", "", ""]);
@@ -271,6 +291,7 @@ export default function SelahTab() {
     setRx(pickPrescription(etat, entries));
     setSignals(readDaySignals());
     setGratitudes(["", "", ""]);
+    setNote("");
     setSilence("idle");
     setSecondsLeft(SILENCE_SECONDS);
     setCopied(false);
@@ -294,12 +315,15 @@ export default function SelahTab() {
       topic,
       gratitudes,
       pas: rx.pas,
+      note,
     });
     const merci = gratitudes.map((g) => g.trim()).filter(Boolean);
     addJournalEntry("private_note_added", `${l.journalLabel} — ${meta.fr}`, {
       detail: `${rx.ref} · ${rx.texte} | Pas : ${rx.pas}${
         topic.trim() ? ` | Sujet de prière : ${topic.trim()}` : ""
-      }${merci.length ? ` | Merci : ${merci.join(" ; ")}` : ""}`,
+      }${merci.length ? ` | Merci : ${merci.join(" ; ")}` : ""}${
+        note.trim() ? ` | Note : ${note.trim()}` : ""
+      }`,
       reference: rx.ref,
     });
     setFinished(true);
@@ -310,6 +334,7 @@ export default function SelahTab() {
     setStep(0);
     setEtat(null);
     setTopic("");
+    setNote("");
     setRx(null);
     setSignals(null);
     setGratitudes(["", "", ""]);
@@ -350,10 +375,34 @@ export default function SelahTab() {
       // ignore
     }
     setApollosMsg(true);
-    setTimeout(() => router.push("/chat"), 1200);
+    if (compact) {
+      // Split View : pas de navigation de page, on affiche Apollos à côté
+      openInOtherPane("selah", "chat");
+    } else {
+      setTimeout(() => router.push("/chat"), 1200);
+    }
   };
 
-  const chapterLink = rx ? chapterHref(rx.ref) : null;
+  const chapterLink = !compact && rx ? chapterHref(rx.ref) : null;
+  const story = etat ? pickStoryForState(etat) : null;
+  const canAnother = Boolean(etat && rx && SELAH_RX[etat].length > 1);
+
+  const anotherVerse = () => {
+    if (!etat || !rx) return;
+    setRx(pickAnotherPrescription(etat, rx.ref));
+  };
+
+  const wall = useMemo(
+    () =>
+      entries
+        .flatMap((e) => e.gratitudes.map((g) => ({ g, date: e.date, id: e.id })))
+        .slice(0, 12),
+    [entries]
+  );
+  const fmtShort = (key: string) =>
+    new Intl.DateTimeFormat(l.locale, { day: "numeric", month: "short" }).format(
+      parseDateKey(key)
+    );
   const mm = Math.floor(secondsLeft / 60);
   const ss = String(secondsLeft % 60).padStart(2, "0");
 
@@ -385,9 +434,11 @@ export default function SelahTab() {
           {l.title}
         </h1>
         <p className="mt-1 text-sm text-[var(--muted)]">{l.subtitle}</p>
-        <p className="mx-auto mt-3 max-w-xl text-xs leading-relaxed text-[var(--muted)]">
-          {l.tagline}
-        </p>
+        {!compact && (
+          <p className="mx-auto mt-3 max-w-xl text-xs leading-relaxed text-[var(--muted)]">
+            {l.tagline}
+          </p>
+        )}
       </header>
 
       <div className="mb-5 grid grid-cols-2 gap-1 rounded-xl border border-[var(--border)] bg-[var(--surface)] p-1">
@@ -540,14 +591,25 @@ export default function SelahTab() {
                   « {rx.texte} »
                 </p>
                 <p className="mt-1 text-sm font-bold text-[var(--color-accent)]">{rx.ref}</p>
-                {chapterLink && (
-                  <Link
-                    href={chapterLink}
-                    className="mt-3 inline-flex items-center gap-1 text-xs font-semibold text-[var(--color-accent)] underline-offset-2 hover:underline"
-                  >
-                    {l.readChapter}
-                  </Link>
-                )}
+                <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-2">
+                  {chapterLink && (
+                    <Link
+                      href={chapterLink}
+                      className="inline-flex items-center gap-1 text-xs font-semibold text-[var(--color-accent)] underline-offset-2 hover:underline"
+                    >
+                      {l.readChapter}
+                    </Link>
+                  )}
+                  {canAnother && (
+                    <button
+                      type="button"
+                      onClick={anotherVerse}
+                      className="inline-flex items-center gap-1 text-xs font-semibold text-[var(--muted)] underline-offset-2 transition-colors hover:text-[var(--color-accent)] hover:underline"
+                    >
+                      ↻ {l.another}
+                    </button>
+                  )}
+                </div>
               </section>
 
               <section className="rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-4">
@@ -644,6 +706,7 @@ export default function SelahTab() {
           )}
 
           {step === 4 && rx && (
+            <>
             <section className="rounded-2xl border border-[var(--color-accent)]/40 bg-[var(--color-accent)]/5 p-4">
               <p className="mb-1 text-xs font-bold uppercase tracking-widest text-[var(--color-accent)]">
                 {l.pas}
@@ -652,6 +715,27 @@ export default function SelahTab() {
                 {rx.pas}
               </p>
             </section>
+            <section className="rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-4">
+              <label
+                htmlFor="selah-note"
+                className="mb-2 block text-xs font-bold uppercase tracking-widest text-[var(--muted)]"
+              >
+                {l.noteLabel}
+              </label>
+              <textarea
+                id="selah-note"
+                value={note}
+                onChange={(e) => setNote(e.target.value)}
+                maxLength={280}
+                rows={3}
+                placeholder={l.notePh}
+                className="w-full resize-none rounded-xl border border-[var(--border)] bg-[var(--background)] px-3 py-2 text-sm text-[var(--foreground)] outline-none focus:border-[var(--color-accent)]"
+              />
+              <p className="mt-1 text-right text-[10px] text-[var(--muted)]">
+                {note.length}/280
+              </p>
+            </section>
+            </>
           )}
 
           {step > 0 && (
@@ -702,6 +786,46 @@ export default function SelahTab() {
               {stats.current} {stats.current === 1 ? l.streakOne : l.streak}
             </p>
           </section>
+
+          {story && (
+            <section className="rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-4">
+              <p className="mb-2 text-xs font-bold uppercase tracking-widest text-[var(--muted)]">
+                {l.storyTitle}
+              </p>
+              <div className="flex items-center gap-3">
+                <span
+                  className={`flex h-14 w-14 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br text-3xl ${story.gradient}`}
+                  aria-hidden="true"
+                >
+                  {story.emoji}
+                </span>
+                <div className="min-w-0 flex-1">
+                  <p className="text-sm font-bold leading-snug text-[var(--foreground)]">
+                    {story.title}
+                  </p>
+                  <p className="mt-0.5 text-[11px] text-[var(--muted)]">
+                    {story.theme} · ⏱ {story.durationMin} min
+                  </p>
+                </div>
+              </div>
+              {compact ? (
+                <button
+                  type="button"
+                  onClick={() => openStoryInOtherPane(story.slug)}
+                  className="mt-3 w-full rounded-xl bg-[var(--color-accent)] py-2.5 text-sm font-bold text-white transition-all hover:brightness-90"
+                >
+                  {l.storyRead}
+                </button>
+              ) : (
+                <Link
+                  href={`/histoires/${story.slug}`}
+                  className="mt-3 block w-full rounded-xl bg-[var(--color-accent)] py-2.5 text-center text-sm font-bold text-white transition-all hover:brightness-90"
+                >
+                  {l.storyRead}
+                </Link>
+              )}
+            </section>
+          )}
 
           <div className="grid grid-cols-2 gap-2">
             <button
@@ -815,13 +939,35 @@ export default function SelahTab() {
                 </div>
               </section>
 
+              {wall.length > 0 && (
+                <section className="rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-4">
+                  <p className="text-xs font-bold uppercase tracking-widest text-[var(--muted)]">
+                    🙏 {l.wall}
+                  </p>
+                  <p className="mt-0.5 text-[11px] text-[var(--muted)]">{l.wallHint}</p>
+                  <ul className="mt-3 flex flex-col gap-2">
+                    {wall.map((w, i) => (
+                      <li
+                        key={`${w.id}-${i}`}
+                        className="flex min-w-0 items-baseline gap-2 text-sm text-[var(--foreground)]"
+                      >
+                        <span className="shrink-0 text-[10px] uppercase text-[var(--muted)]">
+                          {fmtShort(w.date)}
+                        </span>
+                        <span className="min-w-0 break-words">{w.g}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </section>
+              )}
+
               <section className="flex flex-col gap-2">
                 <p className="px-1 text-xs font-bold uppercase tracking-widest text-[var(--muted)]">
                   {l.recent}
                 </p>
                 {entries.slice(0, 30).map((e) => {
                   const m = getStateMeta(e.state);
-                  const href = chapterHref(e.ref);
+                  const href = compact ? null : chapterHref(e.ref);
                   return (
                     <article
                       key={e.id}
@@ -875,6 +1021,13 @@ export default function SelahTab() {
                       {e.topic && (
                         <p className="mt-2 break-words text-xs italic text-[var(--muted)]">
                           {l.prayerFor} : {e.topic}
+                        </p>
+                      )}
+
+                      {e.note && (
+                        <p className="mt-2 break-words border-l-2 border-[var(--color-accent)] pl-2 text-xs text-[var(--foreground)]">
+                          <span className="font-semibold">{l.noteFor} : </span>
+                          {e.note}
                         </p>
                       )}
 

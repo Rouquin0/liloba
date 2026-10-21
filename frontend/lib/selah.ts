@@ -45,6 +45,8 @@ export interface SelahEntry {
   pas: string;
   /** Le pas a-t-il été fait ? (renseigné le lendemain) */
   pasDone?: boolean;
+  /** Note libre : « ce que je retiens ce soir » (optionnel) */
+  note?: string;
 }
 
 export interface DaySignals {
@@ -114,6 +116,7 @@ function parse(raw: string | null): SelahEntry[] {
         state: o.state as SoulState,
         ref: typeof o.ref === "string" ? o.ref : "",
         topic: typeof o.topic === "string" && o.topic ? o.topic : undefined,
+        note: typeof o.note === "string" && o.note ? o.note.slice(0, 500) : undefined,
         gratitudes: Array.isArray(o.gratitudes)
           ? o.gratitudes.filter((g): g is string => typeof g === "string").slice(0, 3)
           : [],
@@ -178,6 +181,7 @@ export function saveSelahEntry(input: {
   topic?: string;
   gratitudes: string[];
   pas: string;
+  note?: string;
 }): SelahEntry {
   const now = Date.now();
   const entry: SelahEntry = {
@@ -187,6 +191,7 @@ export function saveSelahEntry(input: {
     state: input.state,
     ref: input.ref,
     topic: input.topic?.trim() || undefined,
+    note: input.note?.trim() ? input.note.trim().slice(0, 280) : undefined,
     gratitudes: input.gratitudes
       .map((g) => g.trim())
       .filter(Boolean)
@@ -326,6 +331,13 @@ export function pickPrescription(state: SoulState, entries: SelahEntry[]): Presc
   const t = new Date();
   const dayNumber = Math.floor(Date.UTC(t.getFullYear(), t.getMonth(), t.getDate()) / 86400000);
   return pool[dayNumber % pool.length];
+}
+
+/** Verset suivant dans le même état (pour le bouton « Un autre verset »). */
+export function pickAnotherPrescription(state: SoulState, currentRef: string): Prescription {
+  const list = SELAH_RX[state];
+  const idx = list.findIndex((p) => p.ref === currentRef);
+  return list[(idx + 1) % list.length];
 }
 
 /** Lien vers le chapitre complet d'une référence (ex : "Psaumes 23:1" → /bible/psaumes/23). */

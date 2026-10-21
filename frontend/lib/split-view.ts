@@ -10,7 +10,13 @@
 //  - subscribeSplit() utilisable avec useSyncExternalStore
 // ============================================================
 
-export type PaneTab = "bible" | "chat" | "search" | "compare";
+export type PaneTab =
+  | "bible"
+  | "chat"
+  | "search"
+  | "compare"
+  | "selah"
+  | "stories";
 
 export interface PaneState {
   tab: PaneTab;
@@ -25,7 +31,7 @@ export interface SplitState {
 
 const STORAGE_KEY = "liloba:split-view";
 const EVENT = "liloba:split-updated";
-const TABS: PaneTab[] = ["bible", "chat", "search", "compare"];
+const TABS: PaneTab[] = ["bible", "chat", "search", "compare", "selah", "stories"];
 
 export const MIN_RATIO = 20;
 export const MAX_RATIO = 80;
@@ -142,6 +148,42 @@ export function setRatio(ratio: number): void {
   updateSplitState((s) => ({ ...s, ratio: clampRatio(ratio) }));
 }
 
+// ---------- Ouvrir un contenu dans « l'autre » panneau ----------
+// Dans le split, naviguer avec <Link> ne change rien à l'écran (les panneaux
+// remplacent la page). Ces helpers pilotent donc directement l'autre côté.
+
+export function openInOtherPane(current: PaneTab, target: PaneTab): void {
+  updateSplitState((s) => {
+    const side = s.left.tab === current ? "right" : "left";
+    return { ...s, [side]: { tab: target } };
+  });
+}
+
+const PENDING_STORY_KEY = "liloba:pending-story";
+export const OPEN_STORY_EVENT = "liloba:open-story";
+
+/** Demande au panneau Histoires d'ouvrir une histoire (et l'affiche à côté). */
+export function openStoryInOtherPane(slug: string): void {
+  if (typeof window === "undefined") return;
+  try {
+    sessionStorage.setItem(PENDING_STORY_KEY, slug);
+  } catch {}
+  openInOtherPane("selah", "stories");
+  window.dispatchEvent(new Event(OPEN_STORY_EVENT));
+}
+
+/** Lit puis efface la demande d'ouverture d'histoire en attente. */
+export function consumePendingStory(): string | null {
+  if (typeof window === "undefined") return null;
+  try {
+    const slug = sessionStorage.getItem(PENDING_STORY_KEY);
+    if (slug) sessionStorage.removeItem(PENDING_STORY_KEY);
+    return slug;
+  } catch {
+    return null;
+  }
+}
+
 // ---------- Libellés ----------
 
 export function getTabLabel(tab: PaneTab): string {
@@ -154,6 +196,10 @@ export function getTabLabel(tab: PaneTab): string {
       return "Recherche";
     case "compare":
       return "Comparer";
+    case "selah":
+      return "Selah";
+    case "stories":
+      return "Histoires";
     default:
       return tab;
   }
