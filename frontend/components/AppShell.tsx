@@ -1,5 +1,6 @@
 "use client";
 
+import BibleScreensaver from "./BibleScreensaver";
 import { useDailyVerseNotification } from "@/hooks/useDailyVerseNotification";
 import { useReadingReminder } from "@/hooks/useReadingReminder";
 import { useState, useEffect, useCallback, Suspense } from "react";
@@ -69,6 +70,7 @@ function AppShellContent({
     return (
       <div className={`flex h-dvh ${allowScroll ? "overflow-y-auto" : "overflow-hidden"} bg-[var(--background)]`}>
         <main className="flex-1">{children}</main>
+        <BibleScreensaver />
       </div>
     );
   }
@@ -79,6 +81,7 @@ function AppShellContent({
       <div className="relative flex flex-1 flex-col overflow-hidden md:pl-2">
         <main className="flex-1 overflow-hidden">{children}</main>
       </div>
+      <BibleScreensaver />
     </div>
   );
 }

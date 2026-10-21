@@ -14,9 +14,9 @@ export default function ApollosMaintenanceBanner({ compact = false }: { compact?
         </svg>
       </div>
       <div className="flex-1">
-        <p className="font-semibold">Apollos revient bientôt</p>
+        <p className="font-semibold">Apollos en maintenance</p>
         <p className="mt-0.5 text-xs opacity-80">
-          Petit souci technique côté assistant IA. En attendant, la lecture de la Bible reste 100% disponible, même hors ligne.
+          L'assistant IA est temporairement indisponible. La lecture de la Bible reste accessible en ligne.
         </p>
       </div>
     </div>

@@ -65,7 +65,7 @@ export default function HomePage() {
           {/* Grille : 1 colonne sur mobile, 2 colonnes (2/3 - 1/3) sur desktop */}
           <div className="grid grid-cols-1 gap-6 md:grid-cols-3 md:gap-8">
             
-            {/* Colonne de gauche : Actions principales (prend 2 colonnes sur 3) */}
+            {/* Colonne de gauche : Actions principales */}
             <div className="flex flex-col gap-6 md:col-span-2">
               {/* Carte Bible */}
               <Link
@@ -90,7 +90,7 @@ export default function HomePage() {
                 </span>
               </Link>
 
-              {/* Carte Apollos */}
+              {/* Carte Apollos : desktop uniquement */}
               <Link
                 href="/chat"
                 className="group hidden items-center gap-5 rounded-2xl border-2 border-[var(--border)] bg-[var(--surface)] p-6 shadow-sm transition-all hover:border-[var(--color-accent)] active:scale-[0.99] md:flex md:p-8"
@@ -116,23 +116,23 @@ export default function HomePage() {
               <ApollosMaintenanceBanner />
             </div>
 
-            {/* Colonne de droite : Modules (prend 1 colonne sur 3) */}
-            <div className="flex flex-col gap-6">
-              {/* Verset du jour : desktop uniquement */}
-              <div className="hidden md:block">
-                <DailyVerseCard />
-              </div>
-              {/* Teaser Histoires : mobile uniquement (retiré du desktop) */}
-              <div className="md:hidden">
-                <HistoiresTeaser />
-              </div>
+            {/* Colonne de droite : Modules (desktop uniquement) */}
+            <div className="hidden flex-col gap-6 md:flex">
+              {/* Verset du jour */}
+              <DailyVerseCard />
               
+              {/* Phrase corrigée : plus honnête */}
               <div className="flex items-center justify-center gap-2 rounded-xl bg-green-500/10 px-4 py-3 text-xs font-medium text-green-700 dark:text-green-300 md:text-sm">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4 shrink-0">
                   <path d="M20 6 9 17l-5-5"/>
                 </svg>
-                <span className="text-center">Bible disponible sans internet</span>
+                <span className="text-center">Bible disponible en ligne</span>
               </div>
+            </div>
+
+            {/* Teaser Histoires : mobile uniquement */}
+            <div className="md:hidden">
+              <HistoiresTeaser />
             </div>
 
           </div>
