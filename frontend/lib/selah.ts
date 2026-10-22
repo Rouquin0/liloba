@@ -67,6 +67,8 @@ export interface WeekDay {
   weekday: string;
   isToday: boolean;
   entry?: SelahEntry;
+  /** Jour manqué pardonné (sursis sauvé) : affiché 🛡️, ne compte pas comme pause. */
+  grace?: boolean;
 }
 
 // ------------------------------------------------------------
@@ -219,25 +221,69 @@ export function clearSelah(): void {
 // STATISTIQUES
 // ------------------------------------------------------------
 
-export function computeSelahStats(entries: SelahEntry[]): SelahStats {
+export function computeSelahStats(
+  entries: SelahEntry[],
+  shields: string[] = [],
+  todayOverride?: string
+): SelahStats {
   const dates = new Set(entries.map((e) => e.date));
-  const today = getTodayKey();
+  const shieldsSet = new Set(shields);
+  const today = todayOverride ?? getTodayKey();
   const doneToday = dates.has(today);
+  const yesterday = addDays(today, -1);
+  const dayBefore = addDays(today, -2);
 
-  // Série en cours : si la pause d'aujourd'hui n'est pas encore faite,
-  // on compte à partir d'hier (la série n'est pas perdue avant ce soir).
-  let cursor = doneToday ? today : addDays(today, -1);
+  // Série en cours (avec sursis) : un jour manqué pardonné (shield)
+  // ou le sursis en cours (hier manqué + avant-hier présent, pause
+  // d'aujourd'hui pas encore faite) ne casse pas la série et ne
+  // compte pas comme une pause. Deux jours manqués d'affilée → 0.
   let current = 0;
-  while (dates.has(cursor)) {
-    current++;
-    cursor = addDays(cursor, -1);
+  let ongoingGraceUsed = false;
+  let cursor = doneToday ? today : yesterday;
+  for (let guard = 0; guard < 500; guard++) {
+    if (dates.has(cursor)) {
+      current++;
+      cursor = addDays(cursor, -1);
+      continue;
+    }
+    if (shieldsSet.has(cursor)) {
+      // Jour pardonné : la série continue sans compter ce jour.
+      cursor = addDays(cursor, -1);
+      continue;
+    }
+    if (
+      !doneToday &&
+      !ongoingGraceUsed &&
+      cursor === yesterday &&
+      dates.has(dayBefore)
+    ) {
+      // Sursis en cours : hier manqué mais avant-hier présent.
+      // La série est conservée (valeur d'avant-hier) jusqu'à ce soir.
+      ongoingGraceUsed = true;
+      cursor = addDays(cursor, -1);
+      continue;
+    }
+    break;
   }
 
   let longest = 0;
   let run = 0;
   let prev: string | null = null;
   for (const d of [...dates].sort()) {
-    run = prev && addDays(prev, 1) === d ? run + 1 : 1;
+    if (prev === null) {
+      run = 1;
+    } else if (addDays(prev, 1) === d) {
+      run += 1;
+    } else if (addDays(prev, 2) === d && shieldsSet.has(addDays(prev, 1))) {
+      // Trou d'un seul jour pardonné : la série continue (sans +1).
+      run += 1;
+    } else {
+      const diff = Math.round(
+        (parseDateKey(d).getTime() - parseDateKey(prev).getTime()) / 86400000
+      );
+      if (diff === 2 && shieldsSet.has(addDays(prev, 1))) run += 1;
+      else run = 1;
+    }
     if (run > longest) longest = run;
     prev = d;
   }
@@ -245,19 +291,28 @@ export function computeSelahStats(entries: SelahEntry[]): SelahStats {
   return { current, longest, total: entries.length, doneToday };
 }
 
-/** Les n derniers jours (du plus ancien à aujourd'hui) pour la frise. */
-export function lastDays(entries: SelahEntry[], n: number, locale: string): WeekDay[] {
+/** Les n derniers jours (du plus ancien à aujourd'hui) pour la frise.
+ *  `shields` : jours manqués pardonnés → affichés 🛡️ (grace: true). */
+export function lastDays(
+  entries: SelahEntry[],
+  n: number,
+  locale: string,
+  shields: string[] = []
+): WeekDay[] {
   const today = getTodayKey();
+  const shieldsSet = new Set(shields);
   const byDate = new Map(entries.map((e) => [e.date, e]));
   const fmt = new Intl.DateTimeFormat(locale, { weekday: "narrow" });
   const days: WeekDay[] = [];
   for (let i = n - 1; i >= 0; i--) {
     const date = addDays(today, -i);
+    const entry = byDate.get(date);
     days.push({
       date,
       weekday: fmt.format(parseDateKey(date)),
       isToday: i === 0,
-      entry: byDate.get(date),
+      entry,
+      grace: !entry && shieldsSet.has(date) ? true : undefined,
     });
   }
   return days;

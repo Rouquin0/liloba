@@ -4,7 +4,7 @@ import { useEffect, useMemo, useRef, useState, useSyncExternalStore } from "reac
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useAppLanguage } from "@/hooks/useAppLanguage";
-import { addJournalEntry } from "@/lib/journal";
+import { addJournalEntry, getTodayKey } from "@/lib/journal";
 import { SELAH_RX, SELAH_STATES } from "@/lib/selah-content";
 import { openInOtherPane, openStoryInOtherPane } from "@/lib/split-view";
 import { pickStoryForState } from "@/lib/selah-stories";
@@ -29,43 +29,83 @@ import {
   type Prescription,
   type SoulState,
 } from "@/lib/selah";
+import { getSelahPrayer, type PrayerDuration } from "@/lib/selah-prayers";
+import {
+  estimatePrayerTiming,
+  formatPrayerCountdown,
+  isSpeechAvailable,
+  prefersReducedMotion,
+  stopSpeech,
+} from "@/lib/selah-timer";
+import {
+  addGraceShield,
+  computeGraceInfo,
+  getSelahGrace,
+  getServerSelahGrace,
+  graceAddDays,
+  isGraceSave,
+  subscribeSelahGrace,
+} from "@/lib/selah-grace";
+import {
+  getSelahPrefs,
+  getServerSelahPrefs,
+  markMilestoneSeen,
+  setPrayerDuration,
+  setReadAloud,
+  subscribeSelahPrefs,
+} from "@/lib/selah-prefs";
+import {
+  addPrayerTopic,
+  deletePrayerTopic,
+  getPrayerTopics,
+  getServerPrayerTopics,
+  subscribePrayerTopics,
+  toggleTopicAnswered,
+} from "@/lib/selah-topics";
+import {
+  canShare,
+  downloadBlob,
+  elementToBlob,
+  makeFilename,
+  shareBlob,
+} from "@/lib/verse-card";
 
 // ------------------------------------------------------------
 // ICONES SVG POUR LES ETATS
 // ------------------------------------------------------------
 
 const IconPeace = () => (
-  <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+  <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
     <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
   </svg>
 );
 const IconJoy = () => (
-  <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+  <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
     <circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/>
   </svg>
 );
 const IconTired = () => (
-  <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+  <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
     <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/>
   </svg>
 );
 const IconAnxious = () => (
-  <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+  <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
     <path d="M2 6c.6.5 1.2 1 2.5 1C7 7 7 5 9.5 5c2.6 0 2.4 2 5 2 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1"/><path d="M2 12c.6.5 1.2 1 2.5 1 2.5 0 2.5-2 5-2 2.6 0 2.4 2 5 2 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1"/><path d="M2 18c.6.5 1.2 1 2.5 1 2.5 0 2.5-2 5-2 2.6 0 2.4 2 5 2 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1"/>
   </svg>
 );
 const IconAngry = () => (
-  <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+  <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
     <path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/>
   </svg>
 );
 const IconGuilty = () => (
-  <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+  <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
     <path d="M12 22a7 7 0 0 0 7-7c0-2-1-3.9-3-5.5s-3.5-4-4-6.5c-.5 2.5-2 4.9-4 6.5C6 11.1 5 13 5 15a7 7 0 0 0 7 7z"/>
   </svg>
 );
 const IconDry = () => (
-  <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+  <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
     <path d="M12 22v-5"/><path d="M9 8V2"/><path d="M15 8V2"/><path d="M18 8v5a4 4 0 0 1-4 4h-4a4 4 0 0 1-4-4V8Z"/>
   </svg>
 );
@@ -80,8 +120,21 @@ const STATE_ICONS: Record<string, () => React.ReactNode> = {
   secheresse: IconDry,
 };
 
+/** Couleur d'accent propre à chaque état (fond uni + texte blanc, contraste OK clair/sombre). */
+const STATE_ACCENTS: Record<SoulState, string> = {
+  paix: "#047857",
+  joie: "#b45309",
+  fatigue: "#4f46e5",
+  angoisse: "#0284c7",
+  colere: "#b91c1c",
+  culpabilite: "#6d28d9",
+  secheresse: "#a16207",
+};
+
+const MILESTONES = [7, 30, 100];
+
 // ------------------------------------------------------------
-// TEXTES UI
+// TEXTES UI (FR/EN synchronisés)
 // ------------------------------------------------------------
 
 const UI = {
@@ -107,22 +160,39 @@ const UI = {
     verse: "Ta parole pour ce soir",
     meditation: "Pour méditer",
     readChapter: "Lire le chapitre",
+    openBible: "Ouvrir la Bible",
     next: "Suivant",
     back: "Retour",
     thanks: "Pour quoi remercies-tu Dieu aujourd'hui ?",
     thanksHint: "Trois choses, même toutes petites. Tu peux passer cette étape.",
     thanksPh: ["Merci Seigneur pour…", "Merci aussi pour…", "Et merci pour…"],
     prayer: "Prière pour ce soir",
-    silence: "Une minute de silence devant Dieu",
-    silenceStart: "Commencer",
+    prayerReceived: "Prière reçue",
+    durationLabel: "Durée de la prière",
+    durationCourte: "Courte",
+    durationMoyenne: "Moyenne",
+    durationProfonde: "Profonde",
+    prayerStart: "Commencer la prière",
+    prayerPause: "Pause",
+    prayerResume: "Reprendre",
+    prayerSkip: "Passer",
+    prayerRestart: "Recommencer",
+    prayerSilence: "Silence final : demeure devant Dieu.",
+    prayerDone: "Amen.",
+    prayerFullscreen: "Plein écran",
+    prayerExitFullscreen: "Sortir",
+    readAloud: "Lire à voix haute",
+    readAloudOff: "Voix désactivée dans ce navigateur",
     silenceRunning: "Respire doucement. Dieu est présent.",
-    silenceDone: "Amen.",
     skip: "Passer",
     pas: "Ton pas pour demain",
     finish: "Terminer ma pause",
     doneTitle: "Pause enregistrée",
     doneText: "Tu as pris un temps avec Dieu ce soir. Reviens demain.",
     share: "Partager",
+    shareImage: "Partager en image",
+    shareText: "Partager le texte",
+    sharing: "Préparation…",
     copied: "Copié !",
     apollos: "Approfondir avec Apollos",
     apollosCopied: "Question copiée : colle-la dans le chat.",
@@ -159,6 +229,28 @@ const UI = {
     streakRead: (n: number) => `🔥 ${n} jours de lecture de suite`,
     locale: "fr-FR",
     journalLabel: "Selah",
+    graceBanner: (h: number) =>
+      `Ta série est en sursis : il te reste ${h} h pour la sauver en faisant ta pause.`,
+    graceShield: "Jour sauvé",
+    milestone: (n: number) => `🌿 ${n} jours de pause avec Dieu. Quelle fidélité !`,
+    calendar: "Calendrier du mois",
+    calendarHint: "🌿 pause · 🛡️ sursis sauvé · encadré : aujourd'hui",
+    prevMonth: "Mois précédent",
+    nextMonth: "Mois suivant",
+    topicsTitle: "Sujets de prière suivis",
+    topicsHint: "Ajoutés depuis ta pause du soir. Touche « Exaucé » quand Dieu a répondu.",
+    topicsPh: "Ajouter un sujet de prière…",
+    topicsAdd: "Ajouter",
+    topicsAnswered: "Exaucé",
+    topicsNotYet: "Pas encore",
+    topicsEmpty: "Aucun sujet suivi pour l'instant.",
+    memoriesTitle: "Souvenirs",
+    memoryDays: (n: number) => `Il y a ${n} jours, tu remerciais pour…`,
+    reviewTitle: "Bilan de la semaine",
+    reviewPauses: (n: number) => `${n} pause${n > 1 ? "s" : ""} cette semaine`,
+    reviewThanks: (n: number) => `${n} merci${n > 1 ? "s" : ""} noté${n > 1 ? "s" : ""}`,
+    reviewStates: (n: number) => `${n} état${n > 1 ? "s" : ""} du cœur différent${n > 1 ? "s" : ""}`,
+    reviewSteps: (n: number) => `${n} pas accompli${n > 1 ? "s" : ""}`,
   },
   en: {
     title: "Selah",
@@ -182,22 +274,39 @@ const UI = {
     verse: "Your word for tonight",
     meditation: "To reflect on",
     readChapter: "Read the chapter",
+    openBible: "Open the Bible",
     next: "Next",
     back: "Back",
     thanks: "What are you thankful to God for today?",
     thanksHint: "Three things, even tiny ones. You can skip this step.",
     thanksPh: ["Thank you Lord for…", "Thank you also for…", "And thank you for…"],
     prayer: "Prayer for tonight",
-    silence: "One minute of silence before God",
-    silenceStart: "Begin",
+    prayerReceived: "Prayer received",
+    durationLabel: "Prayer length",
+    durationCourte: "Short",
+    durationMoyenne: "Medium",
+    durationProfonde: "Deep",
+    prayerStart: "Begin the prayer",
+    prayerPause: "Pause",
+    prayerResume: "Resume",
+    prayerSkip: "Skip",
+    prayerRestart: "Restart",
+    prayerSilence: "Final silence: rest before God.",
+    prayerDone: "Amen.",
+    prayerFullscreen: "Fullscreen",
+    prayerExitFullscreen: "Exit",
+    readAloud: "Read aloud",
+    readAloudOff: "Voice unavailable in this browser",
     silenceRunning: "Breathe gently. God is present.",
-    silenceDone: "Amen.",
     skip: "Skip",
     pas: "Your step for tomorrow",
     finish: "Finish my pause",
     doneTitle: "Pause saved",
     doneText: "You spent time with God tonight. Come back tomorrow.",
     share: "Share",
+    shareImage: "Share as image",
+    shareText: "Share the text",
+    sharing: "Preparing…",
     copied: "Copied!",
     apollos: "Go deeper with Apollos",
     apollosCopied: "Question copied: paste it in the chat.",
@@ -234,14 +343,59 @@ const UI = {
     streakRead: (n: number) => `🔥 ${n}-day reading streak`,
     locale: "en-US",
     journalLabel: "Selah",
+    graceBanner: (h: number) =>
+      `Your streak is on hold: you have ${h}h left to save it by taking your pause.`,
+    graceShield: "Day saved",
+    milestone: (n: number) => `🌿 ${n} days of pausing with God. What faithfulness!`,
+    calendar: "Month calendar",
+    calendarHint: "🌿 pause · 🛡️ saved hold · outlined: today",
+    prevMonth: "Previous month",
+    nextMonth: "Next month",
+    topicsTitle: "Followed prayer subjects",
+    topicsHint: "Added from your evening pause. Tap “Answered” when God has answered.",
+    topicsPh: "Add a prayer subject…",
+    topicsAdd: "Add",
+    topicsAnswered: "Answered",
+    topicsNotYet: "Not yet",
+    topicsEmpty: "No followed subjects yet.",
+    memoriesTitle: "Memories",
+    memoryDays: (n: number) => `${n} days ago, you were thankful for…`,
+    reviewTitle: "Week review",
+    reviewPauses: (n: number) => `${n} pause${n > 1 ? "s" : ""} this week`,
+    reviewThanks: (n: number) => `${n} thank${n > 1 ? "s" : ""} noted`,
+    reviewStates: (n: number) => `${n} different heart state${n > 1 ? "s" : ""}`,
+    reviewSteps: (n: number) => `${n} step${n > 1 ? "s" : ""} completed`,
   },
 };
 
 type Tab = "tonight" | "path";
-type Silence = "idle" | "running" | "done";
+type PrayerPhase = "idle" | "running" | "paused" | "done";
 
-const SILENCE_SECONDS = 60;
 const LAST_STEP = 4;
+
+/** Durées cumulées (ms) de chaque ligne : mots/90min + 2 s de respiration. */
+function lineSchedule(lines: string[]): { ends: number[]; silenceMs: number; totalMs: number } {
+  const per: number[] = [];
+  let readingMs = 0;
+  for (const line of lines) {
+    const words = line.trim().split(/\s+/).filter(Boolean).length;
+    const ms = (words / 90) * 60000 + 2000;
+    per.push(ms);
+    readingMs += ms;
+  }
+  const silenceMs = Math.max(20000, readingMs * 0.25);
+  const raw = readingMs + silenceMs;
+  const totalMs = Math.max(30000, Math.round(raw / 5000) * 5000);
+  // Ajuste le silence pour retomber exactement sur le total arrondi
+  const fixedSilence = totalMs - readingMs;
+  const ends: number[] = [];
+  let acc = 0;
+  for (const ms of per) {
+    acc += ms;
+    ends.push(acc);
+  }
+  return { ends, silenceMs: fixedSilence, totalMs };
+}
 
 export default function SelahTab({ compact = false }: { compact?: boolean }) {
   const { lang } = useAppLanguage();
@@ -249,8 +403,13 @@ export default function SelahTab({ compact = false }: { compact?: boolean }) {
   const router = useRouter();
 
   const entries = useSyncExternalStore(subscribeSelah, getSelahEntries, getServerSelahEntries);
-  const stats = useMemo(() => computeSelahStats(entries), [entries]);
-  const week = useMemo(() => lastDays(entries, 7, l.locale), [entries, l.locale]);
+  const grace = useSyncExternalStore(subscribeSelahGrace, getSelahGrace, getServerSelahGrace);
+  const prefs = useSyncExternalStore(subscribeSelahPrefs, getSelahPrefs, getServerSelahPrefs);
+  const topics = useSyncExternalStore(subscribePrayerTopics, getPrayerTopics, getServerPrayerTopics);
+
+  const shields = grace.shields;
+  const stats = useMemo(() => computeSelahStats(entries, shields), [entries, shields]);
+  const week = useMemo(() => lastDays(entries, 7, l.locale, shields), [entries, l.locale, shields]);
   const yesterday = useMemo(() => previousPas(entries), [entries]);
 
   const [tab, setTab] = useState<Tab>("tonight");
@@ -264,27 +423,168 @@ export default function SelahTab({ compact = false }: { compact?: boolean }) {
   const [signals, setSignals] = useState<DaySignals | null>(null);
   const [gratitudes, setGratitudes] = useState<string[]>(["", "", ""]);
 
-  const [silence, setSilence] = useState<Silence>("idle");
-  const [secondsLeft, setSecondsLeft] = useState(SILENCE_SECONDS);
-  const endAtRef = useRef(0);
-
   const [copied, setCopied] = useState(false);
   const [apollosMsg, setApollosMsg] = useState(false);
+  const [sharing, setSharing] = useState(false);
+  const [celebration, setCelebration] = useState<number | null>(null);
+  const [calOffset, setCalOffset] = useState(0);
+  const [newTopic, setNewTopic] = useState("");
+  const [nowMs, setNowMs] = useState(() => Date.now());
 
   const meta = etat ? getStateMeta(etat) : null;
+  const accent = etat ? STATE_ACCENTS[etat] : "var(--color-accent)";
+
+  // ---------- Prière guidée (chrono calculé) ----------
+  const duration: PrayerDuration = prefs.prayerDuration;
+  const prayerLines = useMemo(
+    () => (etat ? getSelahPrayer(etat, duration, lang) : []),
+    [etat, duration, lang]
+  );
+  const timing = useMemo(() => estimatePrayerTiming(prayerLines), [prayerLines]);
+  const schedule = useMemo(() => lineSchedule(prayerLines), [prayerLines]);
+
+  const [phase, setPhase] = useState<PrayerPhase>("idle");
+  const [elapsedMs, setElapsedMs] = useState(0);
+  const [prayerFocus, setPrayerFocus] = useState(false);
+  const [speechOn, setSpeechOn] = useState(false);
+  const startRef = useRef(0);
+  const baseRef = useRef(0);
+  const speechAvailable = useMemo(() => isSpeechAvailable(), []);
+  const reducedMotion = useMemo(() => prefersReducedMotion(), []);
+  const stepHeadingRef = useRef<HTMLHeadingElement>(null);
+
+  const lineIdx = useMemo(() => {
+    for (let i = 0; i < schedule.ends.length; i++) {
+      if (elapsedMs < schedule.ends[i]) return i;
+    }
+    return schedule.ends.length; // silence final
+  }, [elapsedMs, schedule]);
+  const inSilence = phase !== "idle" && lineIdx >= schedule.ends.length;
+  const remainingSec = Math.max(0, Math.ceil((schedule.totalMs - elapsedMs) / 1000));
+
+  // Horloge du bandeau de sursis (toutes les 30 s)
+  const datesSet = useMemo(() => new Set(entries.map((e) => e.date)), [entries]);
+  const graceInfo = useMemo(
+    () => computeGraceInfo(datesSet, getTodayKey(), nowMs),
+    [datesSet, nowMs]
+  );
+  useEffect(() => {
+    if (graceInfo.status !== "grace") return;
+    const id = setInterval(() => setNowMs(Date.now()), 30000);
+    return () => clearInterval(id);
+  }, [graceInfo.status]);
+
+  // Paliers 7/30/100 : message affiché une seule fois
+  useEffect(() => {
+    for (const m of MILESTONES) {
+      if (stats.current >= m && !prefs.milestonesSeen.includes(m)) {
+        markMilestoneSeen(m);
+        setCelebration(m);
+      }
+    }
+  }, [stats.current, prefs.milestonesSeen]);
+
+  const speakFrom = (fromLine: number) => {
+    if (!speechOn || !speechAvailable) return;
+    try {
+      window.speechSynthesis.cancel();
+      const text = prayerLines.slice(fromLine).join(" ");
+      if (!text.trim()) return;
+      const u = new SpeechSynthesisUtterance(text);
+      u.lang = lang === "en" ? "en-US" : "fr-FR";
+      u.rate = 0.9;
+      window.speechSynthesis.speak(u);
+    } catch {
+      // ignore
+    }
+  };
+
+  const startPrayer = () => {
+    stopSpeech();
+    baseRef.current = 0;
+    startRef.current = Date.now();
+    setElapsedMs(0);
+    setPhase("running");
+    speakFrom(0);
+  };
 
   useEffect(() => {
-    if (silence !== "running") return;
+    if (phase !== "running") return;
     const id = setInterval(() => {
-      const left = Math.max(0, Math.ceil((endAtRef.current - Date.now()) / 1000));
-      setSecondsLeft(left);
-      if (left === 0) {
+      const e = baseRef.current + (Date.now() - startRef.current);
+      if (e >= schedule.totalMs) {
+        setElapsedMs(schedule.totalMs);
+        setPhase("done");
+        stopSpeech();
         clearInterval(id);
-        setSilence("done");
+      } else {
+        setElapsedMs(e);
       }
     }, 250);
     return () => clearInterval(id);
-  }, [silence]);
+  }, [phase, schedule.totalMs]);
+
+  // Arrêt propre de la synthèse au démontage / changement d'étape
+  useEffect(() => {
+    return () => stopSpeech();
+  }, []);
+  useEffect(() => {
+    if (step !== 3) {
+      setPhase("idle");
+      setElapsedMs(0);
+      setPrayerFocus(false);
+      stopSpeech();
+    }
+  }, [step]);
+
+  const pausePrayer = () => {
+    if (phase !== "running") return;
+    baseRef.current = baseRef.current + (Date.now() - startRef.current);
+    setElapsedMs(baseRef.current);
+    setPhase("paused");
+    try {
+      window.speechSynthesis.cancel();
+    } catch {
+      // ignore
+    }
+  };
+  const resumePrayer = () => {
+    if (phase !== "paused") return;
+    startRef.current = Date.now();
+    setPhase("running");
+    speakFrom(lineIdx);
+  };
+  const skipLine = () => {
+    if (phase !== "running" && phase !== "paused") return;
+    const target =
+      lineIdx < schedule.ends.length ? schedule.ends[lineIdx] : schedule.totalMs;
+    baseRef.current = Math.min(target, schedule.totalMs);
+    startRef.current = Date.now();
+    setElapsedMs(baseRef.current);
+    if (phase === "paused") {
+      setPhase("running");
+      speakFrom(Math.min(lineIdx + 1, prayerLines.length));
+    } else {
+      speakFrom(Math.min(lineIdx + 1, prayerLines.length));
+    }
+    if (baseRef.current >= schedule.totalMs) {
+      setPhase("done");
+      stopSpeech();
+    }
+  };
+  const restartPrayer = () => {
+    stopSpeech();
+    baseRef.current = 0;
+    startRef.current = Date.now();
+    setElapsedMs(0);
+    setPhase("running");
+    speakFrom(0);
+  };
+
+  // Focus accessibilité à chaque étape
+  useEffect(() => {
+    stepHeadingRef.current?.focus();
+  }, [step, tab]);
 
   const begin = () => {
     if (!etat) return;
@@ -292,24 +592,16 @@ export default function SelahTab({ compact = false }: { compact?: boolean }) {
     setSignals(readDaySignals());
     setGratitudes(["", "", ""]);
     setNote("");
-    setSilence("idle");
-    setSecondsLeft(SILENCE_SECONDS);
     setCopied(false);
     setApollosMsg(false);
+    setPhase("idle");
+    setElapsedMs(0);
     setStep(1);
   };
 
-  const startSilence = () => {
-    endAtRef.current = Date.now() + SILENCE_SECONDS * 1000;
-    setSecondsLeft(SILENCE_SECONDS);
-    setSilence("running");
-  };
-
-  const skipSilence = () => setSilence("done");
-
   const finish = () => {
     if (!rx || !meta || !etat) return;
-    saveSelahEntry({
+    const saved = saveSelahEntry({
       state: etat,
       ref: rx.ref,
       topic,
@@ -317,6 +609,13 @@ export default function SelahTab({ compact = false }: { compact?: boolean }) {
       pas: rx.pas,
       note,
     });
+    void saved;
+    // Sursis sauvé ? → mémoriser le jour manqué (🛡️)
+    const after = new Set([...datesSet, getTodayKey()]);
+    const res = isGraceSave(after, getTodayKey());
+    if (res.saved && res.missedDate) addGraceShield(res.missedDate);
+    // Sujet de prière suivi
+    if (topic.trim()) addPrayerTopic(topic.trim(), getTodayKey());
     const merci = gratitudes.map((g) => g.trim()).filter(Boolean);
     addJournalEntry("private_note_added", `${l.journalLabel} — ${meta.fr}`, {
       detail: `${rx.ref} · ${rx.texte} | Pas : ${rx.pas}${
@@ -326,10 +625,12 @@ export default function SelahTab({ compact = false }: { compact?: boolean }) {
       }`,
       reference: rx.ref,
     });
+    setNowMs(Date.now());
     setFinished(true);
   };
 
   const restart = () => {
+    stopSpeech();
     setFinished(false);
     setStep(0);
     setEtat(null);
@@ -338,14 +639,15 @@ export default function SelahTab({ compact = false }: { compact?: boolean }) {
     setRx(null);
     setSignals(null);
     setGratitudes(["", "", ""]);
-    setSilence("idle");
+    setPhase("idle");
+    setElapsedMs(0);
   };
 
-  const share = async () => {
+  const shareText = async () => {
     if (!rx) return;
     const text = `${l.verse} : ${rx.ref}\n« ${rx.texte} »\n\n${l.pas} : ${rx.pas}\n— Selah · LILOBA`;
     try {
-      if (navigator.share) {
+      if (typeof navigator.share === "function") {
         await navigator.share({ title: "Selah · LILOBA", text });
         return;
       }
@@ -363,6 +665,38 @@ export default function SelahTab({ compact = false }: { compact?: boolean }) {
     }
   };
 
+  const cardRef = useRef<HTMLDivElement>(null);
+  const shareImage = async () => {
+    if (!rx || sharing) return;
+    const el = cardRef.current;
+    if (!el) {
+      shareText();
+      return;
+    }
+    setSharing(true);
+    try {
+      try {
+        await (document as Document).fonts?.ready;
+      } catch {
+        // ignore
+      }
+      const blob = await elementToBlob(el);
+      if (!blob) {
+        shareText();
+        return;
+      }
+      const filename = makeFilename(rx.ref || "selah");
+      if (canShare()) {
+        const ok = await shareBlob(blob, filename, "Selah · LILOBA", `${rx.ref} — ${rx.texte}`);
+        if (!ok) downloadBlob(blob, filename);
+      } else {
+        downloadBlob(blob, filename);
+      }
+    } finally {
+      setSharing(false);
+    }
+  };
+
   const goApollos = () => {
     if (!rx || !meta) return;
     const q =
@@ -376,7 +710,6 @@ export default function SelahTab({ compact = false }: { compact?: boolean }) {
     }
     setApollosMsg(true);
     if (compact) {
-      // Split View : pas de navigation de page, on affiche Apollos à côté
       openInOtherPane("selah", "chat");
     } else {
       setTimeout(() => router.push("/chat"), 1200);
@@ -403,13 +736,63 @@ export default function SelahTab({ compact = false }: { compact?: boolean }) {
     new Intl.DateTimeFormat(l.locale, { day: "numeric", month: "short" }).format(
       parseDateKey(key)
     );
-  const mm = Math.floor(secondsLeft / 60);
-  const ss = String(secondsLeft % 60).padStart(2, "0");
 
   const fmtDate = (key: string) =>
     new Intl.DateTimeFormat(l.locale, { weekday: "long", day: "numeric", month: "long" }).format(
       parseDateKey(key)
     );
+
+  // ---------- Souvenirs (il y a 7 / 30 jours) ----------
+  const memories = useMemo(() => {
+    const today = getTodayKey();
+    return [7, 30]
+      .map((delta) => {
+        const key = graceAddDays(today, -delta);
+        const e = entries.find((x) => x.date === key);
+        if (!e || e.gratitudes.length === 0) return null;
+        return { delta, date: key, gratitudes: e.gratitudes };
+      })
+      .filter((m): m is { delta: number; date: string; gratitudes: string[] } => m !== null);
+  }, [entries]);
+
+  // ---------- Bilan factuel de la semaine ----------
+  const review = useMemo(() => {
+    const today = getTodayKey();
+    const keys = new Set(Array.from({ length: 7 }, (_, i) => graceAddDays(today, -i)));
+    const last7 = entries.filter((e) => keys.has(e.date));
+    return {
+      pauses: last7.length,
+      thanks: last7.reduce((n, e) => n + e.gratitudes.length, 0),
+      states: new Set(last7.map((e) => e.state)).size,
+      stepsDone: last7.filter((e) => e.pasDone === true).length,
+    };
+  }, [entries]);
+
+  // ---------- Calendrier du mois ----------
+  const calendar = useMemo(() => {
+    const today = getTodayKey();
+    const [ty, tm] = today.split("-").map(Number);
+    const base = new Date(ty, tm - 1 + calOffset, 1, 12);
+    const y = base.getFullYear();
+    const m = base.getMonth();
+    const label = new Intl.DateTimeFormat(l.locale, { month: "long", year: "numeric" }).format(base);
+    const first = new Date(y, m, 1);
+    const mondayOffset = (first.getDay() + 6) % 7; // lundi = 0
+    const start = new Date(y, m, 1 - mondayOffset, 12);
+    const cells: { key: string; day: number; inMonth: boolean }[] = [];
+    for (let i = 0; i < 42; i++) {
+      const d = new Date(start.getFullYear(), start.getMonth(), start.getDate() + i, 12);
+      const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+      cells.push({ key, day: d.getDate(), inMonth: d.getMonth() === m });
+    }
+    return { label, cells, today };
+  }, [calOffset, l.locale, entries.length]);
+  const byDate = useMemo(() => new Map(entries.map((e) => [e.date, e])), [entries]);
+  const dowHeaders =
+    lang === "en" ? ["M", "T", "W", "T", "F", "S", "S"] : ["L", "M", "M", "J", "V", "S", "D"];
+
+  const progressPct = Math.round(((step + 1) / (LAST_STEP + 1)) * 100);
+  const immersive = tab === "tonight" && !finished && step >= 1;
 
   return (
     <div className="mx-auto w-full min-w-0 max-w-2xl px-4 py-6 md:px-6">
@@ -418,10 +801,34 @@ export default function SelahTab({ compact = false }: { compact?: boolean }) {
           0%, 100% { transform: scale(0.82); opacity: 0.55; }
           50% { transform: scale(1.08); opacity: 1; }
         }
+        @keyframes selah-fade {
+          from { opacity: 0; transform: translateY(8px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+        .selah-step { animation: selah-fade 0.35s ease-out; }
         @media (prefers-reduced-motion: reduce) {
           .selah-breathe { animation: none !important; }
+          .selah-step { animation: none !important; }
         }
       `}</style>
+
+      {/* Carte image du verset (hors écran, pour le partage) */}
+      <div aria-hidden="true" className="pointer-events-none fixed left-[-9999px] top-0 h-0 overflow-hidden opacity-0">
+        <div
+          ref={cardRef}
+          style={{
+            width: 1080,
+            padding: 96,
+            background: "linear-gradient(135deg, #0b1026 0%, #1b2340 55%, #2b1a3a 100%)",
+            color: "#f5efe4",
+            fontFamily: "Georgia, 'Times New Roman', serif",
+          }}
+        >
+          <p style={{ fontSize: 56, lineHeight: 1.4 }}>« {rx?.texte ?? ""} »</p>
+          <p style={{ marginTop: 40, fontSize: 40, fontWeight: 700, color: "#d4af37" }}>{rx?.ref ?? ""}</p>
+          <p style={{ marginTop: 24, fontSize: 28, color: "#b9ac93" }}>Selah · LILOBA</p>
+        </div>
+      </div>
 
       <header className="mb-5 text-center">
         <p className="text-3xl" aria-hidden="true">
@@ -441,13 +848,39 @@ export default function SelahTab({ compact = false }: { compact?: boolean }) {
         )}
       </header>
 
-      <div className="mb-5 grid grid-cols-2 gap-1 rounded-xl border border-[var(--border)] bg-[var(--surface)] p-1">
+      {graceInfo.status === "grace" && graceInfo.hoursLeft !== null && (
+        <div
+          role="alert"
+          className="mb-4 rounded-2xl border border-amber-500/50 bg-amber-500/10 p-4 text-center"
+        >
+          <p className="text-sm font-semibold text-[var(--foreground)]">
+            🛡️ {l.graceBanner(graceInfo.hoursLeft)}
+          </p>
+        </div>
+      )}
+
+      {celebration !== null && (
+        <div role="status" className="selah-step mb-4 rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-4 text-center">
+          <p className="text-sm font-semibold text-[var(--foreground)]">{l.milestone(celebration)}</p>
+          <button
+            type="button"
+            onClick={() => setCelebration(null)}
+            className="mt-2 min-h-[44px] px-4 py-2 text-xs text-[var(--muted)] underline-offset-2 hover:underline"
+          >
+            OK
+          </button>
+        </div>
+      )}
+
+      <div className="mb-5 grid grid-cols-2 gap-1 rounded-xl border border-[var(--border)] bg-[var(--surface)] p-1" role="tablist" aria-label={l.title}>
         {(["tonight", "path"] as const).map((id) => (
           <button
             key={id}
             type="button"
+            role="tab"
+            aria-selected={tab === id}
             onClick={() => setTab(id)}
-            className={`min-w-0 rounded-lg px-2 py-2 text-sm font-medium transition-all ${
+            className={`min-h-[44px] min-w-0 rounded-lg px-2 py-2 text-sm font-medium transition-all ${
               tab === id
                 ? "bg-[var(--color-accent)] text-white shadow-sm"
                 : "text-[var(--muted)] hover:bg-[var(--surface-hover)]"
@@ -461,27 +894,32 @@ export default function SelahTab({ compact = false }: { compact?: boolean }) {
 
       {tab === "tonight" && !finished && (
         <div className="flex flex-col gap-4">
-          <ol className="flex items-center justify-between gap-1 px-1" aria-label="Progression">
-            {l.steps.map((label, i) => (
-              <li key={label} className="flex min-w-0 flex-1 flex-col items-center gap-1">
-                <span
-                  className={`h-1.5 w-full rounded-full transition-colors ${
-                    i <= step ? "bg-[var(--color-accent)]" : "bg-[var(--surface-hover)]"
-                  }`}
-                />
-                <span
-                  className={`truncate text-[10px] uppercase tracking-wide ${
-                    i === step ? "font-bold text-[var(--color-accent)]" : "text-[var(--muted)]"
-                  }`}
-                >
-                  {label}
-                </span>
-              </li>
-            ))}
-          </ol>
+          {/* Belle barre de progression */}
+          <div role="progressbar" aria-valuenow={progressPct} aria-valuemin={0} aria-valuemax={100} aria-label={l.steps[step]}>
+            <div className="h-2 w-full overflow-hidden rounded-full bg-[var(--surface-hover)]">
+              <div
+                className="h-full rounded-full transition-all duration-500"
+                style={{ width: `${progressPct}%`, background: accent }}
+              />
+            </div>
+            <ol className="mt-2 flex items-center justify-between gap-1" aria-label="Progression">
+              {l.steps.map((label, i) => (
+                <li key={label} className="flex min-w-0 flex-1 flex-col items-center gap-1">
+                  <span
+                    className={`text-[10px] uppercase tracking-wide ${
+                      i === step ? "font-bold" : "text-[var(--muted)]"
+                    }`}
+                    style={i === step ? { color: accent } : undefined}
+                  >
+                    {label}
+                  </span>
+                </li>
+              ))}
+            </ol>
+          </div>
 
           {step === 0 && (
-            <>
+            <div className="selah-step flex flex-col gap-4" key={`step0-${lang}`}>
               {yesterday && (
                 <section className="rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-4">
                   <p className="mb-1 text-xs font-bold uppercase tracking-widest text-[var(--muted)]">
@@ -495,14 +933,14 @@ export default function SelahTab({ compact = false }: { compact?: boolean }) {
                       <button
                         type="button"
                         onClick={() => setPasDone(yesterday.id, true)}
-                        className="rounded-xl bg-[var(--color-accent)] py-2 text-xs font-bold text-white transition-all hover:brightness-90"
+                        className="min-h-[44px] rounded-xl bg-[var(--color-accent)] py-2 text-xs font-bold text-white transition-all hover:brightness-90"
                       >
                         {l.yesterdayDone}
                       </button>
                       <button
                         type="button"
                         onClick={() => setPasDone(yesterday.id, false)}
-                        className="rounded-xl border border-[var(--border)] py-2 text-xs font-semibold text-[var(--muted)] transition-all hover:border-[var(--color-accent)]"
+                        className="min-h-[44px] rounded-xl border border-[var(--border)] py-2 text-xs font-semibold text-[var(--muted)] transition-all hover:border-[var(--color-accent)]"
                       >
                         {l.yesterdayNot}
                       </button>
@@ -512,23 +950,32 @@ export default function SelahTab({ compact = false }: { compact?: boolean }) {
               )}
 
               <section className="rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-4">
-                <p className="mb-3 text-sm font-semibold text-[var(--foreground)]">{l.step0}</p>
-                <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
+                <h2 ref={stepHeadingRef} tabIndex={-1} className="mb-3 text-sm font-semibold text-[var(--foreground)] outline-none">
+                  {l.step0}
+                </h2>
+                <div className="grid grid-cols-2 gap-2 sm:grid-cols-3" role="radiogroup" aria-label={l.step0}>
                   {SELAH_STATES.map((s, index) => {
                     const isLast = index === SELAH_STATES.length - 1;
                     const spanClass = isLast ? "col-span-2 sm:col-span-3" : "";
                     const Icon = STATE_ICONS[s.id];
-
+                    const selected = etat === s.id;
                     return (
                       <button
                         key={s.id}
                         type="button"
+                        role="radio"
+                        aria-checked={selected}
                         onClick={() => setEtat(s.id)}
-                        className={`${spanClass} flex min-w-0 items-center gap-2 rounded-xl border px-3 py-3 text-sm transition-all active:scale-95 ${
-                          etat === s.id
-                            ? "border-[var(--color-accent)] bg-[var(--color-accent)]/10 font-semibold text-[var(--color-accent)]"
+                        className={`${spanClass} flex min-h-[44px] min-w-0 items-center gap-2 rounded-xl border px-3 py-3 text-sm transition-all active:scale-95 ${
+                          selected
+                            ? "font-semibold text-white"
                             : "border-[var(--border)] text-[var(--foreground)] hover:border-[var(--color-accent)]/40"
                         }`}
+                        style={
+                          selected
+                            ? { background: STATE_ACCENTS[s.id], borderColor: STATE_ACCENTS[s.id] }
+                            : undefined
+                        }
                       >
                         <span className="shrink-0">{Icon && <Icon />}</span>
                         <span className="truncate">{lang === "en" ? s.en : s.fr}</span>
@@ -552,7 +999,7 @@ export default function SelahTab({ compact = false }: { compact?: boolean }) {
                   type="button"
                   onClick={begin}
                   disabled={!etat}
-                  className="mt-4 w-full rounded-xl bg-[var(--color-accent)] py-3 text-sm font-bold text-white transition-all hover:brightness-90 active:scale-[0.99] disabled:opacity-40"
+                  className="mt-4 min-h-[44px] w-full rounded-xl bg-[var(--color-accent)] py-3 text-sm font-bold text-white transition-all hover:brightness-90 active:scale-[0.99] disabled:opacity-40"
                 >
                   {l.begin}
                 </button>
@@ -564,11 +1011,62 @@ export default function SelahTab({ compact = false }: { compact?: boolean }) {
               <p className="px-2 text-center text-[11px] leading-relaxed text-[var(--muted)]">
                 {l.meaning}
               </p>
-            </>
+            </div>
           )}
 
           {step === 1 && rx && signals && (
-            <>
+            <div className="selah-step flex flex-col gap-4" key={`step1-${rx.ref}`}>
+              {/* Pause du soir immersive : fond nocturne en dégradé */}
+              <div
+                className="overflow-hidden rounded-3xl p-5"
+                style={{
+                  background: "linear-gradient(180deg, #0b1026 0%, #1b2340 55%, #3a2350 100%)",
+                  color: "#f5efe4",
+                }}
+              >
+                <p className="mb-2 text-xs font-bold uppercase tracking-widest" style={{ color: "#d4af37" }}>
+                  {l.verse}
+                </p>
+                <h2
+                  ref={stepHeadingRef}
+                  tabIndex={-1}
+                  className="text-xl font-semibold leading-relaxed outline-none"
+                  style={{ fontFamily: "var(--font-serif)" }}
+                >
+                  « {rx.texte} »
+                </h2>
+                <p className="mt-2 text-base font-bold" style={{ color: accent === "var(--color-accent)" ? "#d4af37" : "#ffffff", background: etat ? STATE_ACCENTS[etat] : undefined, display: "inline-block", padding: "2px 12px", borderRadius: 999 }}>
+                  {rx.ref}
+                </p>
+                <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-2">
+                  {chapterLink ? (
+                    <Link
+                      href={chapterLink}
+                      className="inline-flex min-h-[44px] items-center gap-1 text-xs font-semibold text-[#f5efe4] underline-offset-2 hover:underline"
+                    >
+                      {l.readChapter}
+                    </Link>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={() => openInOtherPane("selah", "bible")}
+                      className="inline-flex min-h-[44px] items-center gap-1 text-xs font-semibold text-[#f5efe4] underline-offset-2 hover:underline"
+                    >
+                      {l.openBible}
+                    </button>
+                  )}
+                  {canAnother && (
+                    <button
+                      type="button"
+                      onClick={anotherVerse}
+                      className="inline-flex min-h-[44px] items-center gap-1 text-xs font-semibold text-[#cfc4ad] underline-offset-2 transition-colors hover:text-white hover:underline"
+                    >
+                      ↻ {l.another}
+                    </button>
+                  )}
+                </div>
+              </div>
+
               <section className="rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-4">
                 <p className="mb-2 text-xs font-bold uppercase tracking-widest text-[var(--muted)]">
                   {l.day}
@@ -580,61 +1078,32 @@ export default function SelahTab({ compact = false }: { compact?: boolean }) {
                 </ul>
               </section>
 
-              <section className="rounded-2xl border border-[var(--color-accent)]/40 bg-[var(--color-accent)]/5 p-4">
-                <p className="mb-1 text-xs font-bold uppercase tracking-widest text-[var(--color-accent)]">
-                  {l.verse}
-                </p>
-                <p
-                  className="text-lg font-semibold leading-relaxed text-[var(--foreground)]"
-                  style={{ fontFamily: "var(--font-serif)" }}
-                >
-                  « {rx.texte} »
-                </p>
-                <p className="mt-1 text-sm font-bold text-[var(--color-accent)]">{rx.ref}</p>
-                <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-2">
-                  {chapterLink && (
-                    <Link
-                      href={chapterLink}
-                      className="inline-flex items-center gap-1 text-xs font-semibold text-[var(--color-accent)] underline-offset-2 hover:underline"
-                    >
-                      {l.readChapter}
-                    </Link>
-                  )}
-                  {canAnother && (
-                    <button
-                      type="button"
-                      onClick={anotherVerse}
-                      className="inline-flex items-center gap-1 text-xs font-semibold text-[var(--muted)] underline-offset-2 transition-colors hover:text-[var(--color-accent)] hover:underline"
-                    >
-                      ↻ {l.another}
-                    </button>
-                  )}
-                </div>
-              </section>
-
               <section className="rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-4">
                 <p className="mb-1 text-xs font-bold uppercase tracking-widest text-[var(--muted)]">
                   {l.meditation}
                 </p>
                 <p className="text-sm leading-relaxed text-[var(--foreground)]">{rx.meditation}</p>
                 {topic.trim() && (
-                  <p className="mt-2 border-l-2 border-[var(--color-accent)] pl-2 text-xs italic text-[var(--muted)]">
+                  <p className="mt-2 border-l-2 pl-2 text-xs italic text-[var(--muted)]" style={{ borderColor: accent }}>
                     {topic.trim()}
                   </p>
                 )}
               </section>
-            </>
+            </div>
           )}
 
           {step === 2 && (
-            <section className="rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-4">
-              <p className="text-sm font-semibold text-[var(--foreground)]">{l.thanks}</p>
+            <section className="selah-step rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-4" key={`step2-${lang}`}>
+              <h2 ref={stepHeadingRef} tabIndex={-1} className="text-sm font-semibold text-[var(--foreground)] outline-none">
+                {l.thanks}
+              </h2>
               <p className="mb-3 mt-1 text-xs text-[var(--muted)]">{l.thanksHint}</p>
               <div className="flex flex-col gap-2">
                 {gratitudes.map((g, i) => (
                   <input
                     key={i}
                     value={g}
+                    aria-label={l.thanksPh[i]}
                     onChange={(e) =>
                       setGratitudes((prev) => prev.map((x, j) => (j === i ? e.target.value : x)))
                     }
@@ -648,10 +1117,10 @@ export default function SelahTab({ compact = false }: { compact?: boolean }) {
           )}
 
           {step === 3 && rx && (
-            <>
+            <div className="selah-step flex flex-col gap-4" key={`step3-${duration}-${lang}`}>
               <section className="rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-4">
                 <p className="mb-1 text-xs font-bold uppercase tracking-widest text-[var(--muted)]">
-                  {l.prayer}
+                  {l.prayerReceived}
                 </p>
                 <p
                   className="text-base italic leading-relaxed text-[var(--foreground)]"
@@ -661,81 +1130,277 @@ export default function SelahTab({ compact = false }: { compact?: boolean }) {
                 </p>
               </section>
 
-              <section className="rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-4 text-center">
-                <p className="text-sm font-semibold text-[var(--foreground)]">{l.silence}</p>
-                <div className="relative mx-auto my-5 flex h-36 w-36 items-center justify-center">
+              {/* Prière immersive */}
+              <section
+                className="overflow-hidden rounded-3xl p-5 text-center"
+                aria-label={l.prayer}
+                style={{
+                  background: "linear-gradient(180deg, #0b1026 0%, #1b2340 55%, #3a2350 100%)",
+                  color: "#f5efe4",
+                }}
+              >
+                <h2 ref={stepHeadingRef} tabIndex={-1} className="text-xs font-bold uppercase tracking-widest outline-none" style={{ color: "#d4af37" }}>
+                  {l.prayer} · {formatPrayerCountdown(timing.totalSeconds)}
+                </h2>
+
+                <p className="mb-2 mt-4 text-xs font-semibold uppercase tracking-widest text-[#cfc4ad]">
+                  {l.durationLabel}
+                </p>
+                <div className="grid grid-cols-3 gap-2" role="radiogroup" aria-label={l.durationLabel}>
+                  {(["courte", "moyenne", "profonde"] as PrayerDuration[]).map((d) => (
+                    <button
+                      key={d}
+                      type="button"
+                      role="radio"
+                      aria-checked={duration === d}
+                      onClick={() => setPrayerDuration(d)}
+                      className={`min-h-[44px] rounded-xl border px-2 py-2.5 text-xs font-bold transition-all ${
+                        duration === d ? "text-white" : "text-[#cfc4ad]"
+                      }`}
+                      style={
+                        duration === d
+                          ? { background: accent, borderColor: accent }
+                          : { borderColor: "#ffffff33", background: "#ffffff10" }
+                      }
+                    >
+                      {d === "courte" ? l.durationCourte : d === "moyenne" ? l.durationMoyenne : l.durationProfonde}
+                    </button>
+                  ))}
+                </div>
+
+                {/* Halo qui respire autour du chrono */}
+                <div className="relative mx-auto my-5 flex h-40 w-40 items-center justify-center" aria-live="polite">
                   <div
-                    className="selah-breathe absolute inset-0 rounded-full bg-[var(--color-accent)]/20"
+                    className="selah-breathe absolute inset-0 rounded-full"
+                    aria-hidden="true"
                     style={{
+                      background: `radial-gradient(circle, ${accent}55 0%, transparent 70%)`,
                       animation:
-                        silence === "running" ? "selah-breathe 8s ease-in-out infinite" : undefined,
+                        phase === "running" && !reducedMotion
+                          ? "selah-breathe 8s ease-in-out infinite"
+                          : undefined,
                     }}
                   />
-                  <span className="relative text-3xl font-semibold tabular-nums text-[var(--foreground)]">
-                    {silence === "done" ? "✓" : `${mm}:${ss}`}
+                  <div
+                    className="absolute inset-4 rounded-full border"
+                    aria-hidden="true"
+                    style={{ borderColor: `${accent}88` }}
+                  />
+                  <span className="relative text-3xl font-semibold tabular-nums">
+                    {phase === "done" ? "✓" : formatPrayerCountdown(remainingSec)}
                   </span>
                 </div>
-                {silence === "idle" && (
-                  <div className="flex items-center justify-center gap-3">
+
+                {/* Progression de la prière */}
+                <div className="mx-auto mb-4 h-1.5 w-full max-w-xs overflow-hidden rounded-full bg-[#ffffff22]" role="progressbar" aria-valuenow={Math.round((elapsedMs / schedule.totalMs) * 100)} aria-valuemin={0} aria-valuemax={100}>
+                  <div
+                    className="h-full rounded-full transition-all"
+                    style={{ width: `${Math.min(100, (elapsedMs / schedule.totalMs) * 100)}%`, background: accent }}
+                  />
+                </div>
+
+                {/* Lignes de la prière, ligne en cours mise en valeur */}
+                <div className="mx-auto flex max-w-md flex-col gap-1.5 text-left">
+                  {prayerLines.map((line, i) => {
+                    const active = phase !== "idle" && i === lineIdx;
+                    const said = phase !== "idle" && i < lineIdx;
+                    return (
+                      <p
+                        key={i}
+                        aria-current={active ? "true" : undefined}
+                        className="rounded-lg px-3 py-1.5 text-sm leading-relaxed transition-all"
+                        style={{
+                          fontFamily: "var(--font-serif)",
+                          background: active ? "#ffffff18" : undefined,
+                          borderLeft: active ? `3px solid ${typeof accent === "string" ? accent : "#d4af37"}` : "3px solid transparent",
+                          color: active ? "#ffffff" : said ? "#8f846e" : "#cfc4ad",
+                          fontWeight: active ? 700 : 400,
+                        }}
+                      >
+                        {line}
+                      </p>
+                    );
+                  })}
+                </div>
+                {inSilence && phase !== "done" && (
+                  <p className="mt-3 text-sm italic text-[#cfc4ad]">{l.prayerSilence}</p>
+                )}
+                {phase === "done" && (
+                  <p className="mt-3 text-sm font-semibold" style={{ color: "#d4af37" }}>{l.prayerDone}</p>
+                )}
+
+                <div className="mt-4 flex flex-wrap items-center justify-center gap-2">
+                  {phase === "idle" && (
                     <button
                       type="button"
-                      onClick={startSilence}
-                      className="rounded-xl bg-[var(--color-accent)] px-5 py-2.5 text-sm font-bold text-white transition-all hover:brightness-90"
+                      onClick={startPrayer}
+                      className="min-h-[44px] rounded-xl px-6 py-2.5 text-sm font-bold text-white transition-all hover:brightness-110"
+                      style={{ background: accent }}
                     >
-                      {l.silenceStart}
+                      {l.prayerStart}
                     </button>
+                  )}
+                  {phase === "running" && (
+                    <>
+                      <button
+                        type="button"
+                        onClick={pausePrayer}
+                        className="min-h-[44px] rounded-xl border border-[#ffffff44] px-5 py-2.5 text-sm font-bold text-white transition-all hover:bg-[#ffffff18]"
+                      >
+                        {l.prayerPause}
+                      </button>
+                      <button
+                        type="button"
+                        onClick={skipLine}
+                        className="min-h-[44px] rounded-xl px-4 py-2.5 text-sm text-[#cfc4ad] underline-offset-2 hover:underline"
+                      >
+                        {l.prayerSkip} →
+                      </button>
+                    </>
+                  )}
+                  {phase === "paused" && (
+                    <>
+                      <button
+                        type="button"
+                        onClick={resumePrayer}
+                        className="min-h-[44px] rounded-xl px-6 py-2.5 text-sm font-bold text-white transition-all hover:brightness-110"
+                        style={{ background: accent }}
+                      >
+                        {l.prayerResume}
+                      </button>
+                      <button
+                        type="button"
+                        onClick={skipLine}
+                        className="min-h-[44px] rounded-xl px-4 py-2.5 text-sm text-[#cfc4ad] underline-offset-2 hover:underline"
+                      >
+                        {l.prayerSkip} →
+                      </button>
+                    </>
+                  )}
+                  {phase === "done" && (
                     <button
                       type="button"
-                      onClick={skipSilence}
-                      className="px-2 py-2 text-xs text-[var(--muted)] underline-offset-2 hover:underline"
+                      onClick={restartPrayer}
+                      className="min-h-[44px] rounded-xl border border-[#ffffff44] px-5 py-2.5 text-sm font-bold text-white transition-all hover:bg-[#ffffff18]"
                     >
-                      {l.skip}
+                      ↻ {l.prayerRestart}
                     </button>
-                  </div>
-                )}
-                {silence === "running" && (
-                  <p className="text-sm text-[var(--muted)]">{l.silenceRunning}</p>
-                )}
-                {silence === "done" && (
-                  <p className="text-sm font-semibold text-[var(--color-accent)]">
-                    {l.silenceDone}
-                  </p>
-                )}
+                  )}
+                  {(phase === "running" || phase === "paused") && (
+                    <button
+                      type="button"
+                      onClick={() => setPrayerFocus(true)}
+                      className="min-h-[44px] rounded-xl border border-[#ffffff44] px-4 py-2.5 text-xs font-semibold text-[#cfc4ad] transition-all hover:text-white"
+                    >
+                      ⛶ {l.prayerFullscreen}
+                    </button>
+                  )}
+                </div>
+
+                <div className="mt-3 flex items-center justify-center gap-2">
+                  {speechAvailable ? (
+                    <label className="flex min-h-[44px] cursor-pointer items-center gap-2 text-xs text-[#cfc4ad]">
+                      <input
+                        type="checkbox"
+                        checked={speechOn}
+                        onChange={(e) => {
+                          setSpeechOn(e.target.checked);
+                          setReadAloud(e.target.checked);
+                          if (!e.target.checked) stopSpeech();
+                        }}
+                        className="h-5 w-5 accent-[#d4af37]"
+                      />
+                      🔊 {l.readAloud}
+                    </label>
+                  ) : (
+                    <p className="text-[11px] text-[#8f846e]">{l.readAloudOff}</p>
+                  )}
+                </div>
               </section>
-            </>
+
+              {/* Plein écran sans distraction pendant la prière */}
+              {prayerFocus && (
+                <div
+                  role="dialog"
+                  aria-modal="true"
+                  aria-label={l.prayer}
+                  className="fixed inset-0 z-50 flex flex-col items-center justify-center overflow-y-auto p-6"
+                  style={{ background: "linear-gradient(180deg, #070b1d 0%, #141b36 60%, #2b1a3a 100%)", color: "#f5efe4" }}
+                >
+                  <button
+                    type="button"
+                    onClick={() => setPrayerFocus(false)}
+                    autoFocus
+                    className="absolute right-4 top-4 min-h-[44px] min-w-[44px] rounded-full border border-[#ffffff55] px-4 py-2 text-sm font-bold text-white"
+                  >
+                    ✕ {l.prayerExitFullscreen}
+                  </button>
+                  <p className="text-5xl font-semibold tabular-nums" aria-live="polite">
+                    {phase === "done" ? "✓" : formatPrayerCountdown(remainingSec)}
+                  </p>
+                  <p
+                    className="mt-6 max-w-md text-center text-2xl italic leading-relaxed"
+                    style={{ fontFamily: "var(--font-serif)" }}
+                  >
+                    {phase === "done"
+                      ? l.prayerDone
+                      : inSilence
+                        ? l.prayerSilence
+                        : (prayerLines[lineIdx] ?? "")}
+                  </p>
+                  <div className="mt-8 flex flex-wrap justify-center gap-2">
+                    {phase === "running" && (
+                      <button type="button" onClick={pausePrayer} className="min-h-[44px] rounded-xl border border-[#ffffff55] px-6 py-3 text-sm font-bold text-white">
+                        {l.prayerPause}
+                      </button>
+                    )}
+                    {phase === "paused" && (
+                      <button type="button" onClick={resumePrayer} className="min-h-[44px] rounded-xl bg-white px-6 py-3 text-sm font-bold text-black">
+                        {l.prayerResume}
+                      </button>
+                    )}
+                    {(phase === "running" || phase === "paused") && (
+                      <button type="button" onClick={skipLine} className="min-h-[44px] rounded-xl px-4 py-3 text-sm text-[#cfc4ad] underline-offset-2 hover:underline">
+                        {l.prayerSkip} →
+                      </button>
+                    )}
+                  </div>
+                </div>
+              )}
+            </div>
           )}
 
           {step === 4 && rx && (
-            <>
-            <section className="rounded-2xl border border-[var(--color-accent)]/40 bg-[var(--color-accent)]/5 p-4">
-              <p className="mb-1 text-xs font-bold uppercase tracking-widest text-[var(--color-accent)]">
-                {l.pas}
-              </p>
-              <p className="text-base font-medium leading-relaxed text-[var(--foreground)]">
-                {rx.pas}
-              </p>
-            </section>
-            <section className="rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-4">
-              <label
-                htmlFor="selah-note"
-                className="mb-2 block text-xs font-bold uppercase tracking-widest text-[var(--muted)]"
-              >
-                {l.noteLabel}
-              </label>
-              <textarea
-                id="selah-note"
-                value={note}
-                onChange={(e) => setNote(e.target.value)}
-                maxLength={280}
-                rows={3}
-                placeholder={l.notePh}
-                className="w-full resize-none rounded-xl border border-[var(--border)] bg-[var(--background)] px-3 py-2 text-sm text-[var(--foreground)] outline-none focus:border-[var(--color-accent)]"
-              />
-              <p className="mt-1 text-right text-[10px] text-[var(--muted)]">
-                {note.length}/280
-              </p>
-            </section>
-            </>
+            <div className="selah-step flex flex-col gap-4" key={`step4-${lang}`}>
+              <section className="rounded-2xl border p-4" style={{ borderColor: `${accent}66`, background: "color-mix(in srgb, var(--surface) 85%, transparent)" }}>
+                <p className="mb-1 text-xs font-bold uppercase tracking-widest" style={{ color: accent }}>
+                  {l.pas}
+                </p>
+                <p className="text-base font-medium leading-relaxed text-[var(--foreground)]">
+                  {rx.pas}
+                </p>
+              </section>
+              <section className="rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-4">
+                <label
+                  htmlFor="selah-note"
+                  className="mb-2 block text-xs font-bold uppercase tracking-widest text-[var(--muted)]"
+                >
+                  {l.noteLabel}
+                </label>
+                <textarea
+                  id="selah-note"
+                  value={note}
+                  onChange={(e) => setNote(e.target.value)}
+                  maxLength={280}
+                  rows={3}
+                  placeholder={l.notePh}
+                  className="w-full resize-none rounded-xl border border-[var(--border)] bg-[var(--background)] px-3 py-2 text-sm text-[var(--foreground)] outline-none focus:border-[var(--color-accent)]"
+                />
+                <p className="mt-1 text-right text-[10px] text-[var(--muted)]">
+                  {note.length}/280
+                </p>
+              </section>
+            </div>
           )}
 
           {step > 0 && (
@@ -743,7 +1408,7 @@ export default function SelahTab({ compact = false }: { compact?: boolean }) {
               <button
                 type="button"
                 onClick={() => setStep((s) => Math.max(0, s - 1))}
-                className="rounded-xl border border-[var(--border)] bg-[var(--surface)] px-4 py-3 text-sm font-semibold text-[var(--foreground)] transition-all hover:border-[var(--color-accent)]"
+                className="min-h-[44px] rounded-xl border border-[var(--border)] bg-[var(--surface)] px-4 py-3 text-sm font-semibold text-[var(--foreground)] transition-all hover:border-[var(--color-accent)]"
               >
                 {l.back}
               </button>
@@ -751,7 +1416,7 @@ export default function SelahTab({ compact = false }: { compact?: boolean }) {
                 <button
                   type="button"
                   onClick={() => setStep((s) => Math.min(LAST_STEP, s + 1))}
-                  className="rounded-xl bg-[var(--color-accent)] py-3 text-sm font-bold text-white transition-all hover:brightness-90 active:scale-[0.99]"
+                  className="min-h-[44px] rounded-xl bg-[var(--color-accent)] py-3 text-sm font-bold text-white transition-all hover:brightness-90 active:scale-[0.99]"
                 >
                   {step === 2 && gratitudes.every((g) => !g.trim()) ? l.skip : l.next}
                 </button>
@@ -759,7 +1424,7 @@ export default function SelahTab({ compact = false }: { compact?: boolean }) {
                 <button
                   type="button"
                   onClick={finish}
-                  className="rounded-xl bg-[var(--color-accent)] py-3 text-sm font-bold text-white transition-all hover:brightness-90 active:scale-[0.99]"
+                  className="min-h-[44px] rounded-xl bg-[var(--color-accent)] py-3 text-sm font-bold text-white transition-all hover:brightness-90 active:scale-[0.99]"
                 >
                   {l.finish}
                 </button>
@@ -771,7 +1436,7 @@ export default function SelahTab({ compact = false }: { compact?: boolean }) {
 
       {tab === "tonight" && finished && rx && (
         <div className="flex flex-col gap-4">
-          <section className="rounded-2xl border border-[var(--color-accent)]/40 bg-[var(--color-accent)]/5 p-5 text-center">
+          <section className="rounded-2xl border p-5 text-center" style={{ borderColor: `${accent}66` }}>
             <p className="text-3xl" aria-hidden="true">
               🌿
             </p>
@@ -812,7 +1477,7 @@ export default function SelahTab({ compact = false }: { compact?: boolean }) {
                 <button
                   type="button"
                   onClick={() => openStoryInOtherPane(story.slug)}
-                  className="mt-3 w-full rounded-xl bg-[var(--color-accent)] py-2.5 text-sm font-bold text-white transition-all hover:brightness-90"
+                  className="mt-3 min-h-[44px] w-full rounded-xl bg-[var(--color-accent)] py-2.5 text-sm font-bold text-white transition-all hover:brightness-90"
                 >
                   {l.storyRead}
                 </button>
@@ -830,24 +1495,32 @@ export default function SelahTab({ compact = false }: { compact?: boolean }) {
           <div className="grid grid-cols-2 gap-2">
             <button
               type="button"
-              onClick={share}
-              className="rounded-xl border border-[var(--border)] bg-[var(--surface)] py-3 text-sm font-semibold text-[var(--foreground)] transition-all hover:border-[var(--color-accent)]"
+              onClick={shareText}
+              className="min-h-[44px] rounded-xl border border-[var(--border)] bg-[var(--surface)] py-3 text-sm font-semibold text-[var(--foreground)] transition-all hover:border-[var(--color-accent)]"
             >
-              {copied ? l.copied : l.share}
+              {copied ? l.copied : l.shareText}
             </button>
             <button
               type="button"
-              onClick={() => setTab("path")}
-              className="rounded-xl bg-[var(--color-accent)] py-3 text-sm font-bold text-white transition-all hover:brightness-90"
+              onClick={shareImage}
+              disabled={sharing}
+              className="min-h-[44px] rounded-xl bg-[var(--color-accent)] py-3 text-sm font-bold text-white transition-all hover:brightness-90 disabled:opacity-50"
             >
-              {l.seePath}
+              {sharing ? l.sharing : `🖼️ ${l.shareImage}`}
             </button>
           </div>
+          <button
+            type="button"
+            onClick={() => setTab("path")}
+            className="min-h-[44px] rounded-xl border border-[var(--border)] bg-[var(--surface)] py-3 text-sm font-semibold text-[var(--foreground)] transition-all hover:border-[var(--color-accent)]"
+          >
+            {l.seePath}
+          </button>
 
           <button
             type="button"
             onClick={goApollos}
-            className="rounded-xl border border-dashed border-[var(--color-accent)]/60 py-3 text-sm font-semibold text-[var(--color-accent)] transition-all hover:bg-[var(--color-accent)]/5"
+            className="min-h-[44px] rounded-xl border border-dashed border-[var(--color-accent)]/60 py-3 text-sm font-semibold text-[var(--color-accent)] transition-all hover:bg-[var(--color-accent)]/5"
           >
             {l.apollos}
           </button>
@@ -858,9 +1531,9 @@ export default function SelahTab({ compact = false }: { compact?: boolean }) {
           <button
             type="button"
             onClick={restart}
-            className="mx-auto mt-2 flex items-center gap-2 rounded-full border border-[var(--border)] bg-[var(--surface)] px-5 py-2.5 text-xs font-medium text-[var(--muted)] transition-all hover:border-[var(--color-accent)] hover:text-[var(--color-accent)]"
+            className="mx-auto mt-2 flex min-h-[44px] items-center gap-2 rounded-full border border-[var(--border)] bg-[var(--surface)] px-5 py-2.5 text-xs font-medium text-[var(--muted)] transition-all hover:border-[var(--color-accent)] hover:text-[var(--color-accent)]"
           >
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-3.5 w-3.5">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-3.5 w-3.5" aria-hidden="true">
               <path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
               <path d="M3 3v5h5" />
               <path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16" />
@@ -879,15 +1552,15 @@ export default function SelahTab({ compact = false }: { compact?: boolean }) {
               <button
                 type="button"
                 onClick={() => setTab("tonight")}
-                className="mt-4 rounded-xl bg-[var(--color-accent)] px-5 py-2.5 text-sm font-bold text-white transition-all hover:brightness-90"
+                className="mt-4 min-h-[44px] rounded-xl bg-[var(--color-accent)] px-5 py-2.5 text-sm font-bold text-white transition-all hover:brightness-90"
               >
                 {l.tabTonight}
               </button>
             </section>
           ) : (
             <>
-              <section className="grid grid-cols-3 gap-2">
-                <div className="min-w-0 rounded-2xl border border-[var(--color-accent)]/40 bg-[var(--color-accent)]/5 p-3 text-center">
+              <section className="grid grid-cols-3 gap-2" aria-label={l.tabPath}>
+                                <div className="min-w-0 rounded-2xl border border-[var(--color-accent)]/40 bg-[var(--color-accent)]/5 p-3 text-center">
                   <p className="text-2xl font-bold text-[var(--color-accent)]">
                     🌿 {stats.current}
                   </p>
@@ -920,12 +1593,15 @@ export default function SelahTab({ compact = false }: { compact?: boolean }) {
                         className={`flex h-9 w-9 items-center justify-center rounded-full border text-base ${
                           d.entry
                             ? "border-[var(--color-accent)] bg-[var(--color-accent)]/10"
-                            : d.isToday
-                              ? "border-dashed border-[var(--color-accent)]/60"
-                              : "border-[var(--border)]"
+                            : d.grace
+                              ? "border-amber-500/60 bg-amber-500/10"
+                              : d.isToday
+                                ? "border-dashed border-[var(--color-accent)]/60"
+                                : "border-[var(--border)]"
                         }`}
+                        title={d.grace ? l.graceShield : undefined}
                       >
-                        {d.entry ? "🌿" : ""}
+                        {d.entry ? "🌿" : d.grace ? "🛡️" : ""}
                       </span>
                       <span
                         className={`text-[10px] uppercase ${
@@ -937,6 +1613,176 @@ export default function SelahTab({ compact = false }: { compact?: boolean }) {
                     </div>
                   ))}
                 </div>
+              </section>
+
+              {/* Calendrier du mois */}
+              <section className="rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-4">
+                <div className="mb-1 flex items-center justify-between gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setCalOffset((o) => o - 1)}
+                    aria-label={l.prevMonth}
+                    className="flex min-h-[44px] min-w-[44px] items-center justify-center rounded-xl border border-[var(--border)] text-[var(--muted)] hover:border-[var(--color-accent)]"
+                  >
+                    ‹
+                  </button>
+                  <p className="text-xs font-bold uppercase tracking-widest text-[var(--muted)]">
+                    {l.calendar} · <span className="capitalize">{calendar.label}</span>
+                  </p>
+                  <button
+                    type="button"
+                    onClick={() => setCalOffset((o) => Math.min(0, o + 1))}
+                    aria-label={l.nextMonth}
+                    disabled={calOffset >= 0}
+                    className="flex min-h-[44px] min-w-[44px] items-center justify-center rounded-xl border border-[var(--border)] text-[var(--muted)] hover:border-[var(--color-accent)] disabled:opacity-30"
+                  >
+                    ›
+                  </button>
+                </div>
+                <p className="mb-3 text-center text-[11px] text-[var(--muted)]">{l.calendarHint}</p>
+                <div className="grid grid-cols-7 gap-1" role="grid" aria-label={calendar.label}>
+                  {dowHeaders.map((d, i) => (
+                    <span key={i} className="pb-1 text-center text-[10px] font-bold uppercase text-[var(--muted)]">
+                      {d}
+                    </span>
+                  ))}
+                  {calendar.cells.map((c) => {
+                    const has = byDate.has(c.key);
+                    const shield = !has && shields.includes(c.key);
+                    const isToday = c.key === calendar.today;
+                    return (
+                      <span
+                        key={c.key}
+                        role="gridcell"
+                        className={`flex h-9 min-w-0 items-center justify-center rounded-lg border text-xs ${
+                          !c.inMonth
+                            ? "border-transparent opacity-30"
+                            : has
+                              ? "border-[var(--color-accent)] bg-[var(--color-accent)]/10 font-bold"
+                              : shield
+                                ? "border-amber-500/60 bg-amber-500/10"
+                                : isToday
+                                  ? "border-dashed border-[var(--color-accent)]/60"
+                                  : "border-[var(--border)]"
+                        } ${isToday ? "ring-1 ring-[var(--color-accent)]" : ""} text-[var(--foreground)]`}
+                        title={shield ? l.graceShield : undefined}
+                      >
+                        {has ? "🌿" : shield ? "🛡️" : c.day}
+                      </span>
+                    );
+                  })}
+                </div>
+              </section>
+
+              {/* Bilan factuel de la semaine */}
+              <section className="rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-4">
+                <p className="mb-2 text-xs font-bold uppercase tracking-widest text-[var(--muted)]">
+                  {l.reviewTitle}
+                </p>
+                <ul className="flex flex-col gap-1 text-sm text-[var(--foreground)]">
+                  <li>· {l.reviewPauses(review.pauses)}</li>
+                  <li>· {l.reviewThanks(review.thanks)}</li>
+                  <li>· {l.reviewStates(review.states)}</li>
+                  <li>· {l.reviewSteps(review.stepsDone)}</li>
+                </ul>
+              </section>
+
+              {/* Souvenirs */}
+              {memories.length > 0 && (
+                <section className="rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-4">
+                  <p className="mb-2 text-xs font-bold uppercase tracking-widest text-[var(--muted)]">
+                    🕰️ {l.memoriesTitle}
+                  </p>
+                  <ul className="flex flex-col gap-3">
+                    {memories.map((m) => (
+                      <li key={m.delta} className="text-sm text-[var(--foreground)]">
+                        <p className="text-xs italic text-[var(--muted)]">{l.memoryDays(m.delta)}</p>
+                        <ul className="mt-1 flex flex-col gap-0.5">
+                          {m.gratitudes.map((g, i) => (
+                            <li key={i} className="break-words">• {g}</li>
+                          ))}
+                        </ul>
+                      </li>
+                    ))}
+                  </ul>
+                </section>
+              )}
+
+              {/* Sujets de prière suivis */}
+              <section className="rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-4">
+                <p className="text-xs font-bold uppercase tracking-widest text-[var(--muted)]">
+                  🙏 {l.topicsTitle}
+                </p>
+                <p className="mt-0.5 text-[11px] text-[var(--muted)]">{l.topicsHint}</p>
+                <div className="mt-3 grid grid-cols-[1fr_auto] gap-2">
+                  <input
+                    value={newTopic}
+                    onChange={(e) => setNewTopic(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter" && newTopic.trim()) {
+                        addPrayerTopic(newTopic.trim(), getTodayKey());
+                        setNewTopic("");
+                      }
+                    }}
+                    placeholder={l.topicsPh}
+                    maxLength={140}
+                    aria-label={l.topicsPh}
+                    className="w-full min-w-0 rounded-xl border border-[var(--border)] bg-[var(--background)] px-3 py-2.5 text-sm text-[var(--foreground)] outline-none placeholder:text-[var(--muted)] focus:border-[var(--color-accent)]"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (newTopic.trim()) {
+                        addPrayerTopic(newTopic.trim(), getTodayKey());
+                        setNewTopic("");
+                      }
+                    }}
+                    className="min-h-[44px] rounded-xl bg-[var(--color-accent)] px-4 py-2.5 text-sm font-bold text-white hover:brightness-90"
+                  >
+                    {l.topicsAdd}
+                  </button>
+                </div>
+                {topics.length === 0 ? (
+                  <p className="mt-3 text-xs text-[var(--muted)]">{l.topicsEmpty}</p>
+                ) : (
+                  <ul className="mt-3 flex flex-col gap-2">
+                    {topics.slice(0, 20).map((t) => (
+                      <li
+                        key={t.id}
+                        className="flex min-w-0 items-center gap-2 rounded-xl border border-[var(--border)] px-3 py-2"
+                      >
+                        <button
+                          type="button"
+                          onClick={() => toggleTopicAnswered(t.id)}
+                          aria-pressed={Boolean(t.answeredAt)}
+                          className={`flex min-h-[44px] min-w-[44px] items-center justify-center rounded-lg border text-base ${
+                            t.answeredAt
+                              ? "border-green-600 bg-green-600/10"
+                              : "border-[var(--border)]"
+                          }`}
+                          title={t.answeredAt ? l.topicsAnswered : l.topicsNotYet}
+                        >
+                          {t.answeredAt ? "✅" : "○"}
+                        </button>
+                        <span
+                          className={`min-w-0 flex-1 break-words text-sm ${
+                            t.answeredAt ? "text-[var(--muted)] line-through" : "text-[var(--foreground)]"
+                          }`}
+                        >
+                          {t.text}
+                        </span>
+                        <button
+                          type="button"
+                          onClick={() => deletePrayerTopic(t.id)}
+                          aria-label={l.remove}
+                          className="shrink-0 px-2 py-2 text-[11px] text-[var(--muted)] underline-offset-2 hover:underline"
+                        >
+                          {l.remove}
+                        </button>
+                      </li>
+                    ))}
+                  </ul>
+                )}
               </section>
 
               {wall.length > 0 && (
@@ -985,7 +1831,7 @@ export default function SelahTab({ compact = false }: { compact?: boolean }) {
                           onClick={() => {
                             if (confirm(l.confirmRemove)) deleteSelahEntry(e.id);
                           }}
-                          className="shrink-0 px-1 text-[11px] text-[var(--muted)] underline-offset-2 hover:underline"
+                          className="shrink-0 px-2 py-2 text-[11px] text-[var(--muted)] underline-offset-2 hover:underline"
                         >
                           {l.remove}
                         </button>
@@ -995,7 +1841,7 @@ export default function SelahTab({ compact = false }: { compact?: boolean }) {
                         (href ? (
                           <Link
                             href={href}
-                            className="mt-2 inline-block text-sm font-bold text-[var(--color-accent)] underline-offset-2 hover:underline"
+                            className="mt-2 inline-block min-h-[44px] text-sm font-bold text-[var(--color-accent)] underline-offset-2 hover:underline"
                           >
                             {e.ref}
                           </Link>
@@ -1053,7 +1899,7 @@ export default function SelahTab({ compact = false }: { compact?: boolean }) {
                 onClick={() => {
                   if (confirm(l.confirmClear)) clearSelah();
                 }}
-                className="py-2 text-center text-xs text-red-500 underline-offset-2 hover:underline"
+                className="min-h-[44px] py-2 text-center text-xs text-red-500 underline-offset-2 hover:underline"
               >
                 {l.clearAll}
               </button>
@@ -1061,6 +1907,8 @@ export default function SelahTab({ compact = false }: { compact?: boolean }) {
           )}
         </div>
       )}
+      {immersive && <span className="sr-only">{l.subtitle}</span>}
     </div>
   );
 }
+
