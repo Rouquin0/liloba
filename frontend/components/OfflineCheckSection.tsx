@@ -20,7 +20,7 @@ export default function OfflineCheckSection({
 }: {
   onChanged?: () => void;
 }) {
-  const { isOnline } = useOnlineStatus();
+  const isOnline = useOnlineStatus();
   const [loading, setLoading] = useState(true);
   const [report, setReport] = useState<VerifyReport | null>(null);
   const [verifying, setVerifying] = useState(false);
