@@ -19,7 +19,7 @@ function isPWAInstalled(): boolean {
 }
 
 export default function OfflineBibleSection() {
-  const { isOnline } = useOnlineStatus();
+  const isOnline = useOnlineStatus();
   const [status, setStatus] = useState<Awaited<ReturnType<typeof getOfflineDetailedStatus>> | null>(null);
   const [isDownloading, setIsDownloading] = useState(false);
   const [progress, setProgress] = useState(0);

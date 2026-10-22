@@ -50,7 +50,7 @@ export default function ChatReader({
   // 🔧 Mets false quand Apollos sera prêt à répondre
   const MAINTENANCE = true; 
 
-  const { isOnline } = useOnlineStatus();
+  const isOnline = useOnlineStatus();
   const [messages, setMessages] = useState<Message[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
