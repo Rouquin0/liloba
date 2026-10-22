@@ -59,11 +59,9 @@ function AppShellContent({
     pathname.startsWith("/read") ||
     pathname.startsWith("/selah");
 
+  // On ajoute /selah et /histoires ici pour autoriser le scroll
   const allowScroll = pathname === "/" || pathname.startsWith("/selah") || pathname.startsWith("/histoires");
 
-  // Le bouton hamburger mobile n'existe QUE dans le header de /chat et de
-  // la liste /bible (événement "liloba:open-menu"). Aucun bouton flottant ici :
-  // il faisait doublon avec ces headers et restait affiché dans le lecteur.
   const handleClose = useCallback(() => setIsMenuOpen(false), []);
 
   if (!showMenu) {
@@ -79,7 +77,10 @@ function AppShellContent({
     <div className="flex h-dvh overflow-hidden bg-[var(--background)]">
       <HamburgerMenu isOpen={isMenuOpen} onClose={handleClose} />
       <div className="relative flex flex-1 flex-col overflow-hidden md:pl-2">
-        <main className="flex-1 overflow-hidden">{children}</main>
+        {/* LA CORRECTION EST ICI : On applique allowScroll à la balise main */}
+        <main className={`flex-1 ${allowScroll ? "overflow-y-auto" : "overflow-hidden"}`}>
+          {children}
+        </main>
       </div>
       <BibleScreensaver />
     </div>
