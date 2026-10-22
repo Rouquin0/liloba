@@ -1,32 +1,28 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState, useEffect } from "react";
 
 export function useOnlineStatus() {
   const [isOnline, setIsOnline] = useState(true);
-  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    setMounted(true);
+    // Fonction pour mettre à jour l'état
+    const updateStatus = () => {
+      setIsOnline(navigator.onLine);
+    };
 
-    // État initial
-    setIsOnline(navigator.onLine);
+    // Vérifier l'état initial au chargement
+    updateStatus();
 
-    // Écouteurs
-    const handleOnline = () => setIsOnline(true);
-    const handleOffline = () => setIsOnline(false);
-
-    window.addEventListener("online", handleOnline);
-    window.addEventListener("offline", handleOffline);
+    // Écouter les événements de connexion/déconnexion du navigateur
+    window.addEventListener("online", updateStatus);
+    window.addEventListener("offline", updateStatus);
 
     return () => {
-      window.removeEventListener("online", handleOnline);
-      window.removeEventListener("offline", handleOffline);
+      window.removeEventListener("online", updateStatus);
+      window.removeEventListener("offline", updateStatus);
     };
   }, []);
 
-  return {
-    isOnline: mounted ? isOnline : true,
-    mounted,
-  };
+  return isOnline;
 }

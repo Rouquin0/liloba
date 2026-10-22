@@ -239,3 +239,20 @@ select {
   background: #1a1a1a;
   color: #f0e5d0;
 }
+@keyframes slow-blink-green {
+  0%, 100% { opacity: 1; box-shadow: 0 0 6px #22c55e; }
+  50% { opacity: 0.3; box-shadow: 0 0 0 transparent; }
+}
+
+@keyframes slow-blink-red {
+  0%, 100% { opacity: 1; box-shadow: 0 0 6px #ef4444; }
+  50% { opacity: 0.3; box-shadow: 0 0 0 transparent; }
+}
+
+.animate-blink-green {
+  animation: slow-blink-green 3s ease-in-out infinite;
+}
+
+.animate-blink-red {
+  animation: slow-blink-red 3s ease-in-out infinite;
+}
