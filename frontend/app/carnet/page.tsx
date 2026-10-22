@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useSmartBack } from "@/hooks/useSmartBack";
 import {
   getNotesList,
   getFavoritesList,
@@ -38,7 +38,7 @@ const TAB_LABELS: Record<Tab, string> = {
 type FilterMode = "all" | "book";
 
 export default function CarnetPage() {
-  const router = useRouter();
+  const goBack = useSmartBack("/");
   const [tab, setTab] = useState<Tab>("favorites");
   const [notes, setNotes] = useState<Note[]>([]);
   const [favorites, setFavorites] = useState<Favorite[]>([]);
@@ -156,7 +156,7 @@ export default function CarnetPage() {
         <div className="flex items-center gap-3 px-4 py-4 md:px-6">
           <button
             type="button"
-            onClick={() => router.back()}
+            onClick={goBack}
             className="flex h-8 w-8 items-center justify-center rounded-lg text-[var(--muted)] transition-colors hover:bg-[var(--surface-hover)] hover:text-[var(--foreground)]"
             aria-label="Retour"
           >

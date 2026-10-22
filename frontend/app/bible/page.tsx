@@ -1,7 +1,7 @@
 "use client";
 
 import { getOfflineLivres } from "@/lib/offline-bible";
-import { useEffect, useState, Suspense } from "react";
+import { useCallback, useEffect, useState, Suspense } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { fetchLivres } from "@/lib/api";
@@ -15,6 +15,20 @@ import BibleHeader from "@/components/BibleHeader";
 import BibleReader from "@/components/BibleReader";
 
 type Testament = "all" | "at" | "nt";
+
+// Le mode Shell mobile ne change pas l'URL. On stocke donc le livre/chapitre
+// ouverts dans history.state : le bouton retour natif referme le lecteur
+// (retour à la liste) au lieu de quitter la page /bible.
+type ShellState = { book: string; chapter: number };
+const SHELL_KEY = "lilobaShell";
+
+function readShellState(): ShellState | null {
+  const s = (window.history.state as Record<string, unknown> | null)?.[SHELL_KEY];
+  return s ? (s as ShellState) : null;
+}
+function currentUrl() {
+  return window.location.pathname + window.location.search;
+}
 
 function getTestamentFromParams(searchParams: URLSearchParams): Testament {
   const t = searchParams.get("testament");
@@ -51,6 +65,32 @@ function BibleContent() {
     const handler = (e: MediaQueryListEvent) => setIsDesktop(e.matches);
     mq.addEventListener("change", handler);
     return () => mq.removeEventListener("change", handler);
+  }, []);
+
+  // Ouvre le lecteur Shell + ajoute une entrée d'historique (même URL)
+  const openBook = useCallback((book: string, chapter = 1) => {
+    setSelectedBook(book);
+    setSelectedChapter(chapter);
+    window.history.pushState({ [SHELL_KEY]: { book, chapter } }, "", currentUrl());
+  }, []);
+
+  // Fermeture via la flèche de l'en-tête : on passe par l'historique pour
+  // rester cohérent avec le bouton retour natif (popstate ferme le lecteur).
+  const closeReader = useCallback(() => {
+    if (readShellState()) window.history.back();
+    else setSelectedBook(null);
+  }, []);
+
+  // Retour natif / restauration : history.state fait foi.
+  useEffect(() => {
+    const sync = () => {
+      const s = readShellState();
+      setSelectedBook(s ? s.book : null);
+      if (s) setSelectedChapter(s.chapter);
+    };
+    sync(); // revenir sur /bible depuis une autre page avec le lecteur ouvert
+    window.addEventListener("popstate", sync);
+    return () => window.removeEventListener("popstate", sync);
   }, []);
 
   useEffect(() => {
@@ -98,8 +138,14 @@ function BibleContent() {
             const bookName = livres.find((b) => slugify(b) === livreSlug) || livreSlug;
             setSelectedBook(bookName);
             setSelectedChapter(chap);
+            // changer de chapitre n'empile rien : retour = liste des livres
+            window.history.replaceState(
+              { [SHELL_KEY]: { book: bookName, chapter: chap } },
+              "",
+              currentUrl()
+            );
           }}
-          onBackToList={() => setSelectedBook(null)}
+          onBackToList={closeReader}
         />
       </div>
     );
@@ -150,10 +196,7 @@ function BibleContent() {
                   books={ANCIEN_TESTAMENT}
                   available={livres}
                   isDesktop={isDesktop}
-                  onSelectBook={(book) => {
-                    setSelectedBook(book);
-                    setSelectedChapter(1);
-                  }}
+                  onSelectBook={(book) => openBook(book, 1)}
                 />
               )}
               {(testament === "all" || testament === "nt") && (
@@ -162,10 +205,7 @@ function BibleContent() {
                   books={NOUVEAU_TESTAMENT}
                   available={livres}
                   isDesktop={isDesktop}
-                  onSelectBook={(book) => {
-                    setSelectedBook(book);
-                    setSelectedChapter(1);
-                  }}
+                  onSelectBook={(book) => openBook(book, 1)}
                 />
               )}
             </div>
@@ -190,6 +230,7 @@ function FilterTab({
   return (
     <Link
       href={href}
+      replace
       className={`group flex items-center gap-2 rounded-full border px-4 py-2 text-sm font-medium transition-all ${
         active
           ? "border-[var(--color-accent)] bg-[var(--color-accent)]/10 text-[var(--color-accent)]"

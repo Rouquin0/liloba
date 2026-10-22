@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useSmartBack } from "@/hooks/useSmartBack";
 import {
   getHistory,
   clearHistory,
@@ -27,7 +27,7 @@ const TAB_LABELS: Record<Tab, string> = {
 };
 
 export default function HistoriquePage() {
-  const router = useRouter();
+  const goBack = useSmartBack("/");
   const [history, setHistory] = useState<HistoryEntry[]>([]);
   const [mounted, setMounted] = useState(false);
   const [confirmClear, setConfirmClear] = useState(false);
@@ -68,7 +68,7 @@ export default function HistoriquePage() {
         <div className="flex items-center gap-3 px-4 py-4 md:px-6">
           <button
             type="button"
-            onClick={() => router.back()}
+            onClick={goBack}
             className="flex h-8 w-8 items-center justify-center rounded-lg text-[var(--muted)] transition-colors hover:bg-[var(--surface-hover)] hover:text-[var(--foreground)]"
             aria-label="Retour"
           >

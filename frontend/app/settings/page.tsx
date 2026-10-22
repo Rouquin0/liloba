@@ -3,6 +3,8 @@
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useIsMobile } from "@/hooks/useIsMobile";
+import { useSmartBack } from "@/hooks/useSmartBack";
 import { useTheme } from "next-themes";
 import { BRANDING } from "@/lib/branding";
 import {
@@ -63,6 +65,8 @@ const ROMAN_NUMERALS = ["I", "II", "III", "IV"];
 
 export default function SettingsPage() {
   const router = useRouter();
+  const isMobile = useIsMobile();
+  const goBack = useSmartBack("/chat");
   const { setTheme, resolvedTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
   const [age, setAgeState] = useState<AgeLevel>("18+");
@@ -268,6 +272,13 @@ export default function SettingsPage() {
       <header className="sticky top-0 z-30 flex items-center gap-3 border-b border-[var(--border)] bg-[var(--background)]/80 px-4 py-3 backdrop-blur-sm md:px-6 md:py-4">
         <Link
           href="/chat"
+          onClick={(e) => {
+            // Mobile : vrai retour (page précédente). Desktop : lien vers /chat comme avant.
+            if (isMobile) {
+              e.preventDefault();
+              goBack();
+            }
+          }}
           className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-[var(--muted)] transition-colors hover:bg-[var(--surface-hover)] hover:text-[var(--foreground)]"
           aria-label="Retour"
         >

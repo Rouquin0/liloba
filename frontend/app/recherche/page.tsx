@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useSmartBack } from "@/hooks/useSmartBack";
 import {
   getSuggestions,
   searchInBible,
@@ -19,6 +20,7 @@ import { addJournalEntry } from "@/lib/journal";
 
 export default function RecherchePage() {
   const router = useRouter();
+  const goBack = useSmartBack("/");
   const inputRef = useRef<HTMLInputElement>(null);
 
   const [query, setQuery] = useState("");
@@ -140,7 +142,7 @@ export default function RecherchePage() {
       <header className="sticky top-0 z-30 flex items-center gap-2 border-b border-[var(--border)] bg-[var(--background)]/95 px-4 py-3 backdrop-blur-sm md:px-6">
         <button
           type="button"
-          onClick={() => router.back()}
+          onClick={goBack}
           className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-[var(--muted)] transition-colors hover:bg-[var(--surface-hover)] hover:text-[var(--foreground)]"
           aria-label="Retour"
         >

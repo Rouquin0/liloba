@@ -1,9 +1,10 @@
 "use client";
 
 import Logo from "@/components/Logo";
-import { useState } from "react";
+import { useState, useSyncExternalStore } from "react";
 import { useRouter } from "next/navigation";
-import { AGE_OPTIONS, setAge, type AgeLevel } from "@/lib/preferences";
+import { AGE_OPTIONS, setAge, isOnboarded, type AgeLevel } from "@/lib/preferences";
+import BackButton from "@/components/BackButton";
 import { BRANDING } from "@/lib/branding";
 
 // ============================================================
@@ -20,10 +21,18 @@ export default function OnboardingPage() {
   const router = useRouter();
   const [selected, setSelected] = useState<AgeLevel | null>(null);
 
+  // Déjà onboardé = l'utilisateur refait le choix depuis les Paramètres :
+  // on lui offre une flèche retour. Au tout premier lancement : aucune sortie.
+  const isRedo = useSyncExternalStore(
+    () => () => {},
+    () => isOnboarded(),
+    () => false
+  );
+
   const handleContinue = () => {
     if (!selected) return;
     setAge(selected);
-    router.push("/");
+    router.replace("/");
   };
 
   return (
@@ -45,6 +54,12 @@ export default function OnboardingPage() {
         }}
         aria-hidden="true"
       />
+
+      {isRedo && (
+        <div className="absolute left-4 top-4 z-20">
+          <BackButton />
+        </div>
+      )}
 
       {/* Zone scrollable */}
       <div className="relative z-10 flex flex-1 flex-col overflow-y-auto px-4 pt-8 pb-4">
