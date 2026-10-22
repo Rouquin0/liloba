@@ -1,11 +1,12 @@
 "use client";
 
 import Logo from "@/components/Logo";
-import { useEffect } from "react";
+import { useEffect, type MouseEvent } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { BRANDING } from "@/lib/branding";
 import { isOnboarded } from "@/lib/preferences";
+import { useIsMobile } from "@/hooks/useIsMobile";
 import ApollosMaintenanceBanner from "@/components/ApollosMaintenanceBanner";
 import StreakBadge from "@/components/StreakBadge";
 import InstallPwaButton from "@/components/InstallPwaButton";
@@ -14,6 +15,7 @@ import OnlineBadge from "@/components/OnlineBadge";
 
 export default function HomePage() {
   const router = useRouter();
+  const isMobile = useIsMobile();
 
   useEffect(() => {
     if (!isOnboarded()) {
@@ -21,8 +23,28 @@ export default function HomePage() {
     }
   }, [router]);
 
+  // MOBILE : quitter l'accueil REMPLACE son entrée d'historique au lieu de
+  // l'empiler. L'accueil disparaît de l'historique : le bouton retour revient
+  // à la sous-page précédente, ou ferme l'app s'il n'y en a pas.
+  // (Capture : couvre tous les liens internes de la page - cartes, teaser
+  // histoires, badge série - sans modifier chaque composant.)
+  const handleClickCapture = (e: MouseEvent<HTMLDivElement>) => {
+    if (!isMobile) return;
+    if (e.defaultPrevented || e.button !== 0) return;
+    if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+    const a = (e.target as HTMLElement).closest("a");
+    if (!a || a.target === "_blank" || a.hasAttribute("download")) return;
+    const href = a.getAttribute("href");
+    if (!href || !href.startsWith("/") || href.startsWith("//")) return;
+    e.preventDefault(); // Next <Link> ignore le clic si defaultPrevented
+    router.replace(href);
+  };
+
   return (
-    <div className="flex min-h-screen flex-col bg-[var(--background)]">
+    <div
+      className="flex min-h-screen flex-col bg-[var(--background)]"
+      onClickCapture={handleClickCapture}
+    >
       {/* Header */}
       <header className="flex flex-col items-center justify-between border-b border-[var(--border)] bg-[var(--surface)]/80 px-4 py-4 backdrop-blur-sm md:flex-row md:px-10 md:py-6">
         <div className="flex items-center gap-4">

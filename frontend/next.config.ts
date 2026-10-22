@@ -25,7 +25,7 @@ const SECURITY_HEADERS = [
       "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
       "font-src 'self' https://fonts.gstatic.com data:",
       "img-src 'self' data: blob: https://images.unsplash.com", // 👈 ajout de unsplash
-      "connect-src 'self' http://localhost:8000 https://*.onrender.com ws://localhost:3000",
+      "connect-src 'self' http://localhost:8000 https://*.onrender.com https://*.supabase.co ws://localhost:3000",
       "media-src 'self' blob:",
       "object-src 'none'",
       "base-uri 'self'",
