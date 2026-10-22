@@ -6,21 +6,19 @@ export function useOnlineStatus() {
   const [isOnline, setIsOnline] = useState(true);
 
   useEffect(() => {
-    // Fonction pour mettre à jour l'état
-    const updateStatus = () => {
-      setIsOnline(navigator.onLine);
-    };
+    // 1. On initialise avec l'état actuel du navigateur
+    setIsOnline(navigator.onLine);
 
-    // Vérifier l'état initial au chargement
-    updateStatus();
+    // 2. On écoute les changements (quand on coupe le Wi-Fi ou qu'on le remet)
+    const handleOnline = () => setIsOnline(true);
+    const handleOffline = () => setIsOnline(false);
 
-    // Écouter les événements de connexion/déconnexion du navigateur
-    window.addEventListener("online", updateStatus);
-    window.addEventListener("offline", updateStatus);
+    window.addEventListener("online", handleOnline);
+    window.addEventListener("offline", handleOffline);
 
     return () => {
-      window.removeEventListener("online", updateStatus);
-      window.removeEventListener("offline", updateStatus);
+      window.removeEventListener("online", handleOnline);
+      window.removeEventListener("offline", handleOffline);
     };
   }, []);
 
