@@ -15,10 +15,7 @@ export default function HomeStoriesStrip() {
             NOUVEAU
           </span>
         </div>
-        <Link
-          href="/histoires"
-          className="shrink-0 text-xs font-semibold text-[var(--muted)] transition-colors hover:text-[var(--foreground)]"
-        >
+        <Link href="/histoires" className="shrink-0 text-xs font-semibold text-[var(--muted)] transition-colors hover:text-[var(--foreground)]">
           Voir tout →
         </Link>
       </div>
@@ -27,22 +24,19 @@ export default function HomeStoriesStrip() {
         {STORIES.length} histoires illustrées · fais glisser →
       </p>
 
-      {/* 
-        La classe px-[calc(50vw-74px)] est la magie ici. 
-        Elle ajoute un espace vide au début et à la fin qui correspond exactement à la moitié de l'écran moins la moitié d'une carte (74px). 
-        Cela force la première et la dernière carte à s'arrêter pile au centre.
-      */}
-      <div className="-mx-5 flex snap-x snap-mandatory gap-3 overflow-x-auto overscroll-x-contain touch-pan-x pb-2 px-[calc(50vw-74px)] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+      {/* -mx-5 permet de prendre toute la largeur de l'écran (100%) */}
+      <div className="-mx-5 flex snap-x snap-mandatory gap-3 overflow-x-auto overscroll-x-contain touch-pan-x pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+        
+        {/* Espaceur gauche : 50% de la largeur moins la moitié de la carte (74px) */}
+        <div aria-hidden="true" className="w-[calc(50%-74px)] shrink-0" />
+        
         {STORIES.map((story) => (
           <Link
             key={story.slug}
             href={`/histoires/${story.slug}`}
             className="flex w-[148px] shrink-0 snap-center flex-col gap-2.5 rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-3 transition-colors active:bg-[var(--surface-hover)]"
           >
-            <span
-              aria-hidden="true"
-              className={`relative flex h-16 items-center justify-center overflow-hidden rounded-xl bg-gradient-to-br ${story.gradient}`}
-            >
+            <span aria-hidden="true" className={`relative flex h-16 items-center justify-center overflow-hidden rounded-xl bg-gradient-to-br ${story.gradient}`}>
               <span className="text-[32px] drop-shadow-md">{story.emoji}</span>
               <span className="absolute -right-4 -top-4 h-12 w-12 rounded-full bg-white/15" />
             </span>
@@ -52,6 +46,9 @@ export default function HomeStoriesStrip() {
             <span className="text-[11px] font-medium text-[var(--muted)]">{story.reference}</span>
           </Link>
         ))}
+        
+        {/* Espaceur droit */}
+        <div aria-hidden="true" className="w-[calc(50%-74px)] shrink-0" />
       </div>
     </section>
   );

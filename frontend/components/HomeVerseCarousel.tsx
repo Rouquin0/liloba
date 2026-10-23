@@ -48,9 +48,11 @@ export default function HomeVerseCarousel() {
 
   const goTo = useCallback((index: number) => {
     const el = scrollerRef.current;
-    const card = el?.children[index] as HTMLElement | undefined;
-    if (!el || !card) return;
-    // On centre parfaitement la carte
+    if (!el) return;
+    const card = el.children[index] as HTMLElement | undefined;
+    if (!card) return;
+    
+    // On centre parfaitement la carte dans le conteneur
     const scrollLeft = card.offsetLeft - (el.offsetWidth - card.offsetWidth) / 2;
     el.scrollTo({ left: scrollLeft, behavior: "smooth" });
   }, []);
@@ -61,12 +63,8 @@ export default function HomeVerseCarousel() {
 
   useEffect(() => {
     if (verses.length < 2) return;
-    if (
-      typeof window.matchMedia === "function" &&
-      window.matchMedia("(prefers-reduced-motion: reduce)").matches
-    ) {
-      return;
-    }
+    if (typeof window.matchMedia === "function" && window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    
     const id = setInterval(() => {
       const el = scrollerRef.current;
       if (!el || pausedRef.current || document.hidden) return;
@@ -76,12 +74,9 @@ export default function HomeVerseCarousel() {
     return () => clearInterval(id);
   }, [verses.length, goTo]);
 
-  useEffect(
-    () => () => {
+  useEffect(() => () => {
       if (resumeTimerRef.current) clearTimeout(resumeTimerRef.current);
-    },
-    []
-  );
+  }, []);
 
   const pause = () => {
     pausedRef.current = true;
@@ -124,11 +119,12 @@ export default function HomeVerseCarousel() {
           role="region"
           aria-roledescription="carrousel"
           aria-label="Versets du jour"
-          // px-4 permet de voir les versets sur les côtés. 
-          className="flex snap-x snap-mandatory overflow-x-auto overscroll-x-contain touch-pan-x px-4 gap-4 pb-4 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+          // px-5 = 20px de marge gauche/droite pour le conteneur
+          // gap-10 = grand espace entre les cartes pour qu'elles soient invisibles
+          className="flex snap-x snap-mandatory overflow-x-auto overscroll-x-contain touch-pan-x px-5 gap-10 pb-4 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
         >
           {verses.length === 0 ? (
-            <div className="flex min-h-[200px] w-[85vw] shrink-0 snap-center items-center justify-center rounded-[24px] border border-[var(--border)] bg-[var(--surface)] p-6">
+            <div className="flex min-h-[200px] w-[calc(100%-40px)] shrink-0 snap-center items-center justify-center rounded-[24px] border border-[var(--border)] bg-[var(--surface)] p-6">
               <p className="animate-pulse text-xs text-[var(--muted)]">Verset du jour…</p>
             </div>
           ) : (
@@ -138,24 +134,16 @@ export default function HomeVerseCarousel() {
                 <article
                   key={verse.ref}
                   aria-label={`Verset ${i + 1} sur ${verses.length}`}
-                  // w-[85vw] au lieu de basis-full pour laisser dépasser le suivant
-                  className="relative flex w-[85vw] shrink-0 snap-center snap-always flex-col justify-between gap-5 overflow-hidden rounded-[24px] border border-[var(--border)] bg-[var(--surface)] p-6 shadow-[0_0_40px_color-mix(in_srgb,var(--foreground)_6%,transparent)]"
+                  // w-[calc(100%-40px)] = 100% de l'écran moins les 40px de padding
+                  className="relative flex w-[calc(100%-40px)] shrink-0 snap-center snap-always flex-col justify-between gap-5 overflow-hidden rounded-[24px] border border-[var(--border)] bg-[var(--surface)] p-6 shadow-[0_0_40px_color-mix(in_srgb,var(--foreground)_6%,transparent)]"
                 >
-                  <span
-                    aria-hidden="true"
-                    className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[var(--foreground)]/25 to-transparent"
-                  />
+                  <span aria-hidden="true" className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[var(--foreground)]/25 to-transparent" />
                   <div>
                     <p className="mb-3 flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-[0.14em] text-[var(--muted)]">
-                      <span aria-hidden="true" className="text-yellow-500">
-                        ✦
-                      </span>
+                      <span aria-hidden="true" className="text-yellow-500">✦</span>
                       {i === 0 ? "Verset du jour" : "Pour toi aujourd'hui"}
                     </p>
-                    <p
-                      className="text-[21px] italic leading-[1.5] text-[var(--foreground)]"
-                      style={{ fontFamily: "var(--font-serif)" }}
-                    >
+                    <p className="text-[21px] italic leading-[1.5] text-[var(--foreground)]" style={{ fontFamily: "var(--font-serif)" }}>
                       « {verse.text} »
                     </p>
                   </div>
@@ -164,10 +152,7 @@ export default function HomeVerseCarousel() {
                       {verse.ref}
                     </span>
                     {href && (
-                      <Link
-                        href={href}
-                        className="shrink-0 text-xs font-semibold text-[var(--foreground)] underline-offset-2 hover:underline"
-                      >
+                      <Link href={href} className="shrink-0 text-xs font-semibold text-[var(--foreground)] underline-offset-2 hover:underline">
                         Lire le chapitre →
                       </Link>
                     )}
@@ -188,17 +173,10 @@ export default function HomeVerseCarousel() {
               role="tab"
               aria-selected={i === active}
               aria-label={`Verset ${i + 1}`}
-              onClick={() => {
-                pause();
-                goTo(i);
-              }}
+              onClick={() => { pause(); goTo(i); }}
               className="flex h-5 items-center px-1"
             >
-              <span
-                className={`block h-1.5 rounded-full transition-all duration-300 ${
-                  i === active ? "w-5 bg-[var(--foreground)]" : "w-1.5 bg-[var(--border)]"
-                }`}
-              />
+              <span className={`block h-1.5 rounded-full transition-all duration-300 ${i === active ? "w-5 bg-[var(--foreground)]" : "w-1.5 bg-[var(--border)]"}`} />
             </button>
           ))}
         </div>
