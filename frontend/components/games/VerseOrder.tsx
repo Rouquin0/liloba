@@ -5,9 +5,7 @@ import { VERSE_GAMES } from "@/lib/games-verses";
 import { getBest, saveBest, shuffle } from "@/lib/games-mobile";
 
 // ============================================================
-// LILOBA — Ordre du Verset 🔢 (MOBILE UNIQUEMENT)
-// Les mots sont mélangés : touche-les dans le bon ordre.
-// Gros boutons tactiles, 8 manches, 100% hors ligne.
+// LILOBA — Ordre du Verset
 // ============================================================
 
 const ROUNDS = 8;
@@ -86,10 +84,9 @@ export default function VerseOrder({ onBack }: { onBack: () => void }) {
       setPicked([]);
       setChecked(null);
     } else {
-      // dernière manche : on fige, écran de fin
       saveBest("ordre", score);
       setBest(Math.max(getBest("ordre"), score));
-      setIdx(rounds.length); // déclenche l'écran de fin
+      setIdx(rounds.length);
     }
   };
 
@@ -98,10 +95,15 @@ export default function VerseOrder({ onBack }: { onBack: () => void }) {
     return (
       <div className="flex flex-col pb-6">
         <div className="rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-6 text-center">
-          <p className="text-4xl">🏁</p>
-          <p className="mt-2 text-base font-bold text-[var(--foreground)]">Score : {score}/{rounds.length}</p>
+          <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-[var(--color-accent)]/10 text-[var(--color-accent)]">
+             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-8 w-8">
+              <path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/>
+              <line x1="4" x2="4" y1="22" y2="15"/>
+            </svg>
+          </div>
+          <p className="mt-4 text-base font-bold text-[var(--foreground)]">Score : {score}/{rounds.length}</p>
           <p className="mt-1 text-xs text-[var(--muted)]">Record : {finalBest}/{rounds.length}</p>
-          <div className="mt-4 flex gap-2">
+          <div className="mt-6 flex gap-2">
             <button
               type="button"
               onClick={start}
@@ -132,11 +134,21 @@ export default function VerseOrder({ onBack }: { onBack: () => void }) {
           className="flex h-10 min-w-10 items-center justify-center rounded-xl border border-[var(--border)] px-3 text-sm font-bold text-[var(--muted)] active:scale-95"
           aria-label="Retour aux jeux"
         >
-          ←
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-5 w-5">
+            <path d="m15 18-6-6 6-6"/>
+          </svg>
         </button>
         <div className="flex-1">
-          <h3 className="text-sm font-bold text-[var(--foreground)]">🔢 Ordre du Verset</h3>
-          <p className="text-[11px] text-[var(--muted)]">Manche {idx + 1}/{rounds.length} · Score {score} · 💡 {round.reference}</p>
+          <h3 className="text-sm font-bold text-[var(--foreground)]">Ordre du Verset</h3>
+          <p className="text-[11px] text-[var(--muted)]">
+            Manche {idx + 1}/{rounds.length} · Score {score} · 
+            <span className="ml-1 inline-flex items-center gap-1">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-3 w-3">
+                <path d="M9 18h6"/><path d="M10 22h4"/><path d="M12 2a7 7 0 0 0-7 7c0 2.38 1.19 4.47 3 5.74V17a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2v-2.26c1.81-1.27 3-3.36 3-5.74a7 7 0 0 0-7-7z"/>
+              </svg>
+              {round.reference}
+            </span>
+          </p>
         </div>
         {best > 0 && (
           <span className="shrink-0 font-mono text-[10px] text-[var(--muted)]">Record : {best}/{rounds.length}</span>
@@ -154,7 +166,7 @@ export default function VerseOrder({ onBack }: { onBack: () => void }) {
         }`}
       >
         {picked.length === 0 ? (
-          "Touche les mots ci-dessous dans le bon ordre 👇"
+          "Touche les mots ci-dessous dans le bon ordre"
         ) : (
           picked.map((i) => round.mixed[i]).join(" ")
         )}
@@ -195,8 +207,22 @@ export default function VerseOrder({ onBack }: { onBack: () => void }) {
         </button>
       ) : (
         <div className="mt-4">
-          <p className={`mb-2 text-center text-sm font-bold ${checked ? "text-green-600" : "text-red-500"}`}>
-            {checked ? "✅ Parfait, à la gloire de Dieu !" : `❌ Raté — c'était : ${round.ordered.join(" ")}`}
+          <p className={`mb-2 flex items-center justify-center gap-2 text-center text-sm font-bold ${checked ? "text-green-600" : "text-red-500"}`}>
+            {checked ? (
+              <>
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" className="h-5 w-5">
+                  <path d="M20 6 9 17l-5-5"/>
+                </svg>
+                Parfait, à la gloire de Dieu !
+              </>
+            ) : (
+              <>
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" className="h-5 w-5">
+                  <path d="M18 6 6 18"/><path d="m6 6 12 12"/>
+                </svg>
+                Raté — c'était : {round.ordered.join(" ")}
+              </>
+            )}
           </p>
           <button
             type="button"
@@ -204,11 +230,10 @@ export default function VerseOrder({ onBack }: { onBack: () => void }) {
             className="w-full rounded-xl bg-[var(--color-accent)] py-4 text-sm font-bold text-white active:scale-95"
             style={{ touchAction: "manipulation" }}
           >
-            {idx < rounds.length - 1 ? "Verset suivant →" : "Voir mon score 🏁"}
+            {idx < rounds.length - 1 ? "Verset suivant →" : "Voir mon score"}
           </button>
         </div>
       )}
-      <p className="mt-3 text-center text-[10px] text-[var(--muted)]">📱 Jeu tactile — mobile uniquement · marche hors ligne</p>
     </div>
   );
 }

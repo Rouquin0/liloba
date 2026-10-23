@@ -218,11 +218,21 @@ export default function GamesTab() {
             className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl text-[var(--color-accent)]"
             style={{ background: "var(--surface-hover)" }}
           >
-            <span className="text-xl" aria-hidden="true">🧠</span>
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-5 w-5">
+              <path d="M12 5a3 3 0 1 0-5.997.125 4 4 0 0 0-2.526 5.77 4 4 0 0 0 .556 6.588A4 4 0 1 0 12 18Z"/>
+              <path d="M12 5a3 3 0 1 1 5.997.125 4 4 0 0 1 2.526 5.77 4 4 0 0 1-.556 6.588A4 4 0 1 1 12 18Z"/>
+              <path d="M15 13a4.5 4.5 0 0 1-3-4 4.5 4.5 0 0 1-3 4"/>
+              <path d="M17.599 6.5a3 3 0 0 0 .399-1.375"/>
+              <path d="M6.003 5.125A3 3 0 0 0 6.401 6.5"/>
+              <path d="M3.477 10.896a4 4 0 0 1 .585-.396"/>
+              <path d="M19.938 10.5a4 4 0 0 1 .585.396"/>
+              <path d="M6 18a4 4 0 0 1-1.967-.516"/>
+              <path d="M19.967 17.484A4 4 0 0 1 18 18"/>
+            </svg>
           </div>
           <div className="flex-1 min-w-0">
             <div className="text-sm font-medium text-[var(--foreground)]">
-              Mémoire Éclair <span className="ml-1 rounded-full bg-[var(--color-accent)]/10 px-2 py-0.5 text-[9px] font-bold uppercase text-[var(--color-accent)]">📱 Mobile</span>
+              Mémoire Éclair
             </div>
             <div className="text-xs text-[var(--muted)]">
               Associe chaque référence à son mot-clé
@@ -248,11 +258,18 @@ export default function GamesTab() {
             className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl text-[var(--color-accent)]"
             style={{ background: "var(--surface-hover)" }}
           >
-            <span className="text-xl" aria-hidden="true">🔢</span>
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-5 w-5">
+              <line x1="10" x2="21" y1="6" y2="6"/>
+              <line x1="10" x2="21" y1="12" y2="12"/>
+              <line x1="10" x2="21" y1="18" y2="18"/>
+              <path d="M4 6h1v4"/>
+              <path d="M4 10h2"/>
+              <path d="M6 18H4c0-1 2-2 2-3s-1-1.5-2-1"/>
+            </svg>
           </div>
           <div className="flex-1 min-w-0">
             <div className="text-sm font-medium text-[var(--foreground)]">
-              Ordre du Verset <span className="ml-1 rounded-full bg-[var(--color-accent)]/10 px-2 py-0.5 text-[9px] font-bold uppercase text-[var(--color-accent)]">📱 Mobile</span>
+              Ordre du Verset
             </div>
             <div className="text-xs text-[var(--muted)]">
               Remets les mots dans le bon ordre

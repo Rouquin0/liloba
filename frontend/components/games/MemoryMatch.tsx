@@ -5,9 +5,7 @@ import { VERSE_GAMES } from "@/lib/games-verses";
 import { getBest, saveBest, shuffle } from "@/lib/games-mobile";
 
 // ============================================================
-// LILOBA — Mémoire Éclair 🧠⚡ (MOBILE UNIQUEMENT)
-// Touche 2 cartes : associe chaque référence à son mot-clé.
-// 100% local, 100% tactile, parfait hors ligne.
+// LILOBA — Mémoire Éclair
 // ============================================================
 
 interface Card {
@@ -72,7 +70,6 @@ export default function MemoryMatch({ onBack }: { onBack: () => void }) {
   const tap = (c: Card) => {
     if (finished || flipped.includes(c.uid)) return;
     if (flipped.length === 2) return;
-    // ne pas retoucher une carte déjà validée
     if (cards.find((x) => x.uid === c.uid && matched.includes(x.pairId))) return;
     const nf = [...flipped, c.uid];
     setFlipped(nf);
@@ -101,10 +98,12 @@ export default function MemoryMatch({ onBack }: { onBack: () => void }) {
           className="flex h-10 min-w-10 items-center justify-center rounded-xl border border-[var(--border)] px-3 text-sm font-bold text-[var(--muted)] active:scale-95"
           aria-label="Retour aux jeux"
         >
-          ←
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-5 w-5">
+            <path d="m15 18-6-6 6-6"/>
+          </svg>
         </button>
         <div className="flex-1">
-          <h3 className="text-sm font-bold text-[var(--foreground)]">🧠⚡ Mémoire Éclair</h3>
+          <h3 className="text-sm font-bold text-[var(--foreground)]">Mémoire Éclair</h3>
           <p className="text-[11px] text-[var(--muted)]">Associe référence ↔ mot-clé · {matched.length}/6 · {moves} coups · {seconds}s</p>
         </div>
         {best > 0 && (
@@ -127,21 +126,34 @@ export default function MemoryMatch({ onBack }: { onBack: () => void }) {
                     ? "border-green-500/50 bg-green-500/10 text-green-600 dark:text-green-300"
                     : up
                       ? "border-[var(--color-accent)] bg-[var(--color-accent)]/10 text-[var(--foreground)]"
-                      : "border-[var(--border)] bg-[var(--surface-hover)] text-2xl"
+                      : "border-[var(--border)] bg-[var(--surface-hover)] text-[var(--muted)]"
                 }`}
                 style={{ touchAction: "manipulation" }}
               >
-                {up ? c.label : "✦"}
+                {up ? c.label : (
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-6 w-6 opacity-30">
+                    <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+                  </svg>
+                )}
               </button>
             );
           })}
         </div>
       ) : (
         <div className="rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-6 text-center">
-          <p className="text-4xl">🎉</p>
-          <p className="mt-2 text-base font-bold text-[var(--foreground)]">Bravo ! Score : {score}</p>
+          <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-[var(--color-accent)]/10 text-[var(--color-accent)]">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-8 w-8">
+              <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/>
+              <path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/>
+              <path d="M4 22h16"/>
+              <path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/>
+              <path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/>
+              <path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/>
+            </svg>
+          </div>
+          <p className="mt-4 text-base font-bold text-[var(--foreground)]">Bravo ! Score : {score}</p>
           <p className="mt-1 text-xs text-[var(--muted)]">{moves} coups · {seconds}s · Record : {Math.max(best, score)}</p>
-          <div className="mt-4 flex gap-2">
+          <div className="mt-6 flex gap-2">
             <button
               type="button"
               onClick={start}
@@ -160,7 +172,6 @@ export default function MemoryMatch({ onBack }: { onBack: () => void }) {
           </div>
         </div>
       )}
-      <p className="mt-3 text-center text-[10px] text-[var(--muted)]">📱 Jeu tactile — mobile uniquement · marche hors ligne</p>
     </div>
   );
 }
