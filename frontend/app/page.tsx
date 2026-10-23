@@ -12,6 +12,7 @@ import StreakBadge from "@/components/StreakBadge";
 import InstallPwaButton from "@/components/InstallPwaButton";
 import HistoiresTeaser from "@/components/HistoiresTeaser";
 import OnlineBadge from "@/components/OnlineBadge";
+import MobileHome from "@/components/MobileHome";
 
 export default function HomePage() {
   const router = useRouter();
@@ -45,6 +46,11 @@ export default function HomePage() {
       className="flex min-h-screen flex-col bg-[var(--background)]"
       onClickCapture={handleClickCapture}
     >
+      {/* Accueil MOBILE (< 768 px) : nouveau design */}
+      <MobileHome />
+
+      {/* Accueil ORDINATEUR (≥ 768 px) : inchangé */}
+      <div className="hidden flex-1 flex-col md:flex">
       {/* Header */}
       <header className="flex flex-col items-center justify-between border-b border-[var(--border)] bg-[var(--surface)]/80 px-4 py-4 backdrop-blur-sm md:flex-row md:px-10 md:py-6">
         <div className="flex items-center gap-4">
@@ -144,6 +150,7 @@ export default function HomePage() {
           </div>
         </div>
       </main>
+      </div>
     </div>
   );
 }
