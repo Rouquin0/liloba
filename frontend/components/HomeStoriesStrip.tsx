@@ -27,12 +27,12 @@ export default function HomeStoriesStrip() {
         {STORIES.length} histoires illustrées · fais glisser →
       </p>
 
-      {/* overscroll-x-contain et touch-pan-x : conservés (stabilité du scroll mobile).
-          snap-center : l'histoire s'arrête CENTRÉE, ses voisines dépassent des deux côtés.
-          Les deux petits blocs vides (début / fin) permettent de centrer aussi la
-          première et la dernière histoire. 148px = largeur d'une carte, 12px = l'espace. */}
-      <div className="-mx-5 flex snap-x snap-mandatory gap-3 overflow-x-auto overscroll-x-contain touch-pan-x pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-        <div aria-hidden="true" className="w-[calc(50%-74px-12px)] shrink-0" />
+      {/* 
+        La classe px-[calc(50vw-74px)] est la magie ici. 
+        Elle ajoute un espace vide au début et à la fin qui correspond exactement à la moitié de l'écran moins la moitié d'une carte (74px). 
+        Cela force la première et la dernière carte à s'arrêter pile au centre.
+      */}
+      <div className="-mx-5 flex snap-x snap-mandatory gap-3 overflow-x-auto overscroll-x-contain touch-pan-x pb-2 px-[calc(50vw-74px)] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
         {STORIES.map((story) => (
           <Link
             key={story.slug}
@@ -52,7 +52,6 @@ export default function HomeStoriesStrip() {
             <span className="text-[11px] font-medium text-[var(--muted)]">{story.reference}</span>
           </Link>
         ))}
-        <div aria-hidden="true" className="w-[calc(50%-74px-12px)] shrink-0" />
       </div>
     </section>
   );
