@@ -66,7 +66,8 @@ function AppShellContent({
 
   if (!showMenu) {
     return (
-      <div className={`flex h-dvh ${allowScroll ? "overflow-y-auto" : "overflow-hidden"} bg-[var(--background)]`}>
+      // Ajout de overscroll-y-none ici pour bloquer l'effet élastique
+      <div className={`flex h-dvh ${allowScroll ? "overflow-y-auto overscroll-y-none" : "overflow-hidden"} bg-[var(--background)]`}>
         <main className="flex-1">{children}</main>
         <BibleScreensaver />
       </div>
@@ -77,8 +78,8 @@ function AppShellContent({
     <div className="flex h-dvh overflow-hidden bg-[var(--background)]">
       <HamburgerMenu isOpen={isMenuOpen} onClose={handleClose} />
       <div className="relative flex flex-1 flex-col overflow-hidden md:pl-2">
-        {/* LA CORRECTION EST ICI : On applique allowScroll à la balise main */}
-        <main className={`flex-1 ${allowScroll ? "overflow-y-auto" : "overflow-hidden"}`}>
+        {/* Ajout de overscroll-y-none ici aussi pour la page Selah */}
+        <main className={`flex-1 ${allowScroll ? "overflow-y-auto overscroll-y-none" : "overflow-hidden"}`}>
           {children}
         </main>
       </div>

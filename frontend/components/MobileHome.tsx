@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import Logo from "@/components/Logo";
+import StreakBadge from "@/components/StreakBadge";
 import ApollosMaintenanceBanner from "@/components/ApollosMaintenanceBanner";
 import HomeVerseCarousel from "@/components/HomeVerseCarousel";
 import HomeStoriesStrip from "@/components/HomeStoriesStrip";
@@ -11,28 +12,25 @@ import { BRANDING } from "@/lib/branding";
 export default function MobileHome() {
   return (
     <div className="md:hidden">
-      {/* min-h-full et pb-32 pour éviter les sauts de scroll */}
-      <div className="mx-auto flex min-h-full w-full max-w-md flex-col gap-6 px-5 pb-32 pt-[max(1rem,env(safe-area-inset-top,0px))]">
+      <div className="mx-auto flex w-full max-w-md flex-col gap-6 px-5 pb-32 pt-[max(1rem,env(safe-area-inset-top,0px))]">
         
-        {/* En-tête : TOUT EST CENTRÉ, engrenage supprimé, série simplifiée */}
-        <header className="flex flex-col items-center justify-center gap-2 border-b border-[var(--border)]/50 pb-5">
-          <div className="flex flex-col items-center gap-2">
-            <Logo size={48} />
-            <span className="text-2xl font-extrabold tracking-wide text-[var(--foreground)]">
+        {/* En-tête : Logo à gauche, Flamme à droite (Engrenage supprimé) */}
+        <header className="flex items-center justify-between gap-3">
+          <div className="flex min-w-0 items-center gap-3">
+            <Logo size={38} />
+            <span className="truncate text-xl font-extrabold tracking-wide text-[var(--foreground)]">
               {BRANDING.app.name}
             </span>
           </div>
           
-          {/* Série simplifiée : juste la flamme et le chiffre */}
-          <div className="flex items-center justify-center gap-1.5 rounded-full border border-orange-500/20 bg-orange-500/10 px-3 py-1 text-sm font-bold text-orange-500 shadow-sm">
-            <span aria-hidden="true">🔥</span>
-            <span>6</span>
+          <div className="flex shrink-0 items-center gap-2">
+            <StreakBadge />
           </div>
         </header>
 
         {/* Aujourd'hui : versets qui défilent + lecture */}
         <main className="flex flex-col gap-4">
-          <span className="text-center text-[11px] font-bold uppercase tracking-[0.12em] text-[var(--muted)]">
+          <span className="text-[11px] font-bold uppercase tracking-[0.12em] text-[var(--muted)]">
             Aujourd&apos;hui
           </span>
 
@@ -72,10 +70,8 @@ export default function MobileHome() {
           </Link>
         </main>
 
-        {/* Les 20 histoires, qui défilent */}
         <HomeStoriesStrip />
 
-        {/* Statut Apollos */}
         <ApollosMaintenanceBanner compact />
       </div>
 

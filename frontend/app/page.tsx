@@ -42,8 +42,8 @@ export default function HomePage() {
   };
 
   return (
-    <div
-      className="flex min-h-screen flex-col bg-[var(--background)]"
+        <div
+      className="flex min-h-full flex-col bg-[var(--background)] md:min-h-screen"
       onClickCapture={handleClickCapture}
     >
       {/* Accueil MOBILE (< 768 px) : nouveau design */}
