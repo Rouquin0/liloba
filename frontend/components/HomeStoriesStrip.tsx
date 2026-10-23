@@ -1,13 +1,5 @@
 "use client";
 
-// ============================================================
-// LILOBA — Accueil mobile : toutes les histoires bibliques
-// ============================================================
-// Bande horizontale qui défile avec TOUTES les histoires de
-// lib/stories-content.ts (aujourd'hui : 20). Ajouter une histoire dans
-// ce fichier suffit : elle apparaît ici automatiquement.
-// ============================================================
-
 import Link from "next/link";
 import { STORIES } from "@/lib/stories-content";
 
@@ -35,7 +27,8 @@ export default function HomeStoriesStrip() {
         {STORIES.length} histoires illustrées · fais glisser →
       </p>
 
-      <div className="-mx-5 flex snap-x snap-mandatory scroll-px-5 gap-3 overflow-x-auto px-5 pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+      {/* LA CORRECTION EST ICI : ajout de overscroll-x-contain et touch-pan-x */}
+      <div className="-mx-5 flex snap-x snap-mandatory scroll-px-5 gap-3 overflow-x-auto overscroll-x-contain touch-pan-x px-5 pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
         {STORIES.map((story) => (
           <Link
             key={story.slug}

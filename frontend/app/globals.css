@@ -256,3 +256,9 @@ select {
 .animate-blink-red {
   animation: slow-blink-red 3s ease-in-out infinite;
 }
+
+html, body {
+  overscroll-behavior-y: none;
+  height: 100%;
+  overflow: hidden;
+}

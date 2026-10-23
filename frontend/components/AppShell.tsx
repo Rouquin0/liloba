@@ -9,11 +9,7 @@ import HamburgerMenu from "./HamburgerMenu";
 import { useCustomColors } from "@/hooks/useCustomColors";
 import { useSplitShortcuts } from "@/hooks/useSplitShortcuts";
 
-export default function AppShell({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function AppShell({ children }: { children: React.ReactNode }) {
   return (
     <Suspense fallback={<AppShellFallback />}>
       <AppShellContent>{children}</AppShellContent>
@@ -29,11 +25,7 @@ function AppShellFallback() {
   );
 }
 
-function AppShellContent({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+function AppShellContent({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
@@ -59,16 +51,18 @@ function AppShellContent({
     pathname.startsWith("/read") ||
     pathname.startsWith("/selah");
 
-  // On ajoute /selah et /histoires ici pour autoriser le scroll
   const allowScroll = pathname === "/" || pathname.startsWith("/selah") || pathname.startsWith("/histoires");
 
   const handleClose = useCallback(() => setIsMenuOpen(false), []);
 
   if (!showMenu) {
     return (
-      // Ajout de overscroll-y-none ici pour bloquer l'effet élastique
-      <div className={`flex h-dvh ${allowScroll ? "overflow-y-auto overscroll-y-none" : "overflow-hidden"} bg-[var(--background)]`}>
-        <main className="flex-1">{children}</main>
+      // h-dvh + overflow-hidden : le conteneur extérieur ne bouge JAMAIS.
+      <div className="flex h-dvh overflow-hidden bg-[var(--background)]">
+        {/* C'est le main qui gère le scroll. overscroll-y-none empêche le rebond. */}
+        <main className={`flex-1 ${allowScroll ? "overflow-y-auto overscroll-y-none" : "overflow-hidden"}`}>
+          {children}
+        </main>
         <BibleScreensaver />
       </div>
     );
@@ -78,7 +72,6 @@ function AppShellContent({
     <div className="flex h-dvh overflow-hidden bg-[var(--background)]">
       <HamburgerMenu isOpen={isMenuOpen} onClose={handleClose} />
       <div className="relative flex flex-1 flex-col overflow-hidden md:pl-2">
-        {/* Ajout de overscroll-y-none ici aussi pour la page Selah */}
         <main className={`flex-1 ${allowScroll ? "overflow-y-auto overscroll-y-none" : "overflow-hidden"}`}>
           {children}
         </main>

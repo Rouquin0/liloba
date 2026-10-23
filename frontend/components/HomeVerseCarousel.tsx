@@ -3,11 +3,6 @@
 // ============================================================
 // LILOBA — Accueil mobile : versets du jour qui défilent
 // ============================================================
-// 5 versets différents chaque jour, tirés de façon déterministe
-// (voir lib/home-verses.ts). Ils changent à minuit, heure locale.
-// Défilement automatique doux, qui s'arrête dès que tu touches
-// la carte et qui respecte "réduire les animations".
-// ============================================================
 
 import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
 import Link from "next/link";
@@ -24,8 +19,6 @@ function chapterHref(ref: string): string | null {
   return `/bible/${parsed.slug}/${parsed.chapitre}`;
 }
 
-// Le "jour" est une donnée externe : on se réabonne à minuit, au retour
-// sur l'app et quand l'onglet redevient visible.
 function subscribeDay(callback: () => void): () => void {
   let timer: ReturnType<typeof setTimeout>;
   const schedule = () => {
@@ -50,7 +43,6 @@ const serverDayKey = () => "";
 
 export default function HomeVerseCarousel() {
   const dayKey = useSyncExternalStore(subscribeDay, getHomeDayKey, serverDayKey);
-  // Vide côté serveur et au premier rendu (évite tout décalage d'hydratation)
   const verses = useMemo(() => (dayKey ? getTodayVerses() : []), [dayKey]);
 
   const [active, setActive] = useState(0);
@@ -67,12 +59,10 @@ export default function HomeVerseCarousel() {
     el.scrollTo({ left: card.offsetLeft - pad, behavior: "smooth" });
   }, []);
 
-  // Nouveau jour → on revient au premier verset
   useEffect(() => {
     scrollerRef.current?.scrollTo({ left: 0 });
   }, [dayKey]);
 
-  // Défilement automatique (jamais si "réduire les animations", ni onglet caché)
   useEffect(() => {
     if (verses.length < 2) return;
     if (
@@ -84,7 +74,7 @@ export default function HomeVerseCarousel() {
     const id = setInterval(() => {
       const el = scrollerRef.current;
       if (!el || pausedRef.current || document.hidden) return;
-      if (el.offsetParent === null) return; // masqué (affichage ordinateur)
+      if (el.offsetParent === null) return;
       goTo((activeRef.current + 1) % verses.length);
     }, AUTOPLAY_MS);
     return () => clearInterval(id);
@@ -97,7 +87,6 @@ export default function HomeVerseCarousel() {
     []
   );
 
-  // Dès que l'utilisateur touche, on arrête le défilement automatique un moment
   const pause = () => {
     pausedRef.current = true;
     if (resumeTimerRef.current) clearTimeout(resumeTimerRef.current);
@@ -137,7 +126,8 @@ export default function HomeVerseCarousel() {
         role="region"
         aria-roledescription="carrousel"
         aria-label="Versets du jour"
-        className="relative -mx-5 flex snap-x snap-mandatory scroll-px-5 gap-3 overflow-x-auto px-5 pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+        // LA CORRECTION EST ICI : ajout de overscroll-x-contain et touch-pan-x
+        className="relative -mx-5 flex snap-x snap-mandatory scroll-px-5 gap-3 overflow-x-auto overscroll-x-contain touch-pan-x px-5 pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
       >
         {verses.length === 0 ? (
           <div className="flex min-h-[200px] shrink-0 basis-[88%] snap-start items-center justify-center rounded-[24px] border border-[var(--border)] bg-[var(--surface)] p-6">
@@ -152,7 +142,6 @@ export default function HomeVerseCarousel() {
                 aria-label={`Verset ${i + 1} sur ${verses.length}`}
                 className="relative flex shrink-0 basis-[88%] snap-start flex-col justify-between gap-5 overflow-hidden rounded-[24px] border border-[var(--border)] bg-[var(--surface)] p-6 shadow-[0_0_40px_color-mix(in_srgb,var(--foreground)_6%,transparent)]"
               >
-                {/* Fin liseré lumineux en haut de la carte */}
                 <span
                   aria-hidden="true"
                   className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[var(--foreground)]/25 to-transparent"
