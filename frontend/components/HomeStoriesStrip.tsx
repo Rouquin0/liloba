@@ -27,13 +27,17 @@ export default function HomeStoriesStrip() {
         {STORIES.length} histoires illustrées · fais glisser →
       </p>
 
-      {/* LA CORRECTION EST ICI : ajout de overscroll-x-contain et touch-pan-x */}
-      <div className="-mx-5 flex snap-x snap-mandatory scroll-px-5 gap-3 overflow-x-auto overscroll-x-contain touch-pan-x px-5 pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+      {/* overscroll-x-contain et touch-pan-x : conservés (stabilité du scroll mobile).
+          snap-center : l'histoire s'arrête CENTRÉE, ses voisines dépassent des deux côtés.
+          Les deux petits blocs vides (début / fin) permettent de centrer aussi la
+          première et la dernière histoire. 148px = largeur d'une carte, 12px = l'espace. */}
+      <div className="-mx-5 flex snap-x snap-mandatory gap-3 overflow-x-auto overscroll-x-contain touch-pan-x pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+        <div aria-hidden="true" className="w-[calc(50%-74px-12px)] shrink-0" />
         {STORIES.map((story) => (
           <Link
             key={story.slug}
             href={`/histoires/${story.slug}`}
-            className="flex w-[148px] shrink-0 snap-start flex-col gap-2.5 rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-3 transition-colors active:bg-[var(--surface-hover)]"
+            className="flex w-[148px] shrink-0 snap-center flex-col gap-2.5 rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-3 transition-colors active:bg-[var(--surface-hover)]"
           >
             <span
               aria-hidden="true"
@@ -42,12 +46,13 @@ export default function HomeStoriesStrip() {
               <span className="text-[32px] drop-shadow-md">{story.emoji}</span>
               <span className="absolute -right-4 -top-4 h-12 w-12 rounded-full bg-white/15" />
             </span>
-            <span className="line-clamp-2 min-h-[2.4rem] text-[13px] font-medium leading-[1.35] text-[var(--foreground)]">
+            <span className="line-clamp-2 h-[2.7em] text-[13px] font-medium leading-[1.35] text-[var(--foreground)]">
               {story.title}
             </span>
             <span className="text-[11px] font-medium text-[var(--muted)]">{story.reference}</span>
           </Link>
         ))}
+        <div aria-hidden="true" className="w-[calc(50%-74px-12px)] shrink-0" />
       </div>
     </section>
   );

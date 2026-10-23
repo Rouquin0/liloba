@@ -116,6 +116,9 @@ export default function HomeVerseCarousel() {
 
   return (
     <div>
+      {/* Cadre fixe : porte la lueur et garantit qu'un SEUL verset est visible,
+          centré (les versets voisins restent cachés et glissent dedans). */}
+      <div className="rounded-[24px] shadow-[0_0_40px_color-mix(in_srgb,var(--foreground)_6%,transparent)]">
       <div
         ref={scrollerRef}
         onScroll={handleScroll}
@@ -126,11 +129,12 @@ export default function HomeVerseCarousel() {
         role="region"
         aria-roledescription="carrousel"
         aria-label="Versets du jour"
-        // LA CORRECTION EST ICI : ajout de overscroll-x-contain et touch-pan-x
-        className="relative -mx-5 flex snap-x snap-mandatory scroll-px-5 gap-3 overflow-x-auto overscroll-x-contain touch-pan-x px-5 pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+        // overscroll-x-contain et touch-pan-x : conservés (stabilité du scroll mobile)
+        // snap-center : le verset s'arrête toujours centré, jamais entre deux
+        className="relative flex snap-x snap-mandatory overflow-x-auto overscroll-x-contain touch-pan-x rounded-[24px] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
       >
         {verses.length === 0 ? (
-          <div className="flex min-h-[200px] shrink-0 basis-[88%] snap-start items-center justify-center rounded-[24px] border border-[var(--border)] bg-[var(--surface)] p-6">
+          <div className="flex min-h-[200px] shrink-0 basis-full snap-center items-center justify-center rounded-[24px] border border-[var(--border)] bg-[var(--surface)] p-6">
             <p className="animate-pulse text-xs text-[var(--muted)]">Verset du jour…</p>
           </div>
         ) : (
@@ -140,7 +144,7 @@ export default function HomeVerseCarousel() {
               <article
                 key={verse.ref}
                 aria-label={`Verset ${i + 1} sur ${verses.length}`}
-                className="relative flex shrink-0 basis-[88%] snap-start flex-col justify-between gap-5 overflow-hidden rounded-[24px] border border-[var(--border)] bg-[var(--surface)] p-6 shadow-[0_0_40px_color-mix(in_srgb,var(--foreground)_6%,transparent)]"
+                className="relative flex shrink-0 basis-full snap-center snap-always flex-col justify-between gap-5 overflow-hidden rounded-[24px] border border-[var(--border)] bg-[var(--surface)] p-6"
               >
                 <span
                   aria-hidden="true"
@@ -177,6 +181,7 @@ export default function HomeVerseCarousel() {
             );
           })
         )}
+      </div>
       </div>
 
       {verses.length > 1 && (
