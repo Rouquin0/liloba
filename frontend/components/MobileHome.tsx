@@ -1,13 +1,7 @@
 "use client";
 
-// ============================================================
-// LILOBA — Accueil MOBILE (masqué dès md : l'ordinateur garde
-// son accueil habituel dans app/page.tsx)
-// ============================================================
-
 import Link from "next/link";
 import Logo from "@/components/Logo";
-import StreakBadge from "@/components/StreakBadge";
 import ApollosMaintenanceBanner from "@/components/ApollosMaintenanceBanner";
 import HomeVerseCarousel from "@/components/HomeVerseCarousel";
 import HomeStoriesStrip from "@/components/HomeStoriesStrip";
@@ -17,43 +11,28 @@ import { BRANDING } from "@/lib/branding";
 export default function MobileHome() {
   return (
     <div className="md:hidden">
-      <div className="mx-auto flex w-full max-w-md flex-col gap-6 px-5 pb-32 pt-[max(1rem,env(safe-area-inset-top,0px))]">
-        {/* En-tête : marque + série + réglages */}
-        <header className="flex items-center justify-between gap-3">
-          <div className="flex min-w-0 items-center gap-3">
-            <Logo size={38} />
-            <span className="truncate text-xl font-extrabold tracking-wide text-[var(--foreground)]">
+      {/* min-h-full et pb-32 pour éviter les sauts de scroll */}
+      <div className="mx-auto flex min-h-full w-full max-w-md flex-col gap-6 px-5 pb-32 pt-[max(1rem,env(safe-area-inset-top,0px))]">
+        
+        {/* En-tête : TOUT EST CENTRÉ, engrenage supprimé, série simplifiée */}
+        <header className="flex flex-col items-center justify-center gap-2 border-b border-[var(--border)]/50 pb-5">
+          <div className="flex flex-col items-center gap-2">
+            <Logo size={48} />
+            <span className="text-2xl font-extrabold tracking-wide text-[var(--foreground)]">
               {BRANDING.app.name}
             </span>
           </div>
-          <div className="flex shrink-0 items-center gap-2">
-            <StreakBadge />
-            <Link
-              href="/settings"
-              aria-label="Réglages"
-              className="flex h-8 w-8 items-center justify-center rounded-full border border-[var(--border)] bg-[var(--surface)] text-[var(--muted)] transition-colors active:bg-[var(--surface-hover)]"
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                className="h-4 w-4"
-                aria-hidden="true"
-              >
-                <circle cx="12" cy="12" r="3" />
-                <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" />
-              </svg>
-            </Link>
+          
+          {/* Série simplifiée : juste la flamme et le chiffre */}
+          <div className="flex items-center justify-center gap-1.5 rounded-full border border-orange-500/20 bg-orange-500/10 px-3 py-1 text-sm font-bold text-orange-500 shadow-sm">
+            <span aria-hidden="true">🔥</span>
+            <span>6</span>
           </div>
         </header>
 
         {/* Aujourd'hui : versets qui défilent + lecture */}
         <main className="flex flex-col gap-4">
-          <span className="text-[11px] font-bold uppercase tracking-[0.12em] text-[var(--muted)]">
+          <span className="text-center text-[11px] font-bold uppercase tracking-[0.12em] text-[var(--muted)]">
             Aujourd&apos;hui
           </span>
 
@@ -96,7 +75,7 @@ export default function MobileHome() {
         {/* Les 20 histoires, qui défilent */}
         <HomeStoriesStrip />
 
-        {/* Statut Apollos (même composant qu'avant : un seul endroit à modifier) */}
+        {/* Statut Apollos */}
         <ApollosMaintenanceBanner compact />
       </div>
 
