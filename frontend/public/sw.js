@@ -1,5 +1,5 @@
 // ============================================================
-// LILOBA — Service Worker v8 (correctif écran blanc iOS)
+// LILOBA — Service Worker v9 (offline carnet/historique/histoires)
 // ============================================================
 // Changements vs v7 (AUCUNE rupture, que des ajouts sûrs) :
 //  - STATIC/RUNTIME passent en v8 (ancien v7 purgé à l'activation).
@@ -8,6 +8,9 @@
 //  - "/offline.html" est pré-caché et servi en dernier recours
 //    pour les navigations quand réseau + cache sont vides.
 //    Avant : simple texte "Hors ligne". Après : belle page sombre.
+//  - v9 : /carnet, /historique, /histoires/<slug> marchent hors ligne
+//    (données 100% locales : localStorage + bundle JS, zéro API).
+//    Images /images/* en cache-first (fallback dégradé déjà prévu).
 //  - Navigations : Cache-First instantané (anti écran blanc iOS)
 //    + revalidation réseau en arrière-plan (Stale-While-Revalidate).
 //    iOS purge le cache après ~24h d'inactivité : au retour, si un
@@ -25,8 +28,8 @@
 // avec "next build && next start" sur localhost.
 const ENABLE_ON_LOCALHOST = false;
 
-const STATIC_CACHE = "liloba-static-v8";
-const RUNTIME_CACHE = "liloba-runtime-v8";
+const STATIC_CACHE = "liloba-static-v9";
+const RUNTIME_CACHE = "liloba-runtime-v9";
 // ⚠️ NE PAS RENOMMER : évite de retélécharger la Bible (45 Mo).
 const BIBLE_CACHE = "liloba-bible-v4";
 const KEEP_CACHES = [STATIC_CACHE, RUNTIME_CACHE, BIBLE_CACHE];
@@ -34,7 +37,12 @@ const KEEP_CACHES = [STATIC_CACHE, RUNTIME_CACHE, BIBLE_CACHE];
 const OFFLINE_URL = "/offline.html";
 
 // Ajout de /histoires pour le pré-cache (+ offline.html = filet de sécurité)
-const PRECACHE_URLS = ["/", "/chat", "/bible", "/histoires", "/selah", "/manifest.webmanifest", OFFLINE_URL];
+// Pages 100% locales (localStorage / données bundlées) : doivent marcher hors ligne.
+// /carnet (notes, favoris, prières, jeux) + /historique + /histoires.
+// Les fiches /histoires/<slug> sont statiques (generateStaticParams) :
+// pré-cache des 3 plus lues, les 20 autres se cachent à la 1re visite.
+const STORY_PRECACHE = ["/histoires/david-goliath", "/histoires/fils-perdu", "/histoires/joseph-pardon"];
+const PRECACHE_URLS = ["/", "/chat", "/bible", "/histoires", "/selah", "/carnet", "/historique", "/manifest.webmanifest", OFFLINE_URL, ...STORY_PRECACHE];
 
 const IS_LOCAL = ["localhost", "127.0.0.1", "[::1]"].includes(
   self.location.hostname
@@ -67,7 +75,7 @@ self.addEventListener("install", (event) => {
 });
 
 // ============================================================
-// ACTIVATION : supprime les anciens caches (v3/v4/v5/v6/v7...)
+// ACTIVATION : supprime les anciens caches (v3/.../v8...)
 // ============================================================
 
 self.addEventListener("activate", (event) => {
@@ -118,6 +126,7 @@ function isStaticAsset(path) {
   return (
     path.startsWith("/_next/static/") ||
     path.startsWith("/icons/") ||
+    path.startsWith("/images/") ||
     path.startsWith("/splash/") ||
     path === "/logo.png" ||
     path === "/favicon.ico" ||
@@ -257,6 +266,8 @@ async function handleNavigation(request, url) {
     let shellUrl = "/";
     if (path.startsWith("/bible") || path.startsWith("/read")) shellUrl = "/bible";
     else if (path.startsWith("/chat")) shellUrl = "/chat";
+    else if (path.startsWith("/carnet")) shellUrl = "/carnet";
+    else if (path.startsWith("/historique")) shellUrl = "/historique";
     else if (path.startsWith("/histoires")) shellUrl = "/histoires";
     else if (path.startsWith("/selah")) shellUrl = "/selah";
 

@@ -17,9 +17,9 @@
     padding: 24px; min-height: 100dvh;
   }
   .card {
-    max-width: 420px; width: 100%; text-align: center;
+    max-width: 440px; width: 100%; text-align: center;
     background: #14141c; border: 1px solid #2a2a35;
-    border-radius: 20px; padding: 40px 28px;
+    border-radius: 20px; padding: 36px 26px;
   }
   .logo {
     width: 84px; height: 84px; border-radius: 22px; margin: 0 auto 18px;
@@ -27,37 +27,44 @@
     border: 1px solid #2a2a35;
   }
   h1 { font-size: 26px; letter-spacing: 4px; color: #D4AF37; margin-bottom: 6px; }
-  .sub { font-size: 14px; color: #a8a8b3; margin-bottom: 20px; font-family: system-ui, sans-serif; }
+  .sub { font-size: 14px; color: #a8a8b3; margin-bottom: 18px; font-family: system-ui, sans-serif; }
   .verse {
     font-style: italic; font-size: 15px; line-height: 1.6; color: #F0E5D0;
     border-left: 3px solid #D4AF37; padding-left: 12px; text-align: left;
-    margin: 0 0 24px;
+    margin: 0 0 20px;
   }
   .verse small { display: block; margin-top: 6px; color: #D4AF37; font-style: normal; font-family: system-ui, sans-serif; }
-  p.info { font-family: system-ui, sans-serif; font-size: 14px; color: #c9c9d1; line-height: 1.6; margin-bottom: 24px; }
+  p.info { font-family: system-ui, sans-serif; font-size: 14px; color: #c9c9d1; line-height: 1.6; margin-bottom: 18px; }
+  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 12px; }
   .btn {
     display: block; width: 100%; padding: 14px; border-radius: 12px; border: none;
     background: #B91C1C; color: #fff; font-size: 16px; font-weight: 700; cursor: pointer;
-    font-family: system-ui, sans-serif;
+    font-family: system-ui, sans-serif; text-decoration: none;
   }
   .btn:active { transform: scale(.98); }
   .btn2 {
-    display: block; width: 100%; padding: 12px; margin-top: 10px; border-radius: 12px;
+    display: block; width: 100%; padding: 12px; border-radius: 12px;
     background: transparent; color: #D4AF37; border: 1px solid #D4AF37;
     font-size: 14px; text-decoration: none; font-family: system-ui, sans-serif;
   }
+  .row2 { grid-column: span 2; }
 </style>
 </head>
 <body>
   <main class="card">
     <div class="logo" aria-hidden="true"></div>
     <h1>LILOBA</h1>
-    <div class="sub">La Parole, éclairée</div>
-    <div class="verse">« Je serre ta parole dans mon cœur. »<small>— Psaume 119:11</small></div>
-    <p class="info">Tu es hors ligne.<br />Les pages déjà visitées (<b>/bible</b>, <b>/chat</b>) restent disponibles. Vérifie ta connexion puis réessaie.</p>
-    <button class="btn" onclick="location.reload()">Réessayer</button>
-    <a class="btn2" href="/bible">Ouvrir ma Bible hors ligne</a>
-    <a class="btn2" href="/">Accueil</a>
+    <div class="sub">La Parole, éclairée — même hors ligne</div>
+    <div class="verse">« Serre ta parole dans ton cœur, même sans réseau. »<small>— d'après Psaume 119:11</small></div>
+    <p class="info">Bonne nouvelle : ton <b>Carnet</b>, ton <b>Historique</b> et tes <b>Histoires</b> sont sur ton téléphone. Ouvre-les, joue, relis.</p>
+    <div class="grid">
+      <a class="btn2" href="/carnet">📓 Carnet + Jeux</a>
+      <a class="btn2" href="/historique">🕘 Historique</a>
+      <a class="btn2" href="/histoires">📚 Histoires</a>
+      <a class="btn2" href="/bible">📖 Bible</a>
+      <button class="btn row2" onclick="location.reload()">Réessayer la connexion</button>
+    </div>
+    <a class="btn2 row2" href="/">Accueil</a>
   </main>
 </body>
 </html>
