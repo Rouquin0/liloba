@@ -75,37 +75,37 @@ import {
 // ------------------------------------------------------------
 
 const IconPeace = () => (
-  <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+  <svg className="h-4 w-4 md:h-5 md:w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
     <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
   </svg>
 );
 const IconJoy = () => (
-  <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+  <svg className="h-4 w-4 md:h-5 md:w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
     <circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/>
   </svg>
 );
 const IconTired = () => (
-  <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+  <svg className="h-4 w-4 md:h-5 md:w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
     <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/>
   </svg>
 );
 const IconAnxious = () => (
-  <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+  <svg className="h-4 w-4 md:h-5 md:w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
     <path d="M2 6c.6.5 1.2 1 2.5 1C7 7 7 5 9.5 5c2.6 0 2.4 2 5 2 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1"/><path d="M2 12c.6.5 1.2 1 2.5 1 2.5 0 2.5-2 5-2 2.6 0 2.4 2 5 2 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1"/><path d="M2 18c.6.5 1.2 1 2.5 1 2.5 0 2.5-2 5-2 2.6 0 2.4 2 5 2 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1"/>
   </svg>
 );
 const IconAngry = () => (
-  <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+  <svg className="h-4 w-4 md:h-5 md:w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
     <path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/>
   </svg>
 );
 const IconGuilty = () => (
-  <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+  <svg className="h-4 w-4 md:h-5 md:w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
     <path d="M12 22a7 7 0 0 0 7-7c0-2-1-3.9-3-5.5s-3.5-4-4-6.5c-.5 2.5-2 4.9-4 6.5C6 11.1 5 13 5 15a7 7 0 0 0 7 7z"/>
   </svg>
 );
 const IconDry = () => (
-  <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+  <svg className="h-4 w-4 md:h-5 md:w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
     <path d="M12 22v-5"/><path d="M9 8V2"/><path d="M15 8V2"/><path d="M18 8v5a4 4 0 0 1-4 4h-4a4 4 0 0 1-4-4V8Z"/>
   </svg>
 );
@@ -795,7 +795,7 @@ export default function SelahTab({ compact = false }: { compact?: boolean }) {
   const immersive = tab === "tonight" && !finished && step >= 1;
 
   return (
-    <div className="mx-auto w-full min-w-0 max-w-2xl px-4 py-6 md:px-6">
+    <div className="mx-auto w-full min-w-0 max-w-2xl px-4 py-6 md:max-w-6xl md:px-12 md:py-10">
       <style>{`
         @keyframes selah-breathe {
           0%, 100% { transform: scale(0.82); opacity: 0.55; }
@@ -830,22 +830,46 @@ export default function SelahTab({ compact = false }: { compact?: boolean }) {
         </div>
       </div>
 
-      <header className="mb-5 text-center">
-        <p className="text-3xl" aria-hidden="true">
-          🌿
-        </p>
-        <h1
-          className="mt-1 text-2xl font-bold text-[var(--color-primary)] md:text-3xl"
-          style={{ fontFamily: "var(--font-serif)" }}
-        >
-          {l.title}
-        </h1>
-        <p className="mt-1 text-sm text-[var(--muted)]">{l.subtitle}</p>
-        {!compact && (
-          <p className="mx-auto mt-3 max-w-xl text-xs leading-relaxed text-[var(--muted)]">
-            {l.tagline}
-          </p>
-        )}
+      <header className="mb-5 text-center md:mb-10 md:flex md:items-end md:justify-between md:border-b md:border-[var(--border)] md:pb-6 md:text-left">
+        <div>
+          {/* Titre avec la feuille à droite */}
+          <div className="flex items-center justify-center gap-2 md:justify-start">
+            <h1
+              className="text-2xl font-bold text-[var(--color-primary)] md:text-5xl"
+              style={{ fontFamily: "var(--font-serif)" }}
+            >
+              {l.title}
+            </h1>
+            <span className="text-3xl md:text-4xl" aria-hidden="true">🌿</span>
+          </div>
+          <p className="mt-1 text-sm text-[var(--muted)] md:mt-2 md:text-lg md:font-light">{l.subtitle}</p>
+          {!compact && (
+            <p className="mx-auto mt-3 max-w-xl text-xs leading-relaxed text-[var(--muted)] md:mx-0">
+              {l.tagline}
+            </p>
+          )}
+        </div>
+
+        {/* Onglets */}
+        <div className="mt-4 flex justify-center gap-1 rounded-xl border border-[var(--border)] bg-[var(--surface)] p-1 md:mt-0 md:rounded-full md:p-2" role="tablist" aria-label={l.title}>
+          {(["tonight", "path"] as const).map((id) => (
+            <button
+              key={id}
+              type="button"
+              role="tab"
+              aria-selected={tab === id}
+              onClick={() => setTab(id)}
+              className={`min-h-[44px] min-w-0 rounded-lg px-4 py-2 text-sm font-medium transition-all md:rounded-full md:px-6 ${
+                tab === id
+                  ? "bg-[var(--color-accent)] text-white shadow-sm md:bg-[var(--color-accent)]"
+                  : "text-[var(--muted)] hover:bg-[var(--surface-hover)]"
+              }`}
+            >
+              {id === "tonight" ? l.tabTonight : l.tabPath}
+              {id === "path" && stats.current > 0 ? ` · 🌿 ${stats.current}` : ""}
+            </button>
+          ))}
+        </div>
       </header>
 
       {graceInfo.status === "grace" && graceInfo.hoursLeft !== null && (
@@ -872,37 +896,18 @@ export default function SelahTab({ compact = false }: { compact?: boolean }) {
         </div>
       )}
 
-      <div className="mb-5 grid grid-cols-2 gap-1 rounded-xl border border-[var(--border)] bg-[var(--surface)] p-1" role="tablist" aria-label={l.title}>
-        {(["tonight", "path"] as const).map((id) => (
-          <button
-            key={id}
-            type="button"
-            role="tab"
-            aria-selected={tab === id}
-            onClick={() => setTab(id)}
-            className={`min-h-[44px] min-w-0 rounded-lg px-2 py-2 text-sm font-medium transition-all ${
-              tab === id
-                ? "bg-[var(--color-accent)] text-white shadow-sm"
-                : "text-[var(--muted)] hover:bg-[var(--surface-hover)]"
-            }`}
-          >
-            {id === "tonight" ? l.tabTonight : l.tabPath}
-            {id === "path" && stats.current > 0 ? ` · 🌿 ${stats.current}` : ""}
-          </button>
-        ))}
-      </div>
-
       {tab === "tonight" && !finished && (
-        <div className="flex flex-col gap-4">
+        <div className="flex flex-col gap-6 md:gap-10">
           {/* Belle barre de progression */}
-          <div role="progressbar" aria-valuenow={progressPct} aria-valuemin={0} aria-valuemax={100} aria-label={l.steps[step]}>
-            <div className="h-2 w-full overflow-hidden rounded-full bg-[var(--surface-hover)]">
+          <div role="progressbar" aria-valuenow={progressPct} aria-valuemin={0} aria-valuemax={100} aria-label={l.steps[step]} className="relative">
+            {/* Mobile : Barre pleine */}
+            <div className="h-2 w-full overflow-hidden rounded-full bg-[var(--surface-hover)] md:hidden">
               <div
                 className="h-full rounded-full transition-all duration-500"
                 style={{ width: `${progressPct}%`, background: accent }}
               />
             </div>
-            <ol className="mt-2 flex items-center justify-between gap-1" aria-label="Progression">
+            <ol className="mt-2 flex items-center justify-between gap-1 md:hidden" aria-label="Progression">
               {l.steps.map((label, i) => (
                 <li key={label} className="flex min-w-0 flex-1 flex-col items-center gap-1">
                   <span
@@ -916,31 +921,41 @@ export default function SelahTab({ compact = false }: { compact?: boolean }) {
                 </li>
               ))}
             </ol>
+
+            {/* Desktop : Ligne traversante */}
+            <div className="hidden md:flex items-center justify-between relative mt-2">
+              <div className="absolute left-0 right-0 top-1/2 h-[1px] bg-[var(--border)] z-0" />
+              {l.steps.map((label, i) => (
+                <span key={label} className={`relative z-10 bg-[var(--background)] px-4 text-xs uppercase tracking-[0.2em] ${i === step ? "font-bold" : "text-[var(--muted)] font-medium"}`} style={i === step ? { color: accent } : undefined}>{label}</span>
+              ))}
+            </div>
           </div>
 
           {step === 0 && (
-            <div className="selah-step flex flex-col gap-4" key={`step0-${lang}`}>
+            <div className="selah-step flex flex-col gap-6 md:gap-10" key={`step0-${lang}`}>
               {yesterday && (
-                <section className="rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-4">
-                  <p className="mb-1 text-xs font-bold uppercase tracking-widest text-[var(--muted)]">
-                    {l.yesterday}
-                  </p>
-                  <p className="text-sm text-[var(--foreground)]">{yesterday.pas}</p>
+                <section className="rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-4 md:p-6 md:flex md:items-center md:justify-between">
+                  <div>
+                    <p className="mb-1 text-xs font-bold uppercase tracking-widest text-[var(--muted)]">
+                      {l.yesterday}
+                    </p>
+                    <p className="text-sm text-[var(--foreground)] md:text-base">{yesterday.pas}</p>
+                  </div>
                   {yesterday.pasDone === true ? (
-                    <p className="mt-2 text-xs font-medium text-green-600">✓ {l.yesterdayYes}</p>
+                    <p className="mt-2 text-xs font-medium text-green-600 md:mt-0 md:text-sm">✓ {l.yesterdayYes}</p>
                   ) : (
-                    <div className="mt-3 grid grid-cols-2 gap-2">
+                    <div className="mt-3 flex gap-2 md:mt-0">
                       <button
                         type="button"
                         onClick={() => setPasDone(yesterday.id, true)}
-                        className="min-h-[44px] rounded-xl bg-[var(--color-accent)] py-2 text-xs font-bold text-white transition-all hover:brightness-90"
+                        className="min-h-[44px] rounded-xl bg-[var(--color-accent)] px-6 py-2 text-xs font-bold text-white transition-all hover:brightness-90 md:text-sm"
                       >
                         {l.yesterdayDone}
                       </button>
                       <button
                         type="button"
                         onClick={() => setPasDone(yesterday.id, false)}
-                        className="min-h-[44px] rounded-xl border border-[var(--border)] py-2 text-xs font-semibold text-[var(--muted)] transition-all hover:border-[var(--color-accent)]"
+                        className="min-h-[44px] rounded-xl border border-[var(--border)] px-6 py-2 text-xs font-semibold text-[var(--muted)] transition-all hover:border-[var(--color-accent)] md:text-sm"
                       >
                         {l.yesterdayNot}
                       </button>
@@ -949,14 +964,16 @@ export default function SelahTab({ compact = false }: { compact?: boolean }) {
                 </section>
               )}
 
-              <section className="rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-4">
-                <h2 ref={stepHeadingRef} tabIndex={-1} className="mb-3 text-sm font-semibold text-[var(--foreground)] outline-none">
+              <section className="md:bg-transparent md:border-none md:p-0">
+                <h2 ref={stepHeadingRef} tabIndex={-1} className="mb-3 text-sm font-semibold text-[var(--foreground)] outline-none md:text-2xl md:mb-8">
                   {l.step0}
                 </h2>
-                <div className="grid grid-cols-2 gap-2 sm:grid-cols-3" role="radiogroup" aria-label={l.step0}>
+                
+                {/* Boutons des états : Grid sur mobile, Flex sur desktop */}
+                <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 md:flex md:flex-wrap md:gap-3" role="radiogroup" aria-label={l.step0}>
                   {SELAH_STATES.map((s, index) => {
                     const isLast = index === SELAH_STATES.length - 1;
-                    const spanClass = isLast ? "col-span-2 sm:col-span-3" : "";
+                    const spanClass = isLast ? "col-span-2 sm:col-span-3 md:col-span-1" : "";
                     const Icon = STATE_ICONS[s.id];
                     const selected = etat === s.id;
                     return (
@@ -966,10 +983,10 @@ export default function SelahTab({ compact = false }: { compact?: boolean }) {
                         role="radio"
                         aria-checked={selected}
                         onClick={() => setEtat(s.id)}
-                        className={`${spanClass} flex min-h-[44px] min-w-0 items-center gap-2 rounded-xl border px-3 py-3 text-sm transition-all active:scale-95 ${
+                        className={`${spanClass} flex min-h-[44px] min-w-0 items-center justify-center gap-2 rounded-xl border px-3 py-3 text-sm transition-all active:scale-95 md:flex-1 md:min-w-[140px] md:py-5 md:rounded-2xl ${
                           selected
                             ? "font-semibold text-white"
-                            : "border-[var(--border)] text-[var(--foreground)] hover:border-[var(--color-accent)]/40"
+                            : "border-[var(--border)] text-[var(--foreground)] hover:border-[var(--color-accent)]/40 md:bg-[var(--surface)] md:hover:bg-[var(--surface-hover)] md:hover:border-[var(--color-accent)]"
                         }`}
                         style={
                           selected
@@ -978,36 +995,42 @@ export default function SelahTab({ compact = false }: { compact?: boolean }) {
                         }
                       >
                         <span className="shrink-0">{Icon && <Icon />}</span>
-                        <span className="truncate">{lang === "en" ? s.en : s.fr}</span>
+                        <span className="truncate md:text-base">{lang === "en" ? s.en : s.fr}</span>
                       </button>
                     );
                   })}
                 </div>
 
-                <p className="mb-2 mt-5 text-sm font-semibold text-[var(--foreground)]">
-                  {l.topicLabel}
-                </p>
-                <input
-                  value={topic}
-                  onChange={(e) => setTopic(e.target.value)}
-                  placeholder={l.topicPh}
-                  maxLength={140}
-                  className="w-full min-w-0 rounded-xl border border-[var(--border)] bg-[var(--background)] px-3 py-2.5 text-sm text-[var(--foreground)] outline-none placeholder:text-[var(--muted)] focus:border-[var(--color-accent)]"
-                />
-
-                <button
-                  type="button"
-                  onClick={begin}
-                  disabled={!etat}
-                  className="mt-4 min-h-[44px] w-full rounded-xl bg-[var(--color-accent)] py-3 text-sm font-bold text-white transition-all hover:brightness-90 active:scale-[0.99] disabled:opacity-40"
-                >
-                  {l.begin}
-                </button>
+                {/* Input + Bouton : Empilés sur mobile, côte à côte sur desktop */}
+                <div className="mt-4 md:mt-10 md:flex md:items-end md:gap-6 md:bg-[var(--surface)] md:p-6 md:rounded-3xl md:border md:border-[var(--border)]">
+                  <div className="flex-1">
+                    <p className="mb-2 text-sm font-semibold text-[var(--foreground)] md:text-xs md:uppercase md:tracking-widest md:text-[var(--muted)] md:mb-3">
+                      {l.topicLabel}
+                    </p>
+                    <input
+                      value={topic}
+                      onChange={(e) => setTopic(e.target.value)}
+                      placeholder={l.topicPh}
+                      maxLength={140}
+                      className="w-full min-w-0 rounded-xl border border-[var(--border)] bg-[var(--background)] px-3 py-2.5 text-sm text-[var(--foreground)] outline-none placeholder:text-[var(--muted)] focus:border-[var(--color-accent)] md:bg-transparent md:border-none md:p-0 md:text-xl md:placeholder:text-[var(--muted)]/50"
+                    />
+                  </div>
+                  <button
+                    type="button"
+                    onClick={begin}
+                    disabled={!etat}
+                    className="mt-4 min-h-[44px] w-full rounded-xl bg-[var(--color-accent)] py-3 text-sm font-bold text-white transition-all hover:brightness-90 active:scale-[0.99] disabled:opacity-40 md:mt-0 md:w-auto md:px-10 md:py-4 md:text-base"
+                  >
+                    {l.begin}
+                  </button>
+                </div>
+                {/* TEXTE CONSERVÉ */}
                 {!etat && (
                   <p className="mt-2 text-center text-[11px] text-[var(--muted)]">{l.startFirst}</p>
                 )}
               </section>
 
+              {/* TEXTE CONSERVÉ */}
               <p className="px-2 text-center text-[11px] leading-relaxed text-[var(--muted)]">
                 {l.meaning}
               </p>
@@ -1015,10 +1038,10 @@ export default function SelahTab({ compact = false }: { compact?: boolean }) {
           )}
 
           {step === 1 && rx && signals && (
-            <div className="selah-step flex flex-col gap-4" key={`step1-${rx.ref}`}>
+            <div className="selah-step flex flex-col gap-4 md:gap-8" key={`step1-${rx.ref}`}>
               {/* Pause du soir immersive : fond nocturne en dégradé */}
               <div
-                className="overflow-hidden rounded-3xl p-5"
+                className="overflow-hidden rounded-3xl p-5 md:p-10"
                 style={{
                   background: "linear-gradient(180deg, #0b1026 0%, #1b2340 55%, #3a2350 100%)",
                   color: "#f5efe4",
@@ -1030,19 +1053,19 @@ export default function SelahTab({ compact = false }: { compact?: boolean }) {
                 <h2
                   ref={stepHeadingRef}
                   tabIndex={-1}
-                  className="text-xl font-semibold leading-relaxed outline-none"
+                  className="text-xl font-semibold leading-relaxed outline-none md:text-3xl"
                   style={{ fontFamily: "var(--font-serif)" }}
                 >
                   « {rx.texte} »
                 </h2>
-                <p className="mt-2 text-base font-bold" style={{ color: accent === "var(--color-accent)" ? "#d4af37" : "#ffffff", background: etat ? STATE_ACCENTS[etat] : undefined, display: "inline-block", padding: "2px 12px", borderRadius: 999 }}>
+                <p className="mt-3 text-base font-bold md:text-lg" style={{ color: accent === "var(--color-accent)" ? "#d4af37" : "#ffffff", background: etat ? STATE_ACCENTS[etat] : undefined, display: "inline-block", padding: "2px 12px", borderRadius: 999 }}>
                   {rx.ref}
                 </p>
-                <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-2">
+                <div className="mt-4 flex flex-wrap items-center gap-x-6 gap-y-2">
                   {chapterLink ? (
                     <Link
                       href={chapterLink}
-                      className="inline-flex min-h-[44px] items-center gap-1 text-xs font-semibold text-[#f5efe4] underline-offset-2 hover:underline"
+                      className="inline-flex min-h-[44px] items-center gap-1 text-xs font-semibold text-[#f5efe4] underline-offset-2 hover:underline md:text-sm"
                     >
                       {l.readChapter}
                     </Link>
@@ -1050,7 +1073,7 @@ export default function SelahTab({ compact = false }: { compact?: boolean }) {
                     <button
                       type="button"
                       onClick={() => openInOtherPane("selah", "bible")}
-                      className="inline-flex min-h-[44px] items-center gap-1 text-xs font-semibold text-[#f5efe4] underline-offset-2 hover:underline"
+                      className="inline-flex min-h-[44px] items-center gap-1 text-xs font-semibold text-[#f5efe4] underline-offset-2 hover:underline md:text-sm"
                     >
                       {l.openBible}
                     </button>
@@ -1059,7 +1082,7 @@ export default function SelahTab({ compact = false }: { compact?: boolean }) {
                     <button
                       type="button"
                       onClick={anotherVerse}
-                      className="inline-flex min-h-[44px] items-center gap-1 text-xs font-semibold text-[#cfc4ad] underline-offset-2 transition-colors hover:text-white hover:underline"
+                      className="inline-flex min-h-[44px] items-center gap-1 text-xs font-semibold text-[#cfc4ad] underline-offset-2 transition-colors hover:text-white hover:underline md:text-sm"
                     >
                       ↻ {l.another}
                     </button>
@@ -1067,38 +1090,40 @@ export default function SelahTab({ compact = false }: { compact?: boolean }) {
                 </div>
               </div>
 
-              <section className="rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-4">
-                <p className="mb-2 text-xs font-bold uppercase tracking-widest text-[var(--muted)]">
-                  {l.day}
-                </p>
-                <ul className="flex flex-col gap-1.5 text-sm text-[var(--foreground)]">
-                  <li>{signals.chapitres > 0 ? l.chapters(signals.chapitres) : l.noChapter}</li>
-                  {signals.versets > 0 && <li>{l.verses(signals.versets)}</li>}
-                  {signals.serie >= 2 && <li>{l.streakRead(signals.serie)}</li>}
-                </ul>
-              </section>
-
-              <section className="rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-4">
-                <p className="mb-1 text-xs font-bold uppercase tracking-widest text-[var(--muted)]">
-                  {l.meditation}
-                </p>
-                <p className="text-sm leading-relaxed text-[var(--foreground)]">{rx.meditation}</p>
-                {topic.trim() && (
-                  <p className="mt-2 border-l-2 pl-2 text-xs italic text-[var(--muted)]" style={{ borderColor: accent }}>
-                    {topic.trim()}
+              <div className="grid md:grid-cols-2 gap-4 md:gap-6">
+                <section className="rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-4 md:p-6">
+                  <p className="mb-2 text-xs font-bold uppercase tracking-widest text-[var(--muted)]">
+                    {l.day}
                   </p>
-                )}
-              </section>
+                  <ul className="flex flex-col gap-1.5 text-sm md:text-base text-[var(--foreground)]">
+                    <li>{signals.chapitres > 0 ? l.chapters(signals.chapitres) : l.noChapter}</li>
+                    {signals.versets > 0 && <li>{l.verses(signals.versets)}</li>}
+                    {signals.serie >= 2 && <li>{l.streakRead(signals.serie)}</li>}
+                  </ul>
+                </section>
+
+                <section className="rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-4 md:p-6">
+                  <p className="mb-1 text-xs font-bold uppercase tracking-widest text-[var(--muted)]">
+                    {l.meditation}
+                  </p>
+                  <p className="text-sm md:text-base leading-relaxed text-[var(--foreground)]">{rx.meditation}</p>
+                  {topic.trim() && (
+                    <p className="mt-2 border-l-2 pl-2 text-xs md:text-sm italic text-[var(--muted)]" style={{ borderColor: accent }}>
+                      {topic.trim()}
+                    </p>
+                  )}
+                </section>
+              </div>
             </div>
           )}
 
           {step === 2 && (
-            <section className="selah-step rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-4" key={`step2-${lang}`}>
-              <h2 ref={stepHeadingRef} tabIndex={-1} className="text-sm font-semibold text-[var(--foreground)] outline-none">
+            <section className="selah-step rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-4 md:p-8 md:max-w-2xl md:mx-auto md:w-full" key={`step2-${lang}`}>
+              <h2 ref={stepHeadingRef} tabIndex={-1} className="text-sm md:text-lg font-semibold text-[var(--foreground)] outline-none">
                 {l.thanks}
               </h2>
-              <p className="mb-3 mt-1 text-xs text-[var(--muted)]">{l.thanksHint}</p>
-              <div className="flex flex-col gap-2">
+              <p className="mb-3 md:mb-4 mt-1 text-xs md:text-sm text-[var(--muted)]">{l.thanksHint}</p>
+              <div className="flex flex-col gap-2 md:gap-3">
                 {gratitudes.map((g, i) => (
                   <input
                     key={i}
@@ -1109,7 +1134,7 @@ export default function SelahTab({ compact = false }: { compact?: boolean }) {
                     }
                     placeholder={l.thanksPh[i]}
                     maxLength={120}
-                    className="w-full min-w-0 rounded-xl border border-[var(--border)] bg-[var(--background)] px-3 py-2.5 text-sm text-[var(--foreground)] outline-none placeholder:text-[var(--muted)] focus:border-[var(--color-accent)]"
+                    className="w-full min-w-0 rounded-xl border border-[var(--border)] bg-[var(--background)] px-3 py-2.5 md:px-4 md:py-3 text-sm text-[var(--foreground)] outline-none placeholder:text-[var(--muted)] focus:border-[var(--color-accent)]"
                   />
                 ))}
               </div>
@@ -1117,13 +1142,13 @@ export default function SelahTab({ compact = false }: { compact?: boolean }) {
           )}
 
           {step === 3 && rx && (
-            <div className="selah-step flex flex-col gap-4" key={`step3-${duration}-${lang}`}>
-              <section className="rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-4">
+            <div className="selah-step flex flex-col gap-4 md:gap-8 md:max-w-4xl md:mx-auto md:w-full" key={`step3-${duration}-${lang}`}>
+              <section className="rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-4 md:p-6">
                 <p className="mb-1 text-xs font-bold uppercase tracking-widest text-[var(--muted)]">
                   {l.prayerReceived}
                 </p>
                 <p
-                  className="text-base italic leading-relaxed text-[var(--foreground)]"
+                  className="text-base md:text-lg italic leading-relaxed text-[var(--foreground)]"
                   style={{ fontFamily: "var(--font-serif)" }}
                 >
                   {rx.priere}
@@ -1132,21 +1157,21 @@ export default function SelahTab({ compact = false }: { compact?: boolean }) {
 
               {/* Prière immersive */}
               <section
-                className="overflow-hidden rounded-3xl p-5 text-center"
+                className="overflow-hidden rounded-3xl p-5 md:p-10 text-center"
                 aria-label={l.prayer}
                 style={{
                   background: "linear-gradient(180deg, #0b1026 0%, #1b2340 55%, #3a2350 100%)",
                   color: "#f5efe4",
                 }}
               >
-                <h2 ref={stepHeadingRef} tabIndex={-1} className="text-xs font-bold uppercase tracking-widest outline-none" style={{ color: "#d4af37" }}>
+                <h2 ref={stepHeadingRef} tabIndex={-1} className="text-xs md:text-sm font-bold uppercase tracking-widest outline-none" style={{ color: "#d4af37" }}>
                   {l.prayer} · {formatPrayerCountdown(timing.totalSeconds)}
                 </h2>
 
-                <p className="mb-2 mt-4 text-xs font-semibold uppercase tracking-widest text-[#cfc4ad]">
+                <p className="mb-2 mt-4 text-xs font-semibold uppercase tracking-widest text-[#cfc4ad] md:hidden">
                   {l.durationLabel}
                 </p>
-                <div className="grid grid-cols-3 gap-2" role="radiogroup" aria-label={l.durationLabel}>
+                <div className="grid grid-cols-3 gap-2 md:flex md:justify-center md:gap-4" role="radiogroup" aria-label={l.durationLabel}>
                   {(["courte", "moyenne", "profonde"] as PrayerDuration[]).map((d) => (
                     <button
                       key={d}
@@ -1154,7 +1179,7 @@ export default function SelahTab({ compact = false }: { compact?: boolean }) {
                       role="radio"
                       aria-checked={duration === d}
                       onClick={() => setPrayerDuration(d)}
-                      className={`min-h-[44px] rounded-xl border px-2 py-2.5 text-xs font-bold transition-all ${
+                      className={`min-h-[44px] rounded-xl border px-2 py-2.5 text-xs md:text-sm font-bold transition-all md:px-8 md:py-3 ${
                         duration === d ? "text-white" : "text-[#cfc4ad]"
                       }`}
                       style={
@@ -1169,7 +1194,7 @@ export default function SelahTab({ compact = false }: { compact?: boolean }) {
                 </div>
 
                 {/* Halo qui respire autour du chrono */}
-                <div className="relative mx-auto my-5 flex h-40 w-40 items-center justify-center" aria-live="polite">
+                <div className="relative mx-auto my-5 md:my-8 flex h-40 w-40 md:h-56 md:w-56 items-center justify-center" aria-live="polite">
                   <div
                     className="selah-breathe absolute inset-0 rounded-full"
                     aria-hidden="true"
@@ -1182,17 +1207,17 @@ export default function SelahTab({ compact = false }: { compact?: boolean }) {
                     }}
                   />
                   <div
-                    className="absolute inset-4 rounded-full border"
+                    className="absolute inset-4 md:inset-6 rounded-full border"
                     aria-hidden="true"
                     style={{ borderColor: `${accent}88` }}
                   />
-                  <span className="relative text-3xl font-semibold tabular-nums">
+                  <span className="relative text-3xl md:text-5xl font-semibold tabular-nums">
                     {phase === "done" ? "✓" : formatPrayerCountdown(remainingSec)}
                   </span>
                 </div>
 
                 {/* Progression de la prière */}
-                <div className="mx-auto mb-4 h-1.5 w-full max-w-xs overflow-hidden rounded-full bg-[#ffffff22]" role="progressbar" aria-valuenow={Math.round((elapsedMs / schedule.totalMs) * 100)} aria-valuemin={0} aria-valuemax={100}>
+                <div className="mx-auto mb-4 md:mb-6 h-1.5 w-full max-w-xs md:max-w-md overflow-hidden rounded-full bg-[#ffffff22]" role="progressbar" aria-valuenow={Math.round((elapsedMs / schedule.totalMs) * 100)} aria-valuemin={0} aria-valuemax={100}>
                   <div
                     className="h-full rounded-full transition-all"
                     style={{ width: `${Math.min(100, (elapsedMs / schedule.totalMs) * 100)}%`, background: accent }}
@@ -1200,7 +1225,7 @@ export default function SelahTab({ compact = false }: { compact?: boolean }) {
                 </div>
 
                 {/* Lignes de la prière, ligne en cours mise en valeur */}
-                <div className="mx-auto flex max-w-md flex-col gap-1.5 text-left">
+                <div className="mx-auto flex max-w-md md:max-w-2xl flex-col gap-1.5 md:gap-2 text-left">
                   {prayerLines.map((line, i) => {
                     const active = phase !== "idle" && i === lineIdx;
                     const said = phase !== "idle" && i < lineIdx;
@@ -1208,7 +1233,7 @@ export default function SelahTab({ compact = false }: { compact?: boolean }) {
                       <p
                         key={i}
                         aria-current={active ? "true" : undefined}
-                        className="rounded-lg px-3 py-1.5 text-sm leading-relaxed transition-all"
+                        className="rounded-lg px-3 py-1.5 md:px-4 md:py-2 text-sm md:text-base leading-relaxed transition-all"
                         style={{
                           fontFamily: "var(--font-serif)",
                           background: active ? "#ffffff18" : undefined,
@@ -1229,12 +1254,12 @@ export default function SelahTab({ compact = false }: { compact?: boolean }) {
                   <p className="mt-3 text-sm font-semibold" style={{ color: "#d4af37" }}>{l.prayerDone}</p>
                 )}
 
-                <div className="mt-4 flex flex-wrap items-center justify-center gap-2">
+                <div className="mt-4 md:mt-6 flex flex-wrap items-center justify-center gap-2 md:gap-3">
                   {phase === "idle" && (
                     <button
                       type="button"
                       onClick={startPrayer}
-                      className="min-h-[44px] rounded-xl px-6 py-2.5 text-sm font-bold text-white transition-all hover:brightness-110"
+                      className="min-h-[44px] rounded-xl px-6 py-2.5 md:px-8 md:py-3 text-sm md:text-base font-bold text-white transition-all hover:brightness-110"
                       style={{ background: accent }}
                     >
                       {l.prayerStart}
@@ -1245,14 +1270,14 @@ export default function SelahTab({ compact = false }: { compact?: boolean }) {
                       <button
                         type="button"
                         onClick={pausePrayer}
-                        className="min-h-[44px] rounded-xl border border-[#ffffff44] px-5 py-2.5 text-sm font-bold text-white transition-all hover:bg-[#ffffff18]"
+                        className="min-h-[44px] rounded-xl border border-[#ffffff44] px-5 py-2.5 md:px-6 md:py-3 text-sm md:text-base font-bold text-white transition-all hover:bg-[#ffffff18]"
                       >
                         {l.prayerPause}
                       </button>
                       <button
                         type="button"
                         onClick={skipLine}
-                        className="min-h-[44px] rounded-xl px-4 py-2.5 text-sm text-[#cfc4ad] underline-offset-2 hover:underline"
+                        className="min-h-[44px] rounded-xl px-4 py-2.5 md:text-base text-sm text-[#cfc4ad] underline-offset-2 hover:underline"
                       >
                         {l.prayerSkip} →
                       </button>
@@ -1263,7 +1288,7 @@ export default function SelahTab({ compact = false }: { compact?: boolean }) {
                       <button
                         type="button"
                         onClick={resumePrayer}
-                        className="min-h-[44px] rounded-xl px-6 py-2.5 text-sm font-bold text-white transition-all hover:brightness-110"
+                        className="min-h-[44px] rounded-xl px-6 py-2.5 md:px-8 md:py-3 text-sm md:text-base font-bold text-white transition-all hover:brightness-110"
                         style={{ background: accent }}
                       >
                         {l.prayerResume}
@@ -1271,7 +1296,7 @@ export default function SelahTab({ compact = false }: { compact?: boolean }) {
                       <button
                         type="button"
                         onClick={skipLine}
-                        className="min-h-[44px] rounded-xl px-4 py-2.5 text-sm text-[#cfc4ad] underline-offset-2 hover:underline"
+                        className="min-h-[44px] rounded-xl px-4 py-2.5 md:text-base text-sm text-[#cfc4ad] underline-offset-2 hover:underline"
                       >
                         {l.prayerSkip} →
                       </button>
@@ -1281,7 +1306,7 @@ export default function SelahTab({ compact = false }: { compact?: boolean }) {
                     <button
                       type="button"
                       onClick={restartPrayer}
-                      className="min-h-[44px] rounded-xl border border-[#ffffff44] px-5 py-2.5 text-sm font-bold text-white transition-all hover:bg-[#ffffff18]"
+                      className="min-h-[44px] rounded-xl border border-[#ffffff44] px-5 py-2.5 md:px-6 md:py-3 text-sm md:text-base font-bold text-white transition-all hover:bg-[#ffffff18]"
                     >
                       ↻ {l.prayerRestart}
                     </button>
@@ -1290,7 +1315,7 @@ export default function SelahTab({ compact = false }: { compact?: boolean }) {
                     <button
                       type="button"
                       onClick={() => setPrayerFocus(true)}
-                      className="min-h-[44px] rounded-xl border border-[#ffffff44] px-4 py-2.5 text-xs font-semibold text-[#cfc4ad] transition-all hover:text-white"
+                      className="min-h-[44px] rounded-xl border border-[#ffffff44] px-4 py-2.5 md:px-5 md:py-3 text-xs md:text-sm font-semibold text-[#cfc4ad] transition-all hover:text-white"
                     >
                       ⛶ {l.prayerFullscreen}
                     </button>
@@ -1299,7 +1324,7 @@ export default function SelahTab({ compact = false }: { compact?: boolean }) {
 
                 <div className="mt-3 flex items-center justify-center gap-2">
                   {speechAvailable ? (
-                    <label className="flex min-h-[44px] cursor-pointer items-center gap-2 text-xs text-[#cfc4ad]">
+                    <label className="flex min-h-[44px] cursor-pointer items-center gap-2 text-xs md:text-sm text-[#cfc4ad]">
                       <input
                         type="checkbox"
                         checked={speechOn}
@@ -1313,7 +1338,7 @@ export default function SelahTab({ compact = false }: { compact?: boolean }) {
                       🔊 {l.readAloud}
                     </label>
                   ) : (
-                    <p className="text-[11px] text-[#8f846e]">{l.readAloudOff}</p>
+                    <p className="text-[11px] md:text-xs text-[#8f846e]">{l.readAloudOff}</p>
                   )}
                 </div>
               </section>
@@ -1331,15 +1356,15 @@ export default function SelahTab({ compact = false }: { compact?: boolean }) {
                     type="button"
                     onClick={() => setPrayerFocus(false)}
                     autoFocus
-                    className="absolute right-4 top-4 min-h-[44px] min-w-[44px] rounded-full border border-[#ffffff55] px-4 py-2 text-sm font-bold text-white"
+                    className="absolute right-4 top-4 md:right-10 md:top-10 min-h-[44px] min-w-[44px] rounded-full border border-[#ffffff55] px-4 py-2 text-sm font-bold text-white"
                   >
                     ✕ {l.prayerExitFullscreen}
                   </button>
-                  <p className="text-5xl font-semibold tabular-nums" aria-live="polite">
+                  <p className="text-5xl md:text-7xl font-semibold tabular-nums" aria-live="polite">
                     {phase === "done" ? "✓" : formatPrayerCountdown(remainingSec)}
                   </p>
                   <p
-                    className="mt-6 max-w-md text-center text-2xl italic leading-relaxed"
+                    className="mt-6 md:mt-8 max-w-md md:max-w-2xl text-center text-2xl md:text-4xl italic leading-relaxed"
                     style={{ fontFamily: "var(--font-serif)" }}
                   >
                     {phase === "done"
@@ -1348,19 +1373,19 @@ export default function SelahTab({ compact = false }: { compact?: boolean }) {
                         ? l.prayerSilence
                         : (prayerLines[lineIdx] ?? "")}
                   </p>
-                  <div className="mt-8 flex flex-wrap justify-center gap-2">
+                  <div className="mt-8 md:mt-10 flex flex-wrap justify-center gap-2 md:gap-3">
                     {phase === "running" && (
-                      <button type="button" onClick={pausePrayer} className="min-h-[44px] rounded-xl border border-[#ffffff55] px-6 py-3 text-sm font-bold text-white">
+                      <button type="button" onClick={pausePrayer} className="min-h-[44px] rounded-xl border border-[#ffffff55] px-6 py-3 md:px-8 text-sm md:text-base font-bold text-white">
                         {l.prayerPause}
                       </button>
                     )}
                     {phase === "paused" && (
-                      <button type="button" onClick={resumePrayer} className="min-h-[44px] rounded-xl bg-white px-6 py-3 text-sm font-bold text-black">
+                      <button type="button" onClick={resumePrayer} className="min-h-[44px] rounded-xl bg-white px-6 py-3 md:px-8 text-sm md:text-base font-bold text-black">
                         {l.prayerResume}
                       </button>
                     )}
                     {(phase === "running" || phase === "paused") && (
-                      <button type="button" onClick={skipLine} className="min-h-[44px] rounded-xl px-4 py-3 text-sm text-[#cfc4ad] underline-offset-2 hover:underline">
+                      <button type="button" onClick={skipLine} className="min-h-[44px] rounded-xl px-4 py-3 md:px-6 text-sm md:text-base text-[#cfc4ad] underline-offset-2 hover:underline">
                         {l.prayerSkip} →
                       </button>
                     )}
@@ -1371,16 +1396,16 @@ export default function SelahTab({ compact = false }: { compact?: boolean }) {
           )}
 
           {step === 4 && rx && (
-            <div className="selah-step flex flex-col gap-4" key={`step4-${lang}`}>
-              <section className="rounded-2xl border p-4" style={{ borderColor: `${accent}66`, background: "color-mix(in srgb, var(--surface) 85%, transparent)" }}>
+            <div className="selah-step flex flex-col gap-4 md:gap-6 md:max-w-2xl md:mx-auto md:w-full" key={`step4-${lang}`}>
+              <section className="rounded-2xl border p-4 md:p-6" style={{ borderColor: `${accent}66`, background: "color-mix(in srgb, var(--surface) 85%, transparent)" }}>
                 <p className="mb-1 text-xs font-bold uppercase tracking-widest" style={{ color: accent }}>
                   {l.pas}
                 </p>
-                <p className="text-base font-medium leading-relaxed text-[var(--foreground)]">
+                <p className="text-base md:text-lg font-medium leading-relaxed text-[var(--foreground)]">
                   {rx.pas}
                 </p>
               </section>
-              <section className="rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-4">
+              <section className="rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-4 md:p-6">
                 <label
                   htmlFor="selah-note"
                   className="mb-2 block text-xs font-bold uppercase tracking-widest text-[var(--muted)]"
@@ -1394,7 +1419,7 @@ export default function SelahTab({ compact = false }: { compact?: boolean }) {
                   maxLength={280}
                   rows={3}
                   placeholder={l.notePh}
-                  className="w-full resize-none rounded-xl border border-[var(--border)] bg-[var(--background)] px-3 py-2 text-sm text-[var(--foreground)] outline-none focus:border-[var(--color-accent)]"
+                  className="w-full resize-none rounded-xl border border-[var(--border)] bg-[var(--background)] px-3 py-2 md:px-4 md:py-3 text-sm text-[var(--foreground)] outline-none focus:border-[var(--color-accent)]"
                 />
                 <p className="mt-1 text-right text-[10px] text-[var(--muted)]">
                   {note.length}/280
@@ -1404,11 +1429,11 @@ export default function SelahTab({ compact = false }: { compact?: boolean }) {
           )}
 
           {step > 0 && (
-            <div className="grid grid-cols-[auto_1fr] gap-2">
+            <div className="grid grid-cols-[auto_1fr] gap-2 md:flex md:justify-center md:gap-4 md:mt-4">
               <button
                 type="button"
                 onClick={() => setStep((s) => Math.max(0, s - 1))}
-                className="min-h-[44px] rounded-xl border border-[var(--border)] bg-[var(--surface)] px-4 py-3 text-sm font-semibold text-[var(--foreground)] transition-all hover:border-[var(--color-accent)]"
+                className="min-h-[44px] rounded-xl border border-[var(--border)] bg-[var(--surface)] px-4 py-3 md:px-10 text-sm font-semibold text-[var(--foreground)] transition-all hover:border-[var(--color-accent)]"
               >
                 {l.back}
               </button>
@@ -1416,7 +1441,7 @@ export default function SelahTab({ compact = false }: { compact?: boolean }) {
                 <button
                   type="button"
                   onClick={() => setStep((s) => Math.min(LAST_STEP, s + 1))}
-                  className="min-h-[44px] rounded-xl bg-[var(--color-accent)] py-3 text-sm font-bold text-white transition-all hover:brightness-90 active:scale-[0.99]"
+                  className="min-h-[44px] rounded-xl bg-[var(--color-accent)] py-3 md:px-10 text-sm font-bold text-white transition-all hover:brightness-90 active:scale-[0.99]"
                 >
                   {step === 2 && gratitudes.every((g) => !g.trim()) ? l.skip : l.next}
                 </button>
@@ -1424,7 +1449,7 @@ export default function SelahTab({ compact = false }: { compact?: boolean }) {
                 <button
                   type="button"
                   onClick={finish}
-                  className="min-h-[44px] rounded-xl bg-[var(--color-accent)] py-3 text-sm font-bold text-white transition-all hover:brightness-90 active:scale-[0.99]"
+                  className="min-h-[44px] rounded-xl bg-[var(--color-accent)] py-3 md:px-10 text-sm font-bold text-white transition-all hover:brightness-90 active:scale-[0.99]"
                 >
                   {l.finish}
                 </button>
@@ -1435,56 +1460,58 @@ export default function SelahTab({ compact = false }: { compact?: boolean }) {
       )}
 
       {tab === "tonight" && finished && rx && (
-        <div className="flex flex-col gap-4">
-          <section className="rounded-2xl border p-5 text-center" style={{ borderColor: `${accent}66` }}>
-            <p className="text-3xl" aria-hidden="true">
+        <div className="flex flex-col gap-4 md:gap-6 md:max-w-3xl md:mx-auto md:w-full">
+          <section className="rounded-2xl border p-5 md:p-10 text-center" style={{ borderColor: `${accent}66` }}>
+            <p className="text-3xl md:text-5xl" aria-hidden="true">
               🌿
             </p>
             <h2
-              className="mt-1 text-xl font-bold text-[var(--color-primary)]"
+              className="mt-1 md:mt-3 text-xl md:text-3xl font-bold text-[var(--color-primary)]"
               style={{ fontFamily: "var(--font-serif)" }}
             >
               {l.doneTitle}
             </h2>
-            <p className="mt-2 text-sm text-[var(--foreground)]">{l.doneText}</p>
-            <p className="mt-3 text-sm font-semibold text-[var(--color-accent)]">
+            <p className="mt-2 md:mt-4 text-sm md:text-base text-[var(--foreground)]">{l.doneText}</p>
+            <p className="mt-3 md:mt-5 text-sm md:text-lg font-semibold text-[var(--color-accent)]">
               {stats.current} {stats.current === 1 ? l.streakOne : l.streak}
             </p>
           </section>
 
           {story && (
-            <section className="rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-4">
-              <p className="mb-2 text-xs font-bold uppercase tracking-widest text-[var(--muted)]">
-                {l.storyTitle}
-              </p>
-              <div className="flex items-center gap-3">
-                <span
-                  className={`flex h-14 w-14 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br text-3xl ${story.gradient}`}
-                  aria-hidden="true"
-                >
-                  {story.emoji}
-                </span>
-                <div className="min-w-0 flex-1">
-                  <p className="text-sm font-bold leading-snug text-[var(--foreground)]">
-                    {story.title}
-                  </p>
-                  <p className="mt-0.5 text-[11px] text-[var(--muted)]">
-                    {story.theme} · ⏱ {story.durationMin} min
-                  </p>
+            <section className="rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-4 md:p-6 md:flex md:items-center md:justify-between">
+              <div>
+                <p className="mb-2 text-xs font-bold uppercase tracking-widest text-[var(--muted)]">
+                  {l.storyTitle}
+                </p>
+                <div className="flex items-center gap-3 md:gap-4">
+                  <span
+                    className={`flex h-14 w-14 md:h-16 md:w-16 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br text-3xl md:text-4xl ${story.gradient}`}
+                    aria-hidden="true"
+                  >
+                    {story.emoji}
+                  </span>
+                  <div className="min-w-0 flex-1">
+                    <p className="text-sm md:text-lg font-bold leading-snug text-[var(--foreground)]">
+                      {story.title}
+                    </p>
+                    <p className="mt-0.5 md:mt-1 text-[11px] md:text-sm text-[var(--muted)]">
+                      {story.theme} · ⏱ {story.durationMin} min
+                    </p>
+                  </div>
                 </div>
               </div>
               {compact ? (
                 <button
                   type="button"
                   onClick={() => openStoryInOtherPane(story.slug)}
-                  className="mt-3 min-h-[44px] w-full rounded-xl bg-[var(--color-accent)] py-2.5 text-sm font-bold text-white transition-all hover:brightness-90"
+                  className="mt-3 md:mt-0 min-h-[44px] w-full md:w-auto rounded-xl bg-[var(--color-accent)] px-6 py-2.5 text-sm font-bold text-white transition-all hover:brightness-90"
                 >
                   {l.storyRead}
                 </button>
               ) : (
                 <Link
                   href={`/histoires/${story.slug}`}
-                  className="mt-3 block w-full rounded-xl bg-[var(--color-accent)] py-2.5 text-center text-sm font-bold text-white transition-all hover:brightness-90"
+                  className="mt-3 md:mt-0 block w-full md:w-auto rounded-xl bg-[var(--color-accent)] px-6 py-2.5 text-center text-sm font-bold text-white transition-all hover:brightness-90"
                 >
                   {l.storyRead}
                 </Link>
@@ -1492,11 +1519,11 @@ export default function SelahTab({ compact = false }: { compact?: boolean }) {
             </section>
           )}
 
-          <div className="grid grid-cols-2 gap-2">
+          <div className="grid grid-cols-2 gap-2 md:gap-4">
             <button
               type="button"
               onClick={shareText}
-              className="min-h-[44px] rounded-xl border border-[var(--border)] bg-[var(--surface)] py-3 text-sm font-semibold text-[var(--foreground)] transition-all hover:border-[var(--color-accent)]"
+              className="min-h-[44px] rounded-xl border border-[var(--border)] bg-[var(--surface)] py-3 md:text-base text-sm font-semibold text-[var(--foreground)] transition-all hover:border-[var(--color-accent)]"
             >
               {copied ? l.copied : l.shareText}
             </button>
@@ -1504,7 +1531,7 @@ export default function SelahTab({ compact = false }: { compact?: boolean }) {
               type="button"
               onClick={shareImage}
               disabled={sharing}
-              className="min-h-[44px] rounded-xl bg-[var(--color-accent)] py-3 text-sm font-bold text-white transition-all hover:brightness-90 disabled:opacity-50"
+              className="min-h-[44px] rounded-xl bg-[var(--color-accent)] py-3 md:text-base text-sm font-bold text-white transition-all hover:brightness-90 disabled:opacity-50"
             >
               {sharing ? l.sharing : `🖼️ ${l.shareImage}`}
             </button>
@@ -1512,7 +1539,7 @@ export default function SelahTab({ compact = false }: { compact?: boolean }) {
           <button
             type="button"
             onClick={() => setTab("path")}
-            className="min-h-[44px] rounded-xl border border-[var(--border)] bg-[var(--surface)] py-3 text-sm font-semibold text-[var(--foreground)] transition-all hover:border-[var(--color-accent)]"
+            className="min-h-[44px] rounded-xl border border-[var(--border)] bg-[var(--surface)] py-3 md:mt-2 text-sm font-semibold text-[var(--foreground)] transition-all hover:border-[var(--color-accent)]"
           >
             {l.seePath}
           </button>
@@ -1545,52 +1572,52 @@ export default function SelahTab({ compact = false }: { compact?: boolean }) {
       )}
 
       {tab === "path" && (
-        <div className="flex flex-col gap-4">
+        <div className="flex flex-col gap-4 md:grid md:grid-cols-2 md:gap-6 md:items-start">
           {entries.length === 0 ? (
-            <section className="rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-5 text-center">
-              <p className="text-sm leading-relaxed text-[var(--muted)]">{l.emptyPath}</p>
+            <section className="rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-5 md:p-8 text-center md:col-span-2">
+              <p className="text-sm md:text-base leading-relaxed text-[var(--muted)]">{l.emptyPath}</p>
               <button
                 type="button"
                 onClick={() => setTab("tonight")}
-                className="mt-4 min-h-[44px] rounded-xl bg-[var(--color-accent)] px-5 py-2.5 text-sm font-bold text-white transition-all hover:brightness-90"
+                className="mt-4 md:mt-6 min-h-[44px] rounded-xl bg-[var(--color-accent)] px-5 py-2.5 md:px-8 md:py-3 text-sm md:text-base font-bold text-white transition-all hover:brightness-90"
               >
                 {l.tabTonight}
               </button>
             </section>
           ) : (
             <>
-              <section className="grid grid-cols-3 gap-2" aria-label={l.tabPath}>
-                                <div className="min-w-0 rounded-2xl border border-[var(--color-accent)]/40 bg-[var(--color-accent)]/5 p-3 text-center">
-                  <p className="text-2xl font-bold text-[var(--color-accent)]">
+              <section className="grid grid-cols-3 gap-2 md:col-span-2 md:gap-6" aria-label={l.tabPath}>
+                <div className="min-w-0 rounded-2xl border border-[var(--color-accent)]/40 bg-[var(--color-accent)]/5 p-3 md:p-6 text-center">
+                  <p className="text-2xl md:text-3xl font-bold text-[var(--color-accent)]">
                     🌿 {stats.current}
                   </p>
-                  <p className="mt-0.5 text-[10px] uppercase tracking-wide text-[var(--muted)]">
+                  <p className="mt-0.5 md:mt-1 text-[10px] md:text-xs uppercase tracking-wide text-[var(--muted)]">
                     {stats.current === 1 ? l.streakOne : l.streak}
                   </p>
                 </div>
-                <div className="min-w-0 rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-3 text-center">
-                  <p className="text-2xl font-bold text-[var(--foreground)]">{stats.longest}</p>
-                  <p className="mt-0.5 text-[10px] uppercase tracking-wide text-[var(--muted)]">
+                <div className="min-w-0 rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-3 md:p-6 text-center">
+                  <p className="text-2xl md:text-3xl font-bold text-[var(--foreground)]">{stats.longest}</p>
+                  <p className="mt-0.5 md:mt-1 text-[10px] md:text-xs uppercase tracking-wide text-[var(--muted)]">
                     {l.best}
                   </p>
                 </div>
-                <div className="min-w-0 rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-3 text-center">
-                  <p className="text-2xl font-bold text-[var(--foreground)]">{stats.total}</p>
-                  <p className="mt-0.5 text-[10px] uppercase tracking-wide text-[var(--muted)]">
+                <div className="min-w-0 rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-3 md:p-6 text-center">
+                  <p className="text-2xl md:text-3xl font-bold text-[var(--foreground)]">{stats.total}</p>
+                  <p className="mt-0.5 md:mt-1 text-[10px] md:text-xs uppercase tracking-wide text-[var(--muted)]">
                     {l.total}
                   </p>
                 </div>
               </section>
 
-              <section className="rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-4">
+              <section className="rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-4 md:p-6">
                 <p className="mb-3 text-xs font-bold uppercase tracking-widest text-[var(--muted)]">
                   {l.week}
                 </p>
-                <div className="grid grid-cols-7 gap-1">
+                <div className="grid grid-cols-7 gap-1 md:gap-2">
                   {week.map((d) => (
-                    <div key={d.date} className="flex min-w-0 flex-col items-center gap-1">
+                    <div key={d.date} className="flex min-w-0 flex-col items-center gap-1 md:gap-2">
                       <span
-                        className={`flex h-9 w-9 items-center justify-center rounded-full border text-base ${
+                        className={`flex h-9 w-9 md:h-11 md:w-11 items-center justify-center rounded-full border text-base md:text-lg ${
                           d.entry
                             ? "border-[var(--color-accent)] bg-[var(--color-accent)]/10"
                             : d.grace
@@ -1604,7 +1631,7 @@ export default function SelahTab({ compact = false }: { compact?: boolean }) {
                         {d.entry ? "🌿" : d.grace ? "🛡️" : ""}
                       </span>
                       <span
-                        className={`text-[10px] uppercase ${
+                        className={`text-[10px] md:text-xs uppercase ${
                           d.isToday ? "font-bold text-[var(--color-accent)]" : "text-[var(--muted)]"
                         }`}
                       >
@@ -1616,7 +1643,7 @@ export default function SelahTab({ compact = false }: { compact?: boolean }) {
               </section>
 
               {/* Calendrier du mois */}
-              <section className="rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-4">
+              <section className="rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-4 md:p-6">
                 <div className="mb-1 flex items-center justify-between gap-2">
                   <button
                     type="button"
@@ -1639,10 +1666,10 @@ export default function SelahTab({ compact = false }: { compact?: boolean }) {
                     ›
                   </button>
                 </div>
-                <p className="mb-3 text-center text-[11px] text-[var(--muted)]">{l.calendarHint}</p>
-                <div className="grid grid-cols-7 gap-1" role="grid" aria-label={calendar.label}>
+                <p className="mb-3 text-center text-[11px] md:text-xs text-[var(--muted)]">{l.calendarHint}</p>
+                <div className="grid grid-cols-7 gap-1 md:gap-2" role="grid" aria-label={calendar.label}>
                   {dowHeaders.map((d, i) => (
-                    <span key={i} className="pb-1 text-center text-[10px] font-bold uppercase text-[var(--muted)]">
+                    <span key={i} className="pb-1 text-center text-[10px] md:text-xs font-bold uppercase text-[var(--muted)]">
                       {d}
                     </span>
                   ))}
@@ -1654,7 +1681,7 @@ export default function SelahTab({ compact = false }: { compact?: boolean }) {
                       <span
                         key={c.key}
                         role="gridcell"
-                        className={`flex h-9 min-w-0 items-center justify-center rounded-lg border text-xs ${
+                        className={`flex h-9 md:h-11 w-full items-center justify-center rounded-lg border text-xs md:text-sm ${
                           !c.inMonth
                             ? "border-transparent opacity-30"
                             : has
@@ -1675,11 +1702,11 @@ export default function SelahTab({ compact = false }: { compact?: boolean }) {
               </section>
 
               {/* Bilan factuel de la semaine */}
-              <section className="rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-4">
-                <p className="mb-2 text-xs font-bold uppercase tracking-widest text-[var(--muted)]">
+              <section className="rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-4 md:p-6">
+                <p className="mb-2 md:mb-3 text-xs font-bold uppercase tracking-widest text-[var(--muted)]">
                   {l.reviewTitle}
                 </p>
-                <ul className="flex flex-col gap-1 text-sm text-[var(--foreground)]">
+                <ul className="flex flex-col gap-1 md:gap-2 text-sm md:text-base text-[var(--foreground)]">
                   <li>· {l.reviewPauses(review.pauses)}</li>
                   <li>· {l.reviewThanks(review.thanks)}</li>
                   <li>· {l.reviewStates(review.states)}</li>
@@ -1689,15 +1716,15 @@ export default function SelahTab({ compact = false }: { compact?: boolean }) {
 
               {/* Souvenirs */}
               {memories.length > 0 && (
-                <section className="rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-4">
-                  <p className="mb-2 text-xs font-bold uppercase tracking-widest text-[var(--muted)]">
+                <section className="rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-4 md:p-6 md:col-span-2">
+                  <p className="mb-2 md:mb-4 text-xs font-bold uppercase tracking-widest text-[var(--muted)]">
                     🕰️ {l.memoriesTitle}
                   </p>
-                  <ul className="flex flex-col gap-3">
+                  <ul className="flex flex-col md:grid md:grid-cols-2 gap-3 md:gap-6">
                     {memories.map((m) => (
-                      <li key={m.delta} className="text-sm text-[var(--foreground)]">
-                        <p className="text-xs italic text-[var(--muted)]">{l.memoryDays(m.delta)}</p>
-                        <ul className="mt-1 flex flex-col gap-0.5">
+                      <li key={m.delta} className="text-sm md:text-base text-[var(--foreground)]">
+                        <p className="text-xs md:text-sm italic text-[var(--muted)]">{l.memoryDays(m.delta)}</p>
+                        <ul className="mt-1 md:mt-2 flex flex-col gap-0.5 md:gap-1">
                           {m.gratitudes.map((g, i) => (
                             <li key={i} className="break-words">• {g}</li>
                           ))}
@@ -1709,12 +1736,12 @@ export default function SelahTab({ compact = false }: { compact?: boolean }) {
               )}
 
               {/* Sujets de prière suivis */}
-              <section className="rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-4">
+              <section className="rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-4 md:p-6 md:col-span-2">
                 <p className="text-xs font-bold uppercase tracking-widest text-[var(--muted)]">
                   🙏 {l.topicsTitle}
                 </p>
-                <p className="mt-0.5 text-[11px] text-[var(--muted)]">{l.topicsHint}</p>
-                <div className="mt-3 grid grid-cols-[1fr_auto] gap-2">
+                <p className="mt-0.5 md:mt-1 text-[11px] md:text-sm text-[var(--muted)]">{l.topicsHint}</p>
+                <div className="mt-3 md:mt-4 flex flex-col sm:flex-row gap-2 md:gap-3">
                   <input
                     value={newTopic}
                     onChange={(e) => setNewTopic(e.target.value)}
@@ -1727,7 +1754,7 @@ export default function SelahTab({ compact = false }: { compact?: boolean }) {
                     placeholder={l.topicsPh}
                     maxLength={140}
                     aria-label={l.topicsPh}
-                    className="w-full min-w-0 rounded-xl border border-[var(--border)] bg-[var(--background)] px-3 py-2.5 text-sm text-[var(--foreground)] outline-none placeholder:text-[var(--muted)] focus:border-[var(--color-accent)]"
+                    className="w-full flex-1 rounded-xl border border-[var(--border)] bg-[var(--background)] px-3 py-2.5 md:px-4 md:py-3 text-sm text-[var(--foreground)] outline-none placeholder:text-[var(--muted)] focus:border-[var(--color-accent)]"
                   />
                   <button
                     type="button"
@@ -1737,19 +1764,19 @@ export default function SelahTab({ compact = false }: { compact?: boolean }) {
                         setNewTopic("");
                       }
                     }}
-                    className="min-h-[44px] rounded-xl bg-[var(--color-accent)] px-4 py-2.5 text-sm font-bold text-white hover:brightness-90"
+                    className="min-h-[44px] rounded-xl bg-[var(--color-accent)] px-4 py-2.5 md:px-6 md:py-3 text-sm font-bold text-white hover:brightness-90"
                   >
                     {l.topicsAdd}
                   </button>
                 </div>
                 {topics.length === 0 ? (
-                  <p className="mt-3 text-xs text-[var(--muted)]">{l.topicsEmpty}</p>
+                  <p className="mt-3 md:mt-4 text-xs md:text-sm text-[var(--muted)]">{l.topicsEmpty}</p>
                 ) : (
-                  <ul className="mt-3 flex flex-col gap-2">
+                  <ul className="mt-3 md:mt-4 flex flex-col md:grid md:grid-cols-2 gap-2 md:gap-3">
                     {topics.slice(0, 20).map((t) => (
                       <li
                         key={t.id}
-                        className="flex min-w-0 items-center gap-2 rounded-xl border border-[var(--border)] px-3 py-2"
+                        className="flex min-w-0 items-center gap-2 md:gap-3 rounded-xl border border-[var(--border)] px-3 py-2 md:p-3"
                       >
                         <button
                           type="button"
@@ -1765,7 +1792,7 @@ export default function SelahTab({ compact = false }: { compact?: boolean }) {
                           {t.answeredAt ? "✅" : "○"}
                         </button>
                         <span
-                          className={`min-w-0 flex-1 break-words text-sm ${
+                          className={`min-w-0 flex-1 break-words text-sm md:text-base ${
                             t.answeredAt ? "text-[var(--muted)] line-through" : "text-[var(--foreground)]"
                           }`}
                         >
@@ -1775,7 +1802,7 @@ export default function SelahTab({ compact = false }: { compact?: boolean }) {
                           type="button"
                           onClick={() => deletePrayerTopic(t.id)}
                           aria-label={l.remove}
-                          className="shrink-0 px-2 py-2 text-[11px] text-[var(--muted)] underline-offset-2 hover:underline"
+                          className="shrink-0 px-2 py-2 text-[11px] md:text-xs text-[var(--muted)] underline-offset-2 hover:underline"
                         >
                           {l.remove}
                         </button>
@@ -1786,18 +1813,18 @@ export default function SelahTab({ compact = false }: { compact?: boolean }) {
               </section>
 
               {wall.length > 0 && (
-                <section className="rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-4">
+                <section className="rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-4 md:p-6 md:col-span-2">
                   <p className="text-xs font-bold uppercase tracking-widest text-[var(--muted)]">
                     🙏 {l.wall}
                   </p>
-                  <p className="mt-0.5 text-[11px] text-[var(--muted)]">{l.wallHint}</p>
-                  <ul className="mt-3 flex flex-col gap-2">
+                  <p className="mt-0.5 md:mt-1 text-[11px] md:text-sm text-[var(--muted)]">{l.wallHint}</p>
+                  <ul className="mt-3 md:mt-4 flex flex-col md:grid md:grid-cols-2 gap-2 md:gap-3">
                     {wall.map((w, i) => (
                       <li
                         key={`${w.id}-${i}`}
-                        className="flex min-w-0 items-baseline gap-2 text-sm text-[var(--foreground)]"
+                        className="flex min-w-0 items-baseline gap-2 text-sm md:text-base text-[var(--foreground)]"
                       >
-                        <span className="shrink-0 text-[10px] uppercase text-[var(--muted)]">
+                        <span className="shrink-0 text-[10px] md:text-xs uppercase text-[var(--muted)]">
                           {fmtShort(w.date)}
                         </span>
                         <span className="min-w-0 break-words">{w.g}</span>
@@ -1807,91 +1834,93 @@ export default function SelahTab({ compact = false }: { compact?: boolean }) {
                 </section>
               )}
 
-              <section className="flex flex-col gap-2">
+              <section className="flex flex-col gap-3 md:gap-4 md:col-span-2">
                 <p className="px-1 text-xs font-bold uppercase tracking-widest text-[var(--muted)]">
                   {l.recent}
                 </p>
-                {entries.slice(0, 30).map((e) => {
-                  const m = getStateMeta(e.state);
-                  const href = compact ? null : chapterHref(e.ref);
-                  return (
-                    <article
-                      key={e.id}
-                      className="min-w-0 rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-4"
-                    >
-                      <div className="flex items-start justify-between gap-2">
-                        <div className="min-w-0">
-                          <p className="text-xs capitalize text-[var(--muted)]">{fmtDate(e.date)}</p>
-                          <p className="mt-0.5 text-sm font-semibold text-[var(--foreground)]">
-                            {lang === "en" ? m.en : m.fr}
-                          </p>
-                        </div>
-                        <button
-                          type="button"
-                          onClick={() => {
-                            if (confirm(l.confirmRemove)) deleteSelahEntry(e.id);
-                          }}
-                          className="shrink-0 px-2 py-2 text-[11px] text-[var(--muted)] underline-offset-2 hover:underline"
-                        >
-                          {l.remove}
-                        </button>
-                      </div>
-
-                      {e.ref &&
-                        (href ? (
-                          <Link
-                            href={href}
-                            className="mt-2 inline-block min-h-[44px] text-sm font-bold text-[var(--color-accent)] underline-offset-2 hover:underline"
+                <div className="flex flex-col md:grid md:grid-cols-2 gap-2 md:gap-4">
+                  {entries.slice(0, 30).map((e) => {
+                    const m = getStateMeta(e.state);
+                    const href = compact ? null : chapterHref(e.ref);
+                    return (
+                      <article
+                        key={e.id}
+                        className="min-w-0 rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-4 md:p-5"
+                      >
+                        <div className="flex items-start justify-between gap-2">
+                          <div className="min-w-0">
+                            <p className="text-xs md:text-sm capitalize text-[var(--muted)]">{fmtDate(e.date)}</p>
+                            <p className="mt-0.5 md:mt-1 text-sm md:text-base font-semibold text-[var(--foreground)]">
+                              {lang === "en" ? m.en : m.fr}
+                            </p>
+                          </div>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              if (confirm(l.confirmRemove)) deleteSelahEntry(e.id);
+                            }}
+                            className="shrink-0 px-2 py-2 text-[11px] md:text-xs text-[var(--muted)] underline-offset-2 hover:underline"
                           >
-                            {e.ref}
-                          </Link>
-                        ) : (
-                          <p className="mt-2 text-sm font-bold text-[var(--color-accent)]">{e.ref}</p>
-                        ))}
-
-                      {e.gratitudes.length > 0 && (
-                        <div className="mt-2">
-                          <p className="text-[10px] font-bold uppercase tracking-wide text-[var(--muted)]">
-                            {l.thanksFor}
-                          </p>
-                          <ul className="mt-1 flex flex-col gap-0.5 text-sm text-[var(--foreground)]">
-                            {e.gratitudes.map((g, i) => (
-                              <li key={i} className="break-words">
-                                • {g}
-                              </li>
-                            ))}
-                          </ul>
+                            {l.remove}
+                          </button>
                         </div>
-                      )}
 
-                      {e.topic && (
-                        <p className="mt-2 break-words text-xs italic text-[var(--muted)]">
-                          {l.prayerFor} : {e.topic}
-                        </p>
-                      )}
+                        {e.ref &&
+                          (href ? (
+                            <Link
+                              href={href}
+                              className="mt-2 inline-block min-h-[44px] text-sm md:text-base font-bold text-[var(--color-accent)] underline-offset-2 hover:underline"
+                            >
+                              {e.ref}
+                            </Link>
+                          ) : (
+                            <p className="mt-2 text-sm md:text-base font-bold text-[var(--color-accent)]">{e.ref}</p>
+                          ))}
 
-                      {e.note && (
-                        <p className="mt-2 break-words border-l-2 border-[var(--color-accent)] pl-2 text-xs text-[var(--foreground)]">
-                          <span className="font-semibold">{l.noteFor} : </span>
-                          {e.note}
-                        </p>
-                      )}
+                        {e.gratitudes.length > 0 && (
+                          <div className="mt-2 md:mt-3">
+                            <p className="text-[10px] md:text-xs font-bold uppercase tracking-wide text-[var(--muted)]">
+                              {l.thanksFor}
+                            </p>
+                            <ul className="mt-1 flex flex-col gap-0.5 md:gap-1 text-sm md:text-base text-[var(--foreground)]">
+                              {e.gratitudes.map((g, i) => (
+                                <li key={i} className="break-words">
+                                  • {g}
+                                </li>
+                              ))}
+                            </ul>
+                          </div>
+                        )}
 
-                      {e.pas && (
-                        <p className="mt-2 break-words text-xs text-[var(--muted)]">
-                          {e.pas}{" "}
-                          <span
-                            className={
-                              e.pasDone === true ? "font-semibold text-green-600" : "text-[var(--muted)]"
-                            }
-                          >
-                            {e.pasDone === true ? `· ✓ ${l.stepDone}` : ""}
-                          </span>
-                        </p>
-                      )}
-                    </article>
-                  );
-                })}
+                        {e.topic && (
+                          <p className="mt-2 break-words text-xs md:text-sm italic text-[var(--muted)]">
+                            {l.prayerFor} : {e.topic}
+                          </p>
+                        )}
+
+                        {e.note && (
+                          <p className="mt-2 break-words border-l-2 border-[var(--color-accent)] pl-2 text-xs md:text-sm text-[var(--foreground)]">
+                            <span className="font-semibold">{l.noteFor} : </span>
+                            {e.note}
+                          </p>
+                        )}
+
+                        {e.pas && (
+                          <p className="mt-2 break-words text-xs md:text-sm text-[var(--muted)]">
+                            {e.pas}{" "}
+                            <span
+                              className={
+                                e.pasDone === true ? "font-semibold text-green-600" : "text-[var(--muted)]"
+                              }
+                            >
+                              {e.pasDone === true ? `· ✓ ${l.stepDone}` : ""}
+                            </span>
+                          </p>
+                        )}
+                      </article>
+                    );
+                  })}
+                </div>
               </section>
 
               <button
@@ -1899,7 +1928,7 @@ export default function SelahTab({ compact = false }: { compact?: boolean }) {
                 onClick={() => {
                   if (confirm(l.confirmClear)) clearSelah();
                 }}
-                className="min-h-[44px] py-2 text-center text-xs text-red-500 underline-offset-2 hover:underline"
+                className="min-h-[44px] py-2 text-center text-xs md:text-sm text-red-500 underline-offset-2 hover:underline md:col-span-2 mt-4"
               >
                 {l.clearAll}
               </button>
@@ -1911,4 +1940,3 @@ export default function SelahTab({ compact = false }: { compact?: boolean }) {
     </div>
   );
 }
-
