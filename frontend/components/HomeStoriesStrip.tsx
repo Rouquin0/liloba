@@ -15,7 +15,10 @@ export default function HomeStoriesStrip() {
             NOUVEAU
           </span>
         </div>
-        <Link href="/histoires" className="shrink-0 text-xs font-semibold text-[var(--muted)] transition-colors hover:text-[var(--foreground)]">
+        <Link
+          href="/histoires"
+          className="shrink-0 text-xs font-semibold text-[var(--muted)] transition-colors hover:text-[var(--foreground)]"
+        >
           Voir tout →
         </Link>
       </div>
@@ -24,11 +27,11 @@ export default function HomeStoriesStrip() {
         {STORIES.length} histoires illustrées · fais glisser →
       </p>
 
-      {/* -mx-5 permet de prendre toute la largeur de l'écran (100%) */}
+      {/* Le conteneur est en -mx-5 pour prendre toute la largeur de l'écran */}
       <div className="-mx-5 flex snap-x snap-mandatory gap-3 overflow-x-auto overscroll-x-contain touch-pan-x pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
         
-        {/* Espaceur gauche : 50% de la largeur moins la moitié de la carte (74px) */}
-        <div aria-hidden="true" className="w-[calc(50%-74px)] shrink-0" />
+        {/* Espaceur de gauche (50% de l'écran moins la moitié de la carte de 148px) */}
+        <div aria-hidden="true" className="w-[calc(50vw-74px)] shrink-0" />
         
         {STORIES.map((story) => (
           <Link
@@ -36,7 +39,10 @@ export default function HomeStoriesStrip() {
             href={`/histoires/${story.slug}`}
             className="flex w-[148px] shrink-0 snap-center flex-col gap-2.5 rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-3 transition-colors active:bg-[var(--surface-hover)]"
           >
-            <span aria-hidden="true" className={`relative flex h-16 items-center justify-center overflow-hidden rounded-xl bg-gradient-to-br ${story.gradient}`}>
+            <span
+              aria-hidden="true"
+              className={`relative flex h-16 items-center justify-center overflow-hidden rounded-xl bg-gradient-to-br ${story.gradient}`}
+            >
               <span className="text-[32px] drop-shadow-md">{story.emoji}</span>
               <span className="absolute -right-4 -top-4 h-12 w-12 rounded-full bg-white/15" />
             </span>
@@ -47,8 +53,8 @@ export default function HomeStoriesStrip() {
           </Link>
         ))}
         
-        {/* Espaceur droit */}
-        <div aria-hidden="true" className="w-[calc(50%-74px)] shrink-0" />
+        {/* Espaceur de droite */}
+        <div aria-hidden="true" className="w-[calc(50vw-74px)] shrink-0" />
       </div>
     </section>
   );
