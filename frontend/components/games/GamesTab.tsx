@@ -6,6 +6,9 @@ import GuessVerse from "./GuessVerse";
 import WhoAmI from "./WhoAmI";
 import WordSearch from "./WordSearch";
 import Crossword from "./Crossword";
+import MemoryMatch from "./MemoryMatch";
+import VerseOrder from "./VerseOrder";
+import { getBest } from "@/lib/games-mobile";
 import { GameResult } from "./CompleteVerse";
 import { getScores, type GameScores } from "@/lib/games-verses";
 
@@ -15,22 +18,27 @@ type GameView =
   | "guessVerse"
   | "whoAmI"
   | "wordSearch"
-  | "crossword";
+  | "crossword"
+  | "memory"
+  | "ordre";
 
 export default function GamesTab() {
   const [view, setView] = useState<GameView>("menu");
   const [scores, setScores] = useState<GameScores | null>(null);
+  const [mobileBest, setMobileBest] = useState({ memory: 0, ordre: 0 });
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
     setMounted(true);
     setScores(getScores());
+    setMobileBest({ memory: getBest("memory"), ordre: getBest("ordre") });
   }, []);
 
   // Rafraîchit les scores quand on revient au menu
   useEffect(() => {
     if (view === "menu") {
       setScores(getScores());
+      setMobileBest({ memory: getBest("memory"), ordre: getBest("ordre") });
     }
   }, [view]);
 
@@ -47,6 +55,12 @@ export default function GamesTab() {
   }
     if (view === "crossword") {
     return <Crossword onBack={() => setView("menu")} />;
+  }
+  if (view === "memory") {
+    return <MemoryMatch onBack={() => setView("menu")} />;
+  }
+  if (view === "ordre") {
+    return <VerseOrder onBack={() => setView("menu")} />;
   }
 
   if (view === "guessVerse") {
@@ -189,6 +203,66 @@ export default function GamesTab() {
               Retrouve les mots cachés dans la grille
             </div>
           </div>
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4 shrink-0 text-[var(--muted)]">
+            <path d="m9 18 6-6-6-6" />
+          </svg>
+        </button>
+
+                {/* Mémoire Éclair — mobile uniquement */}
+        <button
+          type="button"
+          onClick={() => setView("memory")}
+          className="group flex items-center gap-3 border-b border-[var(--border)] py-4 text-left transition-all hover:bg-[var(--surface-hover)] md:hidden"
+        >
+          <div
+            className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl text-[var(--color-accent)]"
+            style={{ background: "var(--surface-hover)" }}
+          >
+            <span className="text-xl" aria-hidden="true">🧠</span>
+          </div>
+          <div className="flex-1 min-w-0">
+            <div className="text-sm font-medium text-[var(--foreground)]">
+              Mémoire Éclair <span className="ml-1 rounded-full bg-[var(--color-accent)]/10 px-2 py-0.5 text-[9px] font-bold uppercase text-[var(--color-accent)]">📱 Mobile</span>
+            </div>
+            <div className="text-xs text-[var(--muted)]">
+              Associe chaque référence à son mot-clé
+            </div>
+          </div>
+          {mobileBest.memory > 0 && (
+            <span className="shrink-0 font-mono text-[10px] text-[var(--muted)]">
+              Record : {mobileBest.memory}
+            </span>
+          )}
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4 shrink-0 text-[var(--muted)]">
+            <path d="m9 18 6-6-6-6" />
+          </svg>
+        </button>
+
+                {/* Ordre du Verset — mobile uniquement */}
+        <button
+          type="button"
+          onClick={() => setView("ordre")}
+          className="group flex items-center gap-3 border-b border-[var(--border)] py-4 text-left transition-all hover:bg-[var(--surface-hover)] md:hidden"
+        >
+          <div
+            className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl text-[var(--color-accent)]"
+            style={{ background: "var(--surface-hover)" }}
+          >
+            <span className="text-xl" aria-hidden="true">🔢</span>
+          </div>
+          <div className="flex-1 min-w-0">
+            <div className="text-sm font-medium text-[var(--foreground)]">
+              Ordre du Verset <span className="ml-1 rounded-full bg-[var(--color-accent)]/10 px-2 py-0.5 text-[9px] font-bold uppercase text-[var(--color-accent)]">📱 Mobile</span>
+            </div>
+            <div className="text-xs text-[var(--muted)]">
+              Remets les mots dans le bon ordre
+            </div>
+          </div>
+          {mobileBest.ordre > 0 && (
+            <span className="shrink-0 font-mono text-[10px] text-[var(--muted)]">
+              Record : {mobileBest.ordre}/8
+            </span>
+          )}
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4 shrink-0 text-[var(--muted)]">
             <path d="m9 18 6-6-6-6" />
           </svg>
