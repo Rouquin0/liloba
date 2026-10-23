@@ -1,39 +1,40 @@
 // ============================================================
-// LILOBA — Service Worker v7
+// LILOBA — Service Worker v8 (correctif écran blanc iOS)
 // ============================================================
-// Pourquoi cette version :
-//  - Le fichier public/sw.js contenait par erreur le composant React
-//    ServiceWorkerRegister (code invalide pour un SW) : le navigateur
-//    ne pouvait plus mettre à jour son ancien SW et gardait un vieux
-//    cache bancal.
-//  - Les requêtes RSC de Next.js (navigation client, prefetch) étaient
-//    mises en cache puis resservies à la place du bon contenu :
-//    clics sans effet, mauvais livre / chapitre.
-//  - Les chunks JS/CSS de développement étaient servis "cache first".
+// Changements vs v7 (AUCUNE rupture, que des ajouts sûrs) :
+//  - STATIC/RUNTIME passent en v8 (ancien v7 purgé à l'activation).
+//  - BIBLE_CACHE RESTE en "liloba-bible-v4" : on ne retélécharge
+//    JAMAIS la Bible (45 Mo). Ne pas renommer ce cache.
+//  - "/offline.html" est pré-caché et servi en dernier recours
+//    pour les navigations quand réseau + cache sont vides.
+//    Avant : simple texte "Hors ligne". Après : belle page sombre.
+//  - Navigations : Cache-First instantané (anti écran blanc iOS)
+//    + revalidation réseau en arrière-plan (Stale-While-Revalidate).
+//    iOS purge le cache après ~24h d'inactivité : au retour, si un
+//    shell est encore là on l'affiche en <50ms, sinon on tente le
+//    réseau, sinon offline.html. Plus jamais d'écran blanc.
+//  - Le reste est INCHANGÉ : bypass RSC/prefetch Next.js, bypass
+//    /api/ask, /_next/webpack-hmr, cache-first Bible + statiques.
 //
-// Principes :
-//  1. On NE TOUCHE JAMAIS aux requêtes RSC / prefetch de Next.js.
-//     Hors ligne, elles échouent, Next fait alors une vraie navigation,
-//     que ce SW sait servir (étape 3).
-//  2. Données Bible (/bible.json, /translations/*.json) : cache d'abord.
-//  3. Pages (navigations) : réseau d'abord, copie gardée pour le hors ligne,
-//     repli sur la page exacte, sinon le shell /bible ou /chat.
-//  4. Assets statiques versionnés (/_next/static, icônes) : cache d'abord.
-//  5. Tout le reste (API, etc.) : réseau normal, jamais mis en cache.
+// Fichiers à déployer avec ce SW :
+//  - public/offline.html (page de secours, fond #0a0a0f)
+//  - public/splash/*.png (splash screens iOS, fond #0a0a0f)
 // ============================================================
 
 // Mets true uniquement pour tester le hors ligne en local
 // avec "next build && next start" sur localhost.
 const ENABLE_ON_LOCALHOST = false;
 
-const STATIC_CACHE = "liloba-static-v7";
-const RUNTIME_CACHE = "liloba-runtime-v7";
-// Inchangé volontairement : évite de retélécharger la Bible (45 Mo).
+const STATIC_CACHE = "liloba-static-v8";
+const RUNTIME_CACHE = "liloba-runtime-v8";
+// ⚠️ NE PAS RENOMMER : évite de retélécharger la Bible (45 Mo).
 const BIBLE_CACHE = "liloba-bible-v4";
 const KEEP_CACHES = [STATIC_CACHE, RUNTIME_CACHE, BIBLE_CACHE];
 
-// Ajout de /histoires pour le pré-cache
-const PRECACHE_URLS = ["/", "/chat", "/bible", "/histoires", "/selah", "/manifest.webmanifest"];
+const OFFLINE_URL = "/offline.html";
+
+// Ajout de /histoires pour le pré-cache (+ offline.html = filet de sécurité)
+const PRECACHE_URLS = ["/", "/chat", "/bible", "/histoires", "/selah", "/manifest.webmanifest", OFFLINE_URL];
 
 const IS_LOCAL = ["localhost", "127.0.0.1", "[::1]"].includes(
   self.location.hostname
@@ -50,9 +51,13 @@ self.addEventListener("install", (event) => {
       // allSettled : une page qui échoue n'empêche plus l'installation
       await Promise.allSettled(
         PRECACHE_URLS.map(async (url) => {
-          const response = await fetch(url, { credentials: "same-origin" });
-          if (response.ok && !response.redirected) {
-            await cache.put(url, response);
+          try {
+            const response = await fetch(url, { credentials: "same-origin" });
+            if (response.ok && !response.redirected) {
+              await cache.put(url, response);
+            }
+          } catch {
+            // hors ligne à l'install : on installera quand même le SW
           }
         })
       );
@@ -62,7 +67,7 @@ self.addEventListener("install", (event) => {
 });
 
 // ============================================================
-// ACTIVATION : supprime les anciens caches (v3/v4/v5/v6...)
+// ACTIVATION : supprime les anciens caches (v3/v4/v5/v6/v7...)
 // ============================================================
 
 self.addEventListener("activate", (event) => {
@@ -113,9 +118,11 @@ function isStaticAsset(path) {
   return (
     path.startsWith("/_next/static/") ||
     path.startsWith("/icons/") ||
+    path.startsWith("/splash/") ||
     path === "/logo.png" ||
     path === "/favicon.ico" ||
     path === "/manifest.webmanifest" ||
+    path === OFFLINE_URL ||
     /\.(?:woff2?|ttf|otf)$/.test(path)
   );
 }
@@ -199,38 +206,68 @@ async function cacheFirstStatic(request) {
   }
 }
 
-async function handleNavigation(request, url) {
-  const cache = await caches.open(RUNTIME_CACHE);
+// Revalidation en arrière-plan : met à jour le cache sans bloquer l'affichage.
+// Fire-and-forget, n'interrompt jamais la page déjà servie.
+function revalidateInBackground(request, cacheName) {
+  fetch(request)
+    .then((response) => {
+      if (response.ok && !response.redirected && response.type === "basic") {
+        caches.open(cacheName).then((cache) => cache.put(request, response).catch(() => {}));
+      }
+    })
+    .catch(() => {});
+}
 
+async function offlineFallback() {
+  // 1. Page offline dédiée (fond sombre #0a0a0f, jamais d'écran blanc)
+  const offline =
+    (await caches.match(OFFLINE_URL, { ignoreVary: true })) ||
+    (await caches.match(OFFLINE_URL));
+  if (offline) return offline;
+  // 2. Dernier recours si même offline.html a été purgé par iOS
+  return new Response(
+    "<!DOCTYPE html><html lang='fr'><head><meta charset='utf-8'><meta name='viewport' content='width=device-width,initial-scale=1'><title>LILOBA — Hors ligne</title></head><body style='background:#0a0a0f;color:#F0E5D0;font-family:Georgia,serif;display:flex;align-items:center;justify-content:center;min-height:100vh;text-align:center'><main><h1 style='color:#D4AF37;letter-spacing:4px'>LILOBA</h1><p>Tu es hors ligne. Reconnecte-toi puis réessaie.</p><button onclick='location.reload()' style='background:#B91C1C;color:#fff;border:none;border-radius:10px;padding:12px 24px;font-size:16px'>Réessayer</button></main></body></html>",
+    { status: 503, headers: { "Content-Type": "text/html; charset=utf-8" } }
+  );
+}
+
+async function handleNavigation(request, url) {
+  // --- CORRECTIF iOS : Cache-First instantané ---
+  // Avant (v7) : réseau d'abord → écran blanc si réseau lent / SW purgé.
+  // Après (v8) : cache d'abord (affichage <50ms), réseau en arrière-plan.
+  const cached =
+    (await caches.match(request, { ignoreVary: true })) ||
+    (await caches.match(request));
+  if (cached) {
+    revalidateInBackground(request, RUNTIME_CACHE);
+    return cached;
+  }
+
+  // Pas de copie exacte : on tente le réseau (cas retour après purge iOS)
   try {
     const response = await fetch(request);
-    // On ne garde que de vraies pages OK (pas de redirection, pas d'erreur)
     if (response.ok && !response.redirected && response.type === "basic") {
+      const cache = await caches.open(RUNTIME_CACHE);
       cache.put(request, response.clone()).catch(() => {});
     }
     return response;
   } catch {
-    // ---- Hors ligne ----
-    // 1. La page exacte déjà visitée
-    const exact = await caches.match(request, { ignoreVary: true });
-    if (exact) return exact;
-
-    // 2. Shell parent selon la route
+    // ---- Hors ligne / réseau lent / cache vidé par iOS ----
     const path = url.pathname;
     let shellUrl = "/";
     if (path.startsWith("/bible") || path.startsWith("/read")) shellUrl = "/bible";
     else if (path.startsWith("/chat")) shellUrl = "/chat";
+    else if (path.startsWith("/histoires")) shellUrl = "/histoires";
+    else if (path.startsWith("/selah")) shellUrl = "/selah";
 
-    const shell = await caches.match(shellUrl, { ignoreVary: true });
+    const shell =
+      (await caches.match(shellUrl, { ignoreVary: true })) ||
+      (await caches.match(shellUrl)) ||
+      (await caches.match("/", { ignoreVary: true })) ||
+      (await caches.match("/"));
     if (shell) return shell;
 
-    // 3. Dernier recours : accueil
-    const home = await caches.match("/", { ignoreVary: true });
-    if (home) return home;
-
-    return new Response("Hors ligne", {
-      status: 503,
-      headers: { "Content-Type": "text/plain; charset=utf-8" },
-    });
+    // 3. Page de secours stylée (plus jamais d'écran blanc)
+    return offlineFallback();
   }
 }
