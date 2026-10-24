@@ -11,7 +11,7 @@ import {
   cleanupExpiredHistory,
   type HistoryEntry,
 } from "@/lib/history";
-import StatsTab from "@/components/StatsTab";
+import AdvancedStats from "@/components/AdvancedStats"; // <-- Nouvel import
 import PrayersFavTab from "@/components/PrayersFavTab";
 import SearchHistoryTab from "@/components/SearchHistoryTab";
 import JournalTab from "@/components/JournalTab";
@@ -284,8 +284,8 @@ export default function HistoriquePage() {
             </>
           )}
 
-          {/* Onglet STATS */}
-          {tab === "stats" && <StatsTab />}
+          {/* Onglet STATS (On utilise le nouveau composant ici) */}
+          {tab === "stats" && <AdvancedStats />}
 
           {/* Onglet PRIÈRES */}
           {tab === "prieres" && <PrayersFavTab />}
@@ -468,40 +468,5 @@ function TabButton({
       {iconMap[icon]}
       <span className="hidden md:inline">{children}</span>
     </button>
-  );
-}
-
-// ============================================================
-// PLACEHOLDER
-// ============================================================
-
-function PlaceholderTab({
-  title,
-  description,
-}: {
-  title: string;
-  description: string;
-}) {
-  return (
-    <div className="mt-20 flex flex-col items-center text-center">
-      <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-[var(--surface-hover)]">
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="1.5"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          className="h-8 w-8 text-[var(--muted)]"
-        >
-          <circle cx="12" cy="12" r="10" />
-        </svg>
-      </div>
-      <p className="mb-1 text-sm font-medium text-[var(--foreground)]">
-        {title}
-      </p>
-      <p className="max-w-xs text-xs text-[var(--muted)]">{description}</p>
-    </div>
   );
 }
