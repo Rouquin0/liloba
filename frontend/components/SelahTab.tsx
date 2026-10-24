@@ -69,6 +69,7 @@ import SelahEveningGate, {
   EveningLockIcon,
   SelahReminderCard,
   SelahSeedHarvest,
+  SelahSeedPlanter,
 } from "@/components/selah/SelahEveningGate";
 import {
   getEveningSnapshot,
@@ -1586,6 +1587,9 @@ export default function SelahTab({ compact = false }: { compact?: boolean }) {
               )}
             </section>
           )}
+
+          {/* Graine pour demain : revient demain soir à l'ouverture de Selah */}
+          <SelahSeedPlanter lang={lang} tomorrow />
 
           <SelahReminderCard lang={lang} variant="compact" />
 

@@ -1,9 +1,10 @@
 "use client";
 
-import { useEffect, useMemo, useState, useSyncExternalStore } from "react";
+import { useEffect, useId, useMemo, useState, useSyncExternalStore } from "react";
 import Link from "next/link";
 import { BRANDING } from "@/lib/branding";
 import { getTodayKey } from "@/lib/journal";
+import { graceAddDays } from "@/lib/selah-grace";
 import {
   EVENING_START_HOUR,
   msUntilOpening,
@@ -56,6 +57,10 @@ const UI = {
     reminderAgain: "L'ajouter à nouveau",
     reminderNote: "Fichier agenda (.ics) : il s'ouvre dans l'application Agenda de ton téléphone.",
     reminderCompact: "Reviens chaque soir à 18h : ajoute le rappel à ton agenda.",
+    seedTomorrowTitle: "Graine pour demain",
+    seedTomorrowText:
+      "Plante une intention pour ta journée de demain. Demain soir, Selah te demandera si elle est tombée en bonne terre.",
+    seedTomorrowPlanted: "Graine plantée pour demain",
     seedTitle: "Graine du jour",
     seedText:
       "Plante une intention pour ta journée. Ce soir, Selah te demandera si elle est tombée en bonne terre.",
@@ -94,6 +99,10 @@ const UI = {
     reminderAgain: "Add it again",
     reminderNote: "Calendar file (.ics): it opens in your phone's Calendar app.",
     reminderCompact: "Come back every evening at 6 PM: add the reminder to your calendar.",
+    seedTomorrowTitle: "Seed for tomorrow",
+    seedTomorrowText:
+      "Plant an intention for your day tomorrow. Tomorrow evening, Selah will ask whether it fell on good soil.",
+    seedTomorrowPlanted: "Seed planted for tomorrow",
     seedTitle: "Seed of the day",
     seedText:
       "Plant an intention for your day. Tonight, Selah will ask whether it fell on good soil.",
@@ -295,10 +304,19 @@ export function SelahReminderCard({
 // Carte « Graine du jour » (plantation, pendant la journée)
 // ------------------------------------------------------------
 
-function SeedPlanter({ lang }: { lang: Lang }) {
+export function SelahSeedPlanter({
+  lang,
+  tomorrow = false,
+}: {
+  lang: Lang;
+  /** true : la graine est plantée pour DEMAIN (écran « pause enregistrée »). */
+  tomorrow?: boolean;
+}) {
   const l = UI[lang];
+  const inputId = useId();
   const seeds = useSyncExternalStore(subscribeSeeds, getSeeds, getServerSeeds);
-  const today = getTodayKey();
+  // « today » désigne ici le jour cible de la graine (aujourd'hui ou demain)
+  const today = tomorrow ? graceAddDays(getTodayKey(), 1) : getTodayKey();
   const seed = seeds.find((s) => s.date === today) ?? null;
   const [draft, setDraft] = useState("");
   const [editing, setEditing] = useState(false);
@@ -319,18 +337,22 @@ function SeedPlanter({ lang }: { lang: Lang }) {
           <Sprout className="h-6 w-6" />
         </span>
         <div className="min-w-0 flex-1">
-          <p className="text-xs font-bold uppercase tracking-widest text-[var(--muted)]">{l.seedTitle}</p>
-          <p className="mt-1 text-xs leading-relaxed text-[var(--muted)] md:text-sm">{l.seedText}</p>
+          <p className="text-xs font-bold uppercase tracking-widest text-[var(--muted)]">
+            {tomorrow ? l.seedTomorrowTitle : l.seedTitle}
+          </p>
+          <p className="mt-1 text-xs leading-relaxed text-[var(--muted)] md:text-sm">
+            {tomorrow ? l.seedTomorrowText : l.seedText}
+          </p>
         </div>
       </div>
 
       {showForm ? (
         <div className="mt-4 flex flex-col gap-2">
-          <label htmlFor="selah-seed" className="sr-only">
-            {l.seedTitle}
+          <label htmlFor={inputId} className="sr-only">
+            {tomorrow ? l.seedTomorrowTitle : l.seedTitle}
           </label>
           <input
-            id="selah-seed"
+            id={inputId}
             type="text"
             value={draft}
             onChange={(e) => setDraft(e.target.value)}
@@ -366,7 +388,9 @@ function SeedPlanter({ lang }: { lang: Lang }) {
         </div>
       ) : (
         <div className="selah-step mt-4 rounded-xl border border-[var(--color-accent)]/40 bg-[var(--color-accent)]/5 p-3">
-          <p className="text-[11px] font-bold uppercase tracking-widest text-[var(--color-accent)]">{l.seedPlanted}</p>
+          <p className="text-[11px] font-bold uppercase tracking-widest text-[var(--color-accent)]">
+            {tomorrow ? l.seedTomorrowPlanted : l.seedPlanted}
+          </p>
           <p className="mt-1 text-sm text-[var(--foreground)]" style={{ fontFamily: "var(--font-serif)" }}>
             {seed?.text}
           </p>
@@ -527,7 +551,7 @@ export default function SelahEveningGate({
       </section>
 
       <div className={`grid gap-4 ${compact ? "" : "md:grid-cols-2 md:gap-6"}`}>
-        <SeedPlanter lang={lang} />
+        <SelahSeedPlanter lang={lang} />
         <SelahReminderCard lang={lang} />
       </div>
 
