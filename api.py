@@ -19,6 +19,9 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from fastapi.concurrency import run_in_threadpool
 from pydantic import BaseModel, Field
+from supabase import create_client, Client
+from fastapi import Depends
+from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 import uvicorn
 
 from main import (
@@ -34,6 +37,34 @@ from main import (
 # ============================================================
 
 load_dotenv()
+SUPABASE_URL = os.getenv("SUPABASE_URL")
+SUPABASE_SERVICE_KEY = os.getenv("SUPABASE_SERVICE_ROLE_KEY")
+supabase_client = create_client(SUPABASE_URL, SUPABASE_SERVICE_KEY) if SUPABASE_URL and SUPABASE_SERVICE_KEY else None
+security = HTTPBearer()
+
+def verify_and_check_quota(credentials: HTTPAuthorizationCredentials = Depends(security)):
+    if not supabase_client:
+        logger.warning("Supabase non configuré. Quota ignoré.")
+        return "default"
+    try:
+        # 1. Vérifier l'identité de l'utilisateur
+        user_response = supabase_client.auth.get_user(credentials.credentials)
+        user_id = user_response.user.id
+        
+        # 2. Vérifier et incrémenter le quota
+        res = supabase_client.rpc("check_and_increment_quota", {"p_user_id": user_id}).execute()
+        
+        if not res.data:
+            raise HTTPException(
+                status_code=429, 
+                detail="Limite de 10 messages gratuits par jour atteinte. Reviens demain !"
+            )
+        return user_id
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Erreur auth: {e}")
+        raise HTTPException(status_code=401, detail="Session invalide ou expirée.")
 
 APP_VERSION = "2.1.0"
 
@@ -245,7 +276,6 @@ class AskRequest(BaseModel):
         max_length=MAX_QUESTION_LEN,
     )
     niveau: Optional[str] = "18+"
-    user_id: Optional[str] = "default"
     historique: Optional[List[Dict[str, str]]] = None
 
 
@@ -322,7 +352,7 @@ async def clear(req: ClearRequest):
 # ============================================================
 
 @app.post("/ask")
-async def ask(request: Request, req: AskRequest):
+async def ask(request: Request, req: AskRequest, user_id: str = Depends(verify_and_check_quota)):
     # Rate limiting
     ip = _client_ip(request)
 
@@ -343,7 +373,7 @@ async def ask(request: Request, req: AskRequest):
             detail="Question trop longue",
         )
 
-    user_id = _sanitize_user_id(req.user_id)
+    
     niveau = normaliser_niveau_utilisateur(req.niveau)
 
     historique = (
@@ -415,7 +445,7 @@ async def ask(request: Request, req: AskRequest):
 # ============================================================
 
 @app.post("/ask/stream")
-async def ask_stream(req: AskRequest):
+async def ask_stream(req: AskRequest, user_id: str = Depends(verify_and_check_quota)):
     """
     Endpoint de streaming SSE.
     Envoie la réponse d'Apollos morceau par morceau.
@@ -436,7 +466,7 @@ async def ask_stream(req: AskRequest):
             detail="Question trop longue",
         )
 
-    user_id = _sanitize_user_id(req.user_id)
+    
     niveau = normaliser_niveau_utilisateur(req.niveau)
 
     historique = (

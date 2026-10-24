@@ -317,7 +317,6 @@ export default function ChatReader({
           {
             question,
             niveau: userAge,
-            user_id: "web",
             historique,
           },
           (event: StreamEvent) => {
