@@ -172,12 +172,13 @@ function BibleContent() {
   const translationConfig =
     TRANSLATIONS.find((t) => t.id === translationId) ?? TRANSLATIONS[0];
 
+  // 🔥 CORRECTION ICI : on utilise shortName (ex: "LSG") partout pour éviter que le texte ne pousse le bouton
   const subtitle =
     testament === "at"
       ? `Ancien Testament · ${translationConfig.shortName}`
       : testament === "nt"
         ? `Nouveau Testament · ${translationConfig.shortName}`
-        : translationConfig.name;
+        : translationConfig.shortName;
 
   return (
     <div className="flex h-full flex-col">
