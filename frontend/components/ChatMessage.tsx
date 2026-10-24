@@ -65,29 +65,41 @@ export default function ChatMessage({
 }: ChatMessageProps) {
   const isUser = role === "user";
 
-    // ==========================================================
+  // ==========================================================
   // MESSAGE UTILISATEUR (carte moderne)
   // ==========================================================
-    if (isUser) {
+  if (isUser) {
     return (
       <div className="animate-fade-in flex w-full justify-end">
         <div className="flex max-w-[85%] flex-row-reverse items-start gap-2.5 md:max-w-[75%]">
-          {/* Avatar */}
+          {/* Avatar (NOUVEAU : Ajout du SVG utilisateur) */}
           <div
-            className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-[var(--color-accent)]/15 text-base text-[var(--color-accent)]"
+            className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-[var(--color-accent)]/15 text-[var(--color-accent)]"
             aria-hidden="true"
           >
-            
+            <svg 
+              xmlns="http://www.w3.org/2000/svg" 
+              viewBox="0 0 24 24" 
+              fill="none" 
+              stroke="currentColor" 
+              strokeWidth="2" 
+              strokeLinecap="round" 
+              strokeLinejoin="round" 
+              className="h-4 w-4"
+            >
+              <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" />
+              <circle cx="12" cy="7" r="4" />
+            </svg>
           </div>
 
           {/* Carte beige moderne */}
           <div
-  className="rounded-lg rounded-tr-none border px-4 py-3 text-sm leading-relaxed text-[var(--bubble-user-text)] shadow-sm"
-  style={{
-    background: "var(--bubble-user)",
-    borderColor: "color-mix(in srgb, var(--color-accent) 70%, transparent)",
-  }}
->
+            className="rounded-lg rounded-tr-none border px-4 py-3 text-sm leading-relaxed text-[var(--bubble-user-text)] shadow-sm"
+            style={{
+              background: "var(--bubble-user)",
+              borderColor: "color-mix(in srgb, var(--color-accent) 70%, transparent)",
+            }}
+          >
             <p className="whitespace-pre-wrap">{content}</p>
           </div>
         </div>

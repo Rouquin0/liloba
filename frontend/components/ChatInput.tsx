@@ -105,7 +105,7 @@ export default function ChatInput({
           </button>
         )}
 
-                {/* Bouton "citer le passage" */}
+        {/* Bouton "citer le passage" */}
         {bibleContext && !offline && (
           <button
             type="button"
@@ -148,7 +148,7 @@ export default function ChatInput({
             offline
               ? "Apollos a besoin d'internet…"
               : isListening
-                ? "🎤 Écoute en cours…"
+                ? "Écoute en cours…" // <-- EMOJI RETIRÉ
                 : placeholder
           }
           disabled={disabled || offline}
@@ -210,16 +210,16 @@ export default function ChatInput({
       <p className="mx-auto mt-2 max-w-3xl text-center text-[10px] text-[var(--muted)]">
         {offline ? (
           <span className="font-semibold text-red-500">
-            📵 Hors ligne — Apollos a besoin d'internet
+            Hors ligne — Apollos a besoin d'internet {/* <-- EMOJI RETIRÉ */}
           </span>
         ) : isListening ? (
           <span className="font-semibold text-[var(--color-accent)]">
-            🎤 Écoute en cours… Parle maintenant
+            Écoute en cours… Parle maintenant {/* <-- EMOJI RETIRÉ */}
           </span>
         ) : (
-                  <span className="hidden md:inline">
-          Entrée pour envoyer · Shift+Entrée pour un saut de ligne
-        </span>
+          <span className="hidden md:inline">
+            Entrée pour envoyer · Shift+Entrée pour un saut de ligne
+          </span>
         )}
       </p>
     </div>

@@ -2,10 +2,10 @@
 
 import { useOnlineStatus } from "@/hooks/useOnlineStatus";
 import { useState, useRef, useEffect, useCallback } from "react";
-import Link from "next/link"; // <-- NOUVEL IMPORT
+import Link from "next/link";
 import { BRANDING } from "@/lib/branding";
 import { getAge } from "@/lib/preferences";
-import { useUser } from "@/hooks/useUser"; // <-- NOUVEL IMPORT
+import { useUser } from "@/hooks/useUser";
 import {
   getActiveConversationId,
   setActiveConversationId,
@@ -19,7 +19,6 @@ import {
   ApiError,
   type StreamEvent,
 } from "@/lib/api";
-// SUPPRESSION de l'import lib/rate-limit
 import ChatMessage from "@/components/ChatMessage";
 import ChatInput from "@/components/ChatInput";
 
@@ -48,7 +47,7 @@ export default function ChatReader({
   const MAINTENANCE = true; 
 
   const isOnline = useOnlineStatus();
-  const { user, loading: userLoading } = useUser(); // <-- AJOUT
+  const { user, loading: userLoading } = useUser();
   
   const [messages, setMessages] = useState<Message[]>([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -166,7 +165,6 @@ export default function ChatReader({
       if (MAINTENANCE) return; 
       if (isLoading) return;
       
-      // VÉRIFICATION DE LA CONNEXION
       if (!user) {
         setError("Tu dois être connecté pour discuter avec Apollos.");
         return;
@@ -271,19 +269,16 @@ export default function ChatReader({
               case "status":
                 updateAssistant({ status: event.message });
                 break;
-
               case "sources":
                 updateAssistant({
                   sources: event.sources,
                   status: undefined,
                 });
                 break;
-
               case "chunk":
                 pushToQueue(event.content);
                 updateAssistant({ status: undefined });
                 break;
-
               case "error":
                 updateAssistant({
                   content: event.message,
@@ -292,7 +287,6 @@ export default function ChatReader({
                   status: undefined,
                 });
                 break;
-
               case "done":
                 waitForQueueEmpty().then(() => {
                   updateAssistant({
@@ -312,12 +306,10 @@ export default function ChatReader({
         let errorText = "Désolé, une erreur technique est survenue. Réessaie.";
 
         if (err instanceof ApiError) {
-          // Si l'erreur vient du backend (ex: 429 Limite atteinte ou 401 Session)
           errorText = err.message; 
         } else if (err instanceof Error && err.name !== "AbortError") {
           if (err.message.includes("fetch")) {
-            errorText =
-              "Impossible de contacter le serveur. Vérifie ta connexion internet.";
+            errorText = "Impossible de contacter le serveur. Vérifie ta connexion internet.";
           }
         }
 
@@ -350,8 +342,6 @@ export default function ChatReader({
 
   const hasMessages = messages.length > 0;
   const msgPadding = compact ? "px-3 py-4" : "px-4 py-6 md:px-6";
-
-  // L'input est désactivé s'il n'y a pas d'utilisateur, si c'est en chargement, hors ligne ou en maintenance
   const inputDisabled = isLoading || !isOnline || MAINTENANCE || !user || userLoading;
 
   return (
@@ -393,81 +383,99 @@ export default function ChatReader({
         </div>
       </div>
 
-      {/* BANNIÈRE DE CONNEXION SI NON CONNECTÉ */}
-      {!user && !userLoading && (
-        <div className="border-t border-[var(--border)] bg-[var(--background)] px-3 py-4 md:px-4">
-          <div className="mx-auto flex max-w-3xl flex-col items-center justify-center gap-3 text-center">
-            <p className="text-sm text-[var(--foreground)]">
-              Connecte-toi pour discuter avec Apollos et sauvegarder tes conversations.
-            </p>
-            <Link
-              href="/auth/sign-in"
-              className="rounded-xl bg-[var(--color-accent)] px-6 py-2.5 text-sm font-bold text-white transition-all hover:brightness-90"
-            >
-              Se connecter / S'inscrire
-            </Link>
-          </div>
-        </div>
-      )}
+      {/* ==================== ZONE DU BAS (GLASSMORPHISM) ==================== */}
+      <div className="relative border-t border-[var(--border)] bg-[var(--background)] overflow-hidden">
+        
+        {/* Lueurs futuristes en arrière-plan */}
+        <div className="absolute left-1/4 top-0 h-32 w-32 -translate-x-1/2 -translate-y-1/2 rounded-full bg-[var(--color-accent)]/10 blur-3xl pointer-events-none" />
+        <div className="absolute right-1/4 bottom-0 h-32 w-32 translate-x-1/2 translate-y-1/2 rounded-full bg-[var(--color-primary)]/10 blur-3xl pointer-events-none" />
 
-      {/* Chip : citer le passage biblique actif */}
-      {bibleRef && !isLoading && user && (
-        <div className="border-t border-[var(--border)] bg-[var(--background)] px-3 pt-2 md:px-4">
-          <div className="mx-auto flex max-w-3xl items-center gap-2">
-            <span className="text-[10px] font-semibold uppercase tracking-wider text-[var(--muted)]">
-              Contexte :
-            </span>
-            <span className="flex items-center gap-1.5 rounded-full border border-[var(--color-accent)]/30 bg-[color-mix(in_srgb,var(--color-accent)_8%,transparent)] px-2.5 py-1 text-xs font-medium text-[var(--color-accent)]">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                className="h-3 w-3"
-              >
-                <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20" />
+        {/* Chip contexte biblique (uniquement si connecté) */}
+        {user && bibleRef && !isLoading && (
+          <div className="relative z-10 px-3 pt-3 md:px-4">
+            <div className="mx-auto flex max-w-3xl items-center gap-2">
+              <span className="text-[10px] font-semibold uppercase tracking-wider text-[var(--muted)]">
+                Contexte :
+              </span>
+              <span className="flex items-center gap-1.5 rounded-full border border-[var(--color-accent)]/30 bg-[color-mix(in_srgb,var(--color-accent)_8%,transparent)] px-2.5 py-1 text-xs font-medium text-[var(--color-accent)]">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-3 w-3">
+                  <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20" />
+                </svg>
+                {bibleRef.livre} {bibleRef.chapitre}
+              </span>
+            </div>
+          </div>
+        )}
+
+        {/* Erreur globale (uniquement si connecté) */}
+        {user && error && (
+          <div className="relative z-10 px-3 pt-2 md:px-4">
+            <div className="mx-auto flex max-w-3xl items-center gap-2 rounded-lg border border-red-500/20 bg-red-500/5 px-3 py-2 text-xs text-red-600 dark:text-red-400">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-3.5 w-3.5 shrink-0">
+                <circle cx="12" cy="12" r="10" />
+                <path d="M12 8v4" />
+                <path d="M12 16h.01" />
               </svg>
-              {bibleRef.livre} {bibleRef.chapitre}
-            </span>
+              <span>{error}</span>
+            </div>
           </div>
-        </div>
-      )}
+        )}
 
-      {/* Erreur globale */}
-      {error && (
-        <div className="border-t border-[var(--border)] bg-[var(--background)] px-3 pt-2 md:px-4">
-          <div className="mx-auto flex max-w-3xl items-center gap-2 rounded-lg border border-red-500/20 bg-red-500/5 px-3 py-2 text-xs text-red-600 dark:text-red-400">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              className="h-3.5 w-3.5 shrink-0"
-            >
-              <circle cx="12" cy="12" r="10" />
-              <path d="M12 8v4" />
-              <path d="M12 16h.01" />
-            </svg>
-            <span>{error}</span>
-          </div>
-        </div>
-      )}
+        {/* CONTENU PRINCIPAL DU BAS */}
+        <div className="relative z-10 p-3 md:p-4">
+          {MAINTENANCE ? (
+            // ÉTAT : MAINTENANCE
+            <div className="mx-auto flex max-w-3xl flex-col items-center justify-center gap-2 py-4 text-center">
+              <span className="flex h-10 w-10 items-center justify-center rounded-full bg-amber-500/10 text-amber-500 mb-1">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-5 w-5">
+                  <path d="M12 2v4"/><path d="M12 18v4"/><path d="m4.93 4.93 2.83 2.83"/><path d="m16.24 16.24 2.83 2.83"/><path d="M2 12h4"/><path d="M18 12h4"/><path d="m6.34 17.66-2.83 2.83"/><path d="m19.07 4.93-2.83 2.83"/>
+                </svg>
+              </span>
+              <p className="text-sm font-bold tracking-wide text-[var(--foreground)]">Apollos se prépare...</p>
+              <p className="text-xs text-[var(--muted)]">L'assistant biblique sera de retour très bientôt.</p>
+            </div>
+          ) : !user && !userLoading ? (
+            // ÉTAT : NON CONNECTÉ (FUTURISTE)
+            <div className="mx-auto flex max-w-3xl flex-col items-center justify-between gap-5 rounded-2xl border border-[var(--border)] bg-[var(--surface)]/50 p-4 shadow-lg backdrop-blur-md md:flex-row md:gap-6 md:p-5">
+              <div className="flex flex-col items-center gap-3 text-center md:flex-row md:gap-4 md:text-left">
+                <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border border-[var(--border)] bg-[var(--surface)] shadow-inner">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="h-6 w-6 text-[var(--color-accent)]">
+                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+                    <path d="M8 10h.01"/><path d="M12 10h.01"/><path d="M16 10h.01"/>
+                  </svg>
+                </div>
+                <div>
+                  <h3 className="text-sm font-bold text-[var(--foreground)] md:text-base">
+                    Rejoins la conversation
+                  </h3>
+                  <p className="mt-1 text-xs text-[var(--muted)] md:text-sm">
+                    Connecte-toi pour discuter avec Apollos et sauvegarder tes conversations.
+                  </p>
+                </div>
+              </div>
 
-      {/* Input : on ne l'affiche que si l'utilisateur est connecté */}
-      {user ? (
-        <ChatInput
-          onSend={handleSend}
-          disabled={inputDisabled} 
-          offline={!isOnline}
-          bibleContext={bibleRef}
-        />
-      ) : null}
+              <Link
+                href="/auth/sign-in"
+                className="group relative flex w-full shrink-0 items-center justify-center gap-2 overflow-hidden rounded-xl bg-[var(--color-accent)] px-6 py-3 text-sm font-bold text-white shadow-[0_0_20px_rgba(var(--color-accent-rgb),0.3)] transition-all hover:scale-[1.02] hover:shadow-[0_0_30px_rgba(var(--color-accent-rgb),0.5)] active:scale-95 md:w-auto"
+              >
+                <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:animate-[shimmer_1.5s_infinite]" />
+                <span>Se connecter</span>
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4 transition-transform group-hover:translate-x-1">
+                  <path d="M5 12h14"/><path d="m12 5 7 7-7 7"/>
+                </svg>
+              </Link>
+            </div>
+          ) : (
+            // ÉTAT : CONNECTÉ (BARRE DE SAISIE)
+            <ChatInput
+              onSend={handleSend}
+              disabled={inputDisabled} 
+              offline={!isOnline}
+              bibleContext={bibleRef}
+            />
+          )}
+        </div>
+      </div>
     </div>
   );
 }

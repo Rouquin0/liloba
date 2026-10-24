@@ -262,3 +262,8 @@ html, body {
   height: 100%;
   overflow: hidden;
 }
+@keyframes shimmer {
+  100% {
+    transform: translateX(100%);
+  }
+}
