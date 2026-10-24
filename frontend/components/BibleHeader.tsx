@@ -8,14 +8,10 @@ interface BibleHeaderProps {
   title: string;
   subtitle?: string;
   backHref?: string;
-  /** Callback quand on clique sur "retour" (au lieu d'un lien href) */
   onBack?: () => void;
   showMenuButton?: boolean;
-  /** Affiche le bouton "split" à droite (desktop uniquement) */
   showSplitButton?: boolean;
-  /** Contenu affiché à droite sur mobile uniquement (ex: sélecteur de chapitre) */
   mobileRightSlot?: ReactNode;
-  /** Contenu affiché à droite sur TOUS les écrans (ex: sélecteur de version) */
   rightSlot?: ReactNode;
 }
 
@@ -36,7 +32,9 @@ export default function BibleHeader({
   };
 
   return (
-    <header className="sticky top-0 z-30 flex w-full items-center justify-between gap-3 border-b border-[var(--border)] bg-[var(--surface)]/95 px-4 py-3 backdrop-blur-sm md:px-6">
+    // 🔥 LA CORRECTION EST ICI : Grid au lieu de Flex
+    <header className="sticky top-0 z-30 grid w-full grid-cols-[auto_1fr_auto] items-center gap-3 border-b border-[var(--border)] bg-[var(--surface)]/95 px-4 py-3 backdrop-blur-sm md:px-6">
+      
       {/* Bouton gauche */}
       <div className="flex shrink-0 items-center">
         {showMenuButton ? (
@@ -62,7 +60,6 @@ export default function BibleHeader({
                 <line x1="4" x2="20" y1="18" y2="18" />
               </svg>
             </button>
-            {/* Desktop : espace réservé pour centrer le titre */}
             <div className="hidden h-9 w-9 md:block" aria-hidden="true" />
           </>
         ) : onBack ? (
@@ -93,8 +90,8 @@ export default function BibleHeader({
         )}
       </div>
 
-      {/* Titre — Correction du bug iOS Flexbox avec w-full */}
-      <div className="flex w-full min-w-0 flex-1 flex-col items-center justify-center text-center">
+      {/* Titre — Au milieu. Le overflow-hidden force la troncature */}
+      <div className="flex min-w-0 flex-col items-center justify-center overflow-hidden text-center">
         <h1 className="w-full truncate text-sm font-bold text-[var(--color-primary)] md:text-base">
           {title}
         </h1>
