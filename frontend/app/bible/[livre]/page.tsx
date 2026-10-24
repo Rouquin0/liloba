@@ -44,13 +44,16 @@ function LivreContent({ params }: PageProps) {
 
       <div className="flex-1 overflow-y-auto">
         <div className="mx-auto max-w-3xl px-4 py-6 md:px-6">
-          <div className="mb-4">
+          
+          {/* Caché sur mobile, visible sur desktop */}
+          <div className="mb-4 hidden md:block">
             <h2 className="text-xs font-bold uppercase tracking-wider text-[var(--muted)]">
               {totalChapters} chapitres
             </h2>
           </div>
 
-          <div className="grid grid-cols-4 gap-2 sm:grid-cols-6 md:grid-cols-8">
+          {/* Caché sur mobile, visible sur desktop */}
+          <div className="hidden md:grid grid-cols-4 gap-2 sm:grid-cols-6 md:grid-cols-8">
             {chapters.map((num) => (
               <Link
                 key={num}
