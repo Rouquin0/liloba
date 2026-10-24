@@ -37,10 +37,11 @@ export default function BibleHeader({
       {/* Bouton gauche */}
       <div className="flex shrink-0 items-center">
         {showMenuButton ? (
+          <>
           <button
             type="button"
             onClick={handleMenuClick}
-            className="flex h-9 w-9 items-center justify-center rounded-lg border border-[var(--border)] text-[var(--muted)] transition-colors hover:bg-[var(--surface-hover)] hover:text-[var(--foreground)]"
+            className="flex h-9 w-9 items-center justify-center rounded-lg border border-[var(--border)] text-[var(--muted)] transition-colors hover:bg-[var(--surface-hover)] hover:text-[var(--foreground)] md:hidden"
             aria-label="Ouvrir le menu"
           >
             <svg
@@ -58,6 +59,10 @@ export default function BibleHeader({
               <line x1="4" x2="20" y1="18" y2="18" />
             </svg>
           </button>
+          {/* Desktop : le menu est toujours visible à gauche, le bouton est inutile.
+              Espace réservé pour que le titre reste parfaitement centré. */}
+          <div className="hidden h-9 w-9 md:block" aria-hidden="true" />
+          </>
         ) : onBack ? (
           <button
             type="button"
