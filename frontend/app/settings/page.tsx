@@ -32,9 +32,6 @@ import {
   setLineHeight,
   getDisplayMode,
   setDisplayMode,
-  type DefaultTranslationId,
-  getDefaultTranslation,
-  setDefaultTranslation,
 } from "@/lib/preferences";
 import { deleteAllConversations } from "@/lib/conversations";
 import {
@@ -53,9 +50,7 @@ import {
 import { applyAccentColor } from "@/hooks/useCustomColors";
 import HighlightsSection from "@/components/HighlightsSection";
 import OfflineCheckSection from "@/components/OfflineCheckSection";
-import SettingSelect from "@/components/SettingSelect";
 import Logo from "@/components/Logo";
-import { TRANSLATIONS } from "@/lib/translations";
 
 // ============================================================
 // NUMÉRAUX ROMAINS
@@ -79,10 +74,6 @@ export default function SettingsPage() {
   const [lineHeight, setLineHeightState] = useState<LineHeight>("normal");
   const [displayMode, setDisplayModeState] = useState<DisplayMode>("verse");
 
-  // ---- Traduction par défaut ----
-  const [defaultTranslation, setDefaultTranslationState] =
-    useState<DefaultTranslationId>("lsg");
-
   // ---- Données ----
   const [storage, setStorage] = useState<StorageEstimate | null>(null);
   const [offlineInfo, setOfflineInfo] = useState<{
@@ -101,7 +92,6 @@ export default function SettingsPage() {
     setFontFamilyState(getFontFamily());
     setLineHeightState(getLineHeight());
     setDisplayModeState(getDisplayMode());
-    setDefaultTranslationState(getDefaultTranslation());
     refreshStorage();
   }, []);
 
@@ -119,12 +109,6 @@ export default function SettingsPage() {
   const handleAgeChange = (newAge: AgeLevel) => {
     setAgeState(newAge);
     setAge(newAge);
-    showSaved();
-  };
-
-  const handleDefaultTranslationChange = (id: DefaultTranslationId) => {
-    setDefaultTranslationState(id);
-    setDefaultTranslation(id);
     showSaved();
   };
 
@@ -400,28 +384,7 @@ export default function SettingsPage() {
             </div>
           </Section>
 
-          {/* ========== 2. LANGUE (mobile uniquement) ========== */}
-          <div className="md:hidden">
-            <Section title="Langue">
-              <div className="min-w-0 max-w-full">
-              <SettingSelect<DefaultTranslationId>
-                icon={<IconBook />}
-                title="Traduction par défaut"
-                description="Version de la Bible utilisée par défaut"
-                value={defaultTranslation}
-                onChange={handleDefaultTranslationChange}
-                options={TRANSLATIONS.map((tr) => ({
-                  value: tr.id as DefaultTranslationId,
-                  label: tr.name,
-                  description: `${tr.shortName} · ${tr.language}`,
-                  flag: tr.flag,
-                }))}
-              />
-              </div>
-            </Section>
-          </div>
-
-          {/* ========== 3. ÂGE ========== */}
+          {/* ========== 2. ÂGE ========== */}
           <Section title="Mon âge">
             <div className="flex min-w-0 flex-col">
               {AGE_OPTIONS.map((option, index) => {
@@ -489,7 +452,7 @@ export default function SettingsPage() {
             </div>
           </Section>
 
-          {/* ========== 4. LECTURE & TYPOGRAPHIE ========== */}
+          {/* ========== 3. LECTURE & TYPOGRAPHIE ========== */}
           <Section title="Lecture & typographie">
             {/* Taille du texte */}
             <div className="border-b border-[var(--border)] py-3 md:py-4">
@@ -701,7 +664,7 @@ export default function SettingsPage() {
             </SettingRow>
           </Section>
 
-          {/* ========== 5. DONNÉES & SAUVEGARDE ========== */}
+          {/* ========== 4. DONNÉES & SAUVEGARDE ========== */}
           <Section title="Données & sauvegarde">
             {/* Export / Import */}
             <div className="border-b border-[var(--border)] py-3 md:py-4">
@@ -846,14 +809,14 @@ export default function SettingsPage() {
             </div>
           </Section>
 
-          {/* ========== 6. MES SURLIGNAGES ========== */}
+          {/* ========== 5. MES SURLIGNAGES ========== */}
           <Section title="Mes surlignages">
             <div className="min-w-0 max-w-full">
               <HighlightsSection />
             </div>
           </Section>
 
-          {/* ========== 7. À PROPOS ========== */}
+          {/* ========== 6. À PROPOS ========== */}
           <Section title="À propos">
             <div className="flex items-center gap-3 border-b border-[var(--border)] py-3">
               <div
@@ -1018,15 +981,6 @@ function IconBrush() {
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4">
       <path d="m9.06 11.9 8.07-8.06a2.85 2.85 0 1 1 4.03 4.03l-8.06 8.08" />
       <path d="M7.07 14.94c-1.66 0-3 1.35-3 3.02 0 1.33-2.5 1.52-2 2.02 1.08 1.1 2.49 2.02 4 2.02 2.2 0 4-1.8 4-4.04a3.01 3.01 0 0 0-3-3.02z" />
-    </svg>
-  );
-}
-
-function IconBook() {
-  return (
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4">
-      <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
-      <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
     </svg>
   );
 }

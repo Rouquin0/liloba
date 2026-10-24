@@ -13,6 +13,9 @@ import {
 } from "@/lib/bible-utils";
 import BibleHeader from "@/components/BibleHeader";
 import BibleReader from "@/components/BibleReader";
+import VersionSelector from "@/components/VersionSelector";
+import { getDefaultTranslation, type DefaultTranslationId } from "@/lib/preferences";
+import { TRANSLATIONS } from "@/lib/translations";
 
 type Testament = "all" | "at" | "nt";
 
@@ -56,8 +59,23 @@ function BibleContent() {
   const [selectedBook, setSelectedBook] = useState<string | null>(null);
   const [selectedChapter, setSelectedChapter] = useState<number>(1);
 
+  // 🆕 Version de la Bible (pilule en haut à droite, synchro instantanée)
+  const [translationId, setTranslationId] =
+    useState<DefaultTranslationId>("lsg");
+
   // 🆕 Détection mobile / desktop
   const [isDesktop, setIsDesktop] = useState(false);
+
+  useEffect(() => {
+    setTranslationId(getDefaultTranslation());
+    const sync = () => setTranslationId(getDefaultTranslation());
+    window.addEventListener("liloba:default-translation-updated", sync);
+    window.addEventListener("storage", sync);
+    return () => {
+      window.removeEventListener("liloba:default-translation-updated", sync);
+      window.removeEventListener("storage", sync);
+    };
+  }, []);
 
   useEffect(() => {
     const mq = window.matchMedia("(min-width: 768px)");
@@ -151,16 +169,24 @@ function BibleContent() {
     );
   }
 
+  const translationConfig =
+    TRANSLATIONS.find((t) => t.id === translationId) ?? TRANSLATIONS[0];
+
   const subtitle =
     testament === "at"
-      ? "Ancien Testament"
+      ? `Ancien Testament · ${translationConfig.shortName}`
       : testament === "nt"
-        ? "Nouveau Testament"
-        : "Louis Segond 1910";
+        ? `Nouveau Testament · ${translationConfig.shortName}`
+        : translationConfig.name;
 
   return (
     <div className="flex h-full flex-col">
-      <BibleHeader title="La Bible" subtitle={subtitle} showMenuButton />
+      <BibleHeader
+        title="La Bible"
+        subtitle={subtitle}
+        showMenuButton
+        rightSlot={<VersionSelector />}
+      />
 
       <div className="flex-1 overflow-y-auto">
         <div className="mx-auto max-w-3xl px-4 py-6 md:px-6">

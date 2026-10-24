@@ -15,6 +15,8 @@ interface BibleHeaderProps {
   showSplitButton?: boolean;
   /** Contenu affiché à droite sur mobile uniquement (ex: sélecteur de chapitre) */
   mobileRightSlot?: ReactNode;
+  /** Contenu affiché à droite sur TOUS les écrans (ex: sélecteur de version) */
+  rightSlot?: ReactNode;
 }
 
 export default function BibleHeader({
@@ -25,6 +27,7 @@ export default function BibleHeader({
   showMenuButton = false,
   showSplitButton = false,
   mobileRightSlot,
+  rightSlot,
 }: BibleHeaderProps) {
   const handleMenuClick = () => {
     if (typeof window !== "undefined") {
@@ -103,20 +106,18 @@ export default function BibleHeader({
         )}
       </div>
 
-      {/* Bouton droite : split (desktop) ou espace vide */}
-      <div
-        className={`flex shrink-0 items-center justify-end ${
-          mobileRightSlot ? "md:w-9" : "w-9"
-        }`}
-      >
+      {/* Bloc droite : sélecteur de version, slot mobile, split ou espace vide */}
+      <div className="flex shrink-0 items-center justify-end gap-2">
+        {rightSlot}
         {mobileRightSlot && <div className="md:hidden">{mobileRightSlot}</div>}
         {showSplitButton ? (
           <SplitButton />
         ) : (
-          <div
-            className={mobileRightSlot ? "hidden w-9 md:block" : "w-9"}
-            aria-hidden="true"
-          />
+          !rightSlot &&
+          !mobileRightSlot && <div className="w-9" aria-hidden="true" />
+        )}
+        {!showSplitButton && !rightSlot && mobileRightSlot && (
+          <div className="hidden w-9 md:block" aria-hidden="true" />
         )}
       </div>
     </header>

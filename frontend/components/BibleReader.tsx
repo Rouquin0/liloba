@@ -23,6 +23,7 @@ import {
   type HighlightColor,
 } from "@/lib/highlights";
 import BibleHeader from "@/components/BibleHeader";
+import VersionSelector from "@/components/VersionSelector";
 import { addToHistory } from "@/lib/history";
 import { trackStreak } from "@/lib/stats";
 import { addJournalEntry } from "@/lib/journal";
@@ -547,6 +548,11 @@ export default function BibleReader({
           showSplitButton={showSplitButton}
           showMenuButton={showMenuButton}
           mobileRightSlot={chapterSelect}
+          rightSlot={
+            <div className="md:hidden">
+              <VersionSelector />
+            </div>
+          }
         />
       )}
 
