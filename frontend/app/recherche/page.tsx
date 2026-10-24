@@ -20,7 +20,7 @@ import { addJournalEntry } from "@/lib/journal";
 
 export default function RecherchePage() {
   const router = useRouter();
-  const goBack = useSmartBack("/");
+  const goBack = useSmartBack("/bible");
   const inputRef = useRef<HTMLInputElement>(null);
 
   const [query, setQuery] = useState("");

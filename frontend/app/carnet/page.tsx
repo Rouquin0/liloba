@@ -38,7 +38,7 @@ const TAB_LABELS: Record<Tab, string> = {
 type FilterMode = "all" | "book";
 
 export default function CarnetPage() {
-  const goBack = useSmartBack("/");
+  const goBack = useSmartBack("/bible");
   const [tab, setTab] = useState<Tab>("favorites");
   const [notes, setNotes] = useState<Note[]>([]);
   const [favorites, setFavorites] = useState<Favorite[]>([]);

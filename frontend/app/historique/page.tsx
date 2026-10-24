@@ -27,7 +27,7 @@ const TAB_LABELS: Record<Tab, string> = {
 };
 
 export default function HistoriquePage() {
-  const goBack = useSmartBack("/");
+  const goBack = useSmartBack("/bible");
   const [history, setHistory] = useState<HistoryEntry[]>([]);
   const [mounted, setMounted] = useState(false);
   const [confirmClear, setConfirmClear] = useState(false);
