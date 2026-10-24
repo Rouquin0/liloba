@@ -21,12 +21,18 @@ export interface SelahPrefs {
   milestonesSeen: number[];
   /** Option « lire à voix haute » (désactivée par défaut). */
   readAloud: boolean;
+  /** Ambiance sonore générative pendant la prière (désactivée par défaut). */
+  ambient: boolean;
+  /** Guide de souffle (anneau + vibrations douces) pendant la prière. */
+  breath: boolean;
 }
 
 const DEFAULTS: SelahPrefs = {
   prayerDuration: "moyenne",
   milestonesSeen: [],
   readAloud: false,
+  ambient: false,
+  breath: false,
 };
 
 function parse(raw: string | null): SelahPrefs {
@@ -41,6 +47,8 @@ function parse(raw: string | null): SelahPrefs {
         ? o.milestonesSeen.filter((n): n is number => typeof n === "number")
         : [],
       readAloud: o.readAloud === true,
+      ambient: o.ambient === true,
+      breath: o.breath === true,
     };
   } catch {
     return { ...DEFAULTS, milestonesSeen: [] };
@@ -96,6 +104,14 @@ export function setPrayerDuration(d: PrayerDuration): void {
 
 export function setReadAloud(on: boolean): void {
   write({ ...getSelahPrefs(), readAloud: on === true });
+}
+
+export function setAmbient(on: boolean): void {
+  write({ ...getSelahPrefs(), ambient: on === true });
+}
+
+export function setBreath(on: boolean): void {
+  write({ ...getSelahPrefs(), breath: on === true });
 }
 
 /** Marque un palier (7/30/100) comme déjà célébré. */

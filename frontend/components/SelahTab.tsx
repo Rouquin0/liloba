@@ -62,6 +62,11 @@ import {
   subscribePrayerTopics,
   toggleTopicAnswered,
 } from "@/lib/selah-topics";
+import SelahConstellation from "@/components/selah/SelahConstellation";
+import SelahSoundscape, { SelahBreathRing } from "@/components/selah/SelahSoundscape";
+import SelahCapsules, { SelahCapsuleBanner } from "@/components/selah/SelahCapsules";
+import { primeAmbient } from "@/lib/selah-ambient";
+import { getCapsules, getServerCapsules, subscribeCapsules } from "@/lib/selah-capsules";
 import {
   canShare,
   downloadBlob,
@@ -406,6 +411,7 @@ export default function SelahTab({ compact = false }: { compact?: boolean }) {
   const grace = useSyncExternalStore(subscribeSelahGrace, getSelahGrace, getServerSelahGrace);
   const prefs = useSyncExternalStore(subscribeSelahPrefs, getSelahPrefs, getServerSelahPrefs);
   const topics = useSyncExternalStore(subscribePrayerTopics, getPrayerTopics, getServerPrayerTopics);
+  const capsules = useSyncExternalStore(subscribeCapsules, getCapsules, getServerCapsules);
 
   const shields = grace.shields;
   const stats = useMemo(() => computeSelahStats(entries, shields), [entries, shields]);
@@ -500,6 +506,7 @@ export default function SelahTab({ compact = false }: { compact?: boolean }) {
   };
 
   const startPrayer = () => {
+    primeAmbient(); // geste utilisateur : autorise le son (iOS)
     stopSpeech();
     baseRef.current = 0;
     startRef.current = Date.now();
@@ -550,6 +557,7 @@ export default function SelahTab({ compact = false }: { compact?: boolean }) {
   };
   const resumePrayer = () => {
     if (phase !== "paused") return;
+    primeAmbient();
     startRef.current = Date.now();
     setPhase("running");
     speakFrom(lineIdx);
@@ -573,6 +581,7 @@ export default function SelahTab({ compact = false }: { compact?: boolean }) {
     }
   };
   const restartPrayer = () => {
+    primeAmbient();
     stopSpeech();
     baseRef.current = 0;
     startRef.current = Date.now();
@@ -895,6 +904,16 @@ export default function SelahTab({ compact = false }: { compact?: boolean }) {
           </button>
         </div>
       )}
+
+      <SelahCapsuleBanner
+        lang={lang}
+        onOpen={() => {
+          setTab("path");
+          setTimeout(() => {
+            document.getElementById("selah-capsules")?.scrollIntoView({ behavior: "smooth", block: "start" });
+          }, 60);
+        }}
+      />
 
       {tab === "tonight" && !finished && (
         <div className="flex flex-col gap-6 md:gap-10">
@@ -1341,6 +1360,16 @@ export default function SelahTab({ compact = false }: { compact?: boolean }) {
                     <p className="text-[11px] md:text-xs text-[#8f846e]">{l.readAloudOff}</p>
                   )}
                 </div>
+
+                {/* Ambiance sonore vivante + guide de souffle */}
+                <SelahSoundscape
+                  phase={phase}
+                  etat={etat}
+                  lang={lang}
+                  ambientOn={prefs.ambient}
+                  breathOn={prefs.breath}
+                  accent={accent}
+                />
               </section>
 
               {/* Plein écran sans distraction pendant la prière */}
@@ -1373,6 +1402,11 @@ export default function SelahTab({ compact = false }: { compact?: boolean }) {
                         ? l.prayerSilence
                         : (prayerLines[lineIdx] ?? "")}
                   </p>
+                  {prefs.breath && (phase === "running" || phase === "paused") && (
+                    <div className="mt-6">
+                      <SelahBreathRing active={phase === "running"} lang={lang} accent={accent} drive={false} size={150} />
+                    </div>
+                  )}
                   <div className="mt-8 md:mt-10 flex flex-wrap justify-center gap-2 md:gap-3">
                     {phase === "running" && (
                       <button type="button" onClick={pausePrayer} className="min-h-[44px] rounded-xl border border-[#ffffff55] px-6 py-3 md:px-8 text-sm md:text-base font-bold text-white">
@@ -1519,6 +1553,8 @@ export default function SelahTab({ compact = false }: { compact?: boolean }) {
             </section>
           )}
 
+          <SelahCapsules lang={lang} entries={entries} variant="composer" verseRef={rx.ref} state={etat ?? undefined} />
+
           <div className="grid grid-cols-2 gap-2 md:gap-4">
             <button
               type="button"
@@ -1573,6 +1609,11 @@ export default function SelahTab({ compact = false }: { compact?: boolean }) {
 
       {tab === "path" && (
         <div className="flex flex-col gap-4 md:grid md:grid-cols-2 md:gap-6 md:items-start">
+          {entries.length === 0 && capsules.length > 0 && (
+            <div className="md:col-span-2">
+              <SelahCapsules lang={lang} entries={entries} variant="full" />
+            </div>
+          )}
           {entries.length === 0 ? (
             <section className="rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-5 md:p-8 text-center md:col-span-2">
               <p className="text-sm md:text-base leading-relaxed text-[var(--muted)]">{l.emptyPath}</p>
@@ -1608,6 +1649,21 @@ export default function SelahTab({ compact = false }: { compact?: boolean }) {
                   </p>
                 </div>
               </section>
+
+              <div className="md:col-span-2">
+                <SelahConstellation
+                  entries={entries}
+                  shields={shields}
+                  topics={topics}
+                  today={getTodayKey()}
+                  streak={stats.current}
+                  lang={lang}
+                />
+              </div>
+
+              <div className="md:col-span-2">
+                <SelahCapsules lang={lang} entries={entries} variant="full" />
+              </div>
 
               <section className="rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-4 md:p-6">
                 <p className="mb-3 text-xs font-bold uppercase tracking-widest text-[var(--muted)]">
