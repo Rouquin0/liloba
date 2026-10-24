@@ -75,8 +75,16 @@ export default function VersionSelector({ onChange, className = "" }: VersionSel
   const handleSelect = (id: TranslationId) => {
     setCurrent(id as DefaultTranslationId);
     setDefaultTranslation(id as DefaultTranslationId);
-    // Pré-charge en mémoire pour un affichage encore plus rapide
-    preloadTranslation(id);
+    
+    // 🔥 SÉCURITÉ HORS-LIGNE : on ne pré-charge que si on a du réseau
+    if (typeof navigator !== "undefined" && navigator.onLine) {
+      try {
+        preloadTranslation(id);
+      } catch (e) {
+        // On ignore l'erreur silencieusement pour ne pas crasher le composant
+      }
+    }
+    
     onChange?.(id);
     setOpen(false);
   };
