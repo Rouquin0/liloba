@@ -2,8 +2,10 @@
 
 import { useOnlineStatus } from "@/hooks/useOnlineStatus";
 import { useState, useRef, useEffect, useCallback } from "react";
+import Link from "next/link"; // <-- NOUVEL IMPORT
 import { BRANDING } from "@/lib/branding";
 import { getAge } from "@/lib/preferences";
+import { useUser } from "@/hooks/useUser"; // <-- NOUVEL IMPORT
 import {
   getActiveConversationId,
   setActiveConversationId,
@@ -17,11 +19,7 @@ import {
   ApiError,
   type StreamEvent,
 } from "@/lib/api";
-import {
-  canSend,
-  registerMessage,
-  RATE_LIMIT_CONFIG,
-} from "@/lib/rate-limit";
+// SUPPRESSION de l'import lib/rate-limit
 import ChatMessage from "@/components/ChatMessage";
 import ChatInput from "@/components/ChatInput";
 
@@ -39,7 +37,6 @@ function makeId(): string {
 
 interface ChatReaderProps {
   compact?: boolean;
-  /** Mode éphémère (contrôlé par le parent, ex. ChatPage) */
   ephemeral?: boolean;
 }
 
@@ -51,6 +48,8 @@ export default function ChatReader({
   const MAINTENANCE = true; 
 
   const isOnline = useOnlineStatus();
+  const { user, loading: userLoading } = useUser(); // <-- AJOUT
+  
   const [messages, setMessages] = useState<Message[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -61,46 +60,8 @@ export default function ChatReader({
     chapitre: number;
   } | null>(null);
 
-  // 🚦 Rate limiting
-  const [remainingToday, setRemainingToday] = useState(
-    RATE_LIMIT_CONFIG.maxPerDay
-  );
-  const [secondsUntilAllowed, setSecondsUntilAllowed] = useState(0);
-    const [blockedReason, setBlockedReason] = useState<
-    "minute" | "day" | "clock" | null
-  >(null);
-
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const abortRef = useRef<AbortController | null>(null);
-
-  // ============================================================
-  // RATE LIMIT — refresh
-  // ============================================================
-
-  const refreshRateLimit = useCallback(() => {
-    const check = canSend();
-    setRemainingToday(check.remainingToday);
-    setSecondsUntilAllowed(check.secondsUntilAllowed);
-    setBlockedReason(check.allowed ? null : check.reason ?? null);
-  }, []);
-
-  useEffect(() => {
-    refreshRateLimit();
-    const onUpdate = () => refreshRateLimit();
-    window.addEventListener("liloba:rate-limit-updated", onUpdate);
-    return () => {
-      window.removeEventListener("liloba:rate-limit-updated", onUpdate);
-    };
-  }, [refreshRateLimit]);
-
-  // Timer pour décompter les secondes
-  useEffect(() => {
-    if (secondsUntilAllowed <= 0) return;
-    const timer = setInterval(() => {
-      refreshRateLimit();
-    }, 1000);
-    return () => clearInterval(timer);
-  }, [secondsUntilAllowed, refreshRateLimit]);
 
   // ============================================================
   // CHARGEMENT INITIAL
@@ -202,33 +163,19 @@ export default function ChatReader({
 
   const handleSend = useCallback(
     async (question: string) => {
-      if (MAINTENANCE) return; // 🔒 Bloque si en maintenance
+      if (MAINTENANCE) return; 
       if (isLoading) return;
+      
+      // VÉRIFICATION DE LA CONNEXION
+      if (!user) {
+        setError("Tu dois être connecté pour discuter avec Apollos.");
+        return;
+      }
 
       if (!isOnline) {
         setError("Apollos a besoin d'internet pour répondre.");
         return;
       }
-
-      // 🚦 Vérifie le rate limit AVANT d'envoyer
-      const check = canSend();
-      if (!check.allowed) {
-        if (check.reason === "day") {
-          setError(
-            "Limite quotidienne de messages atteinte pour Apollos. Revenez demain !"
-          );
-        } else {
-          setError(
-            "Vous envoyez des messages trop rapidement. Veuillez patienter une minute."
-          );
-        }
-        refreshRateLimit();
-        return;
-      }
-
-      // Enregistre l'envoi
-      registerMessage();
-      refreshRateLimit();
 
       setError(null);
 
@@ -365,7 +312,8 @@ export default function ChatReader({
         let errorText = "Désolé, une erreur technique est survenue. Réessaie.";
 
         if (err instanceof ApiError) {
-          errorText = err.message;
+          // Si l'erreur vient du backend (ex: 429 Limite atteinte ou 401 Session)
+          errorText = err.message; 
         } else if (err instanceof Error && err.name !== "AbortError") {
           if (err.message.includes("fetch")) {
             errorText =
@@ -393,7 +341,7 @@ export default function ChatReader({
         abortRef.current = null;
       }
     },
-    [isLoading, messages, conversationId, isOnline, ephemeral, refreshRateLimit]
+    [isLoading, messages, conversationId, isOnline, ephemeral, user]
   );
 
   // ============================================================
@@ -403,7 +351,8 @@ export default function ChatReader({
   const hasMessages = messages.length > 0;
   const msgPadding = compact ? "px-3 py-4" : "px-4 py-6 md:px-6";
 
-  const inputDisabled = isLoading || !isOnline || blockedReason !== null;
+  // L'input est désactivé s'il n'y a pas d'utilisateur, si c'est en chargement, hors ligne ou en maintenance
+  const inputDisabled = isLoading || !isOnline || MAINTENANCE || !user || userLoading;
 
   return (
     <div className="flex h-full flex-col">
@@ -444,8 +393,25 @@ export default function ChatReader({
         </div>
       </div>
 
+      {/* BANNIÈRE DE CONNEXION SI NON CONNECTÉ */}
+      {!user && !userLoading && (
+        <div className="border-t border-[var(--border)] bg-[var(--background)] px-3 py-4 md:px-4">
+          <div className="mx-auto flex max-w-3xl flex-col items-center justify-center gap-3 text-center">
+            <p className="text-sm text-[var(--foreground)]">
+              Connecte-toi pour discuter avec Apollos et sauvegarder tes conversations.
+            </p>
+            <Link
+              href="/auth/sign-in"
+              className="rounded-xl bg-[var(--color-accent)] px-6 py-2.5 text-sm font-bold text-white transition-all hover:brightness-90"
+            >
+              Se connecter / S'inscrire
+            </Link>
+          </div>
+        </div>
+      )}
+
       {/* Chip : citer le passage biblique actif */}
-      {bibleRef && !isLoading && (
+      {bibleRef && !isLoading && user && (
         <div className="border-t border-[var(--border)] bg-[var(--background)] px-3 pt-2 md:px-4">
           <div className="mx-auto flex max-w-3xl items-center gap-2">
             <span className="text-[10px] font-semibold uppercase tracking-wider text-[var(--muted)]">
@@ -470,8 +436,8 @@ export default function ChatReader({
         </div>
       )}
 
-      {/* 🚦 Rate limit banner */}
-      {blockedReason && (
+      {/* Erreur globale */}
+      {error && (
         <div className="border-t border-[var(--border)] bg-[var(--background)] px-3 pt-2 md:px-4">
           <div className="mx-auto flex max-w-3xl items-center gap-2 rounded-lg border border-red-500/20 bg-red-500/5 px-3 py-2 text-xs text-red-600 dark:text-red-400">
             <svg
@@ -488,46 +454,20 @@ export default function ChatReader({
               <path d="M12 8v4" />
               <path d="M12 16h.01" />
             </svg>
-                        <span>
-              {blockedReason === "day" ? (
-                <>
-                  <strong>Limite quotidienne</strong> atteinte
-                  ({RATE_LIMIT_CONFIG.maxPerDay}/jour). Revenez demain !
-                </>
-              ) : blockedReason === "clock" ? (
-                <>
-                  <strong>Horloge modifiée détectée.</strong> Vérifie l&apos;heure
-                  de ton appareil et recharge l&apos;application.
-                </>
-              ) : (
-                <>
-                  <strong>Trop rapide.</strong> Patientez{" "}
-                  {secondsUntilAllowed}s avant le prochain message.
-                </>
-              )}
-            </span>
+            <span>{error}</span>
           </div>
         </div>
       )}
 
-      {/* Compteur discret (si proche de la limite) */}
-      {remainingToday <= 5 && remainingToday > 0 && (
-        <div className="border-t border-[var(--border)] bg-[var(--background)] px-3 pt-1 md:px-4">
-          <div className="mx-auto flex max-w-3xl items-center justify-end">
-            <span className="text-[10px] text-[var(--muted)]">
-              Messages restants aujourd&apos;hui :{" "}
-              <strong>{remainingToday}</strong>/{RATE_LIMIT_CONFIG.maxPerDay}
-            </span>
-          </div>
-        </div>
-      )}
-
-      <ChatInput
-        onSend={handleSend}
-        disabled={inputDisabled || MAINTENANCE} // 🔒 Bloque la barre
-        offline={!isOnline}
-        bibleContext={bibleRef}
-      />
+      {/* Input : on ne l'affiche que si l'utilisateur est connecté */}
+      {user ? (
+        <ChatInput
+          onSend={handleSend}
+          disabled={inputDisabled} 
+          offline={!isOnline}
+          bibleContext={bibleRef}
+        />
+      ) : null}
     </div>
   );
 }
