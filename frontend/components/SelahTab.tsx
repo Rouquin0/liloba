@@ -65,6 +65,16 @@ import {
 import SelahConstellation from "@/components/selah/SelahConstellation";
 import SelahSoundscape, { SelahBreathRing } from "@/components/selah/SelahSoundscape";
 import SelahCapsules, { SelahCapsuleBanner } from "@/components/selah/SelahCapsules";
+import SelahEveningGate, {
+  EveningLockIcon,
+  SelahReminderCard,
+  SelahSeedHarvest,
+} from "@/components/selah/SelahEveningGate";
+import {
+  getEveningSnapshot,
+  getServerEveningSnapshot,
+  subscribeEvening,
+} from "@/lib/selah-evening";
 import { primeAmbient } from "@/lib/selah-ambient";
 import { getCapsules, getServerCapsules, subscribeCapsules } from "@/lib/selah-capsules";
 import {
@@ -412,6 +422,14 @@ export default function SelahTab({ compact = false }: { compact?: boolean }) {
   const prefs = useSyncExternalStore(subscribeSelahPrefs, getSelahPrefs, getServerSelahPrefs);
   const topics = useSyncExternalStore(subscribePrayerTopics, getPrayerTopics, getServerPrayerTopics);
   const capsules = useSyncExternalStore(subscribeCapsules, getCapsules, getServerCapsules);
+
+  // Verrou du soir : Selah n'ouvre qu'à partir de 18h (heure locale de l'appareil).
+  // null = heure pas encore connue (rendu serveur) → on n'affiche rien plutôt que de clignoter.
+  const evening = useSyncExternalStore<boolean | null>(
+    subscribeEvening,
+    getEveningSnapshot,
+    getServerEveningSnapshot
+  );
 
   const shields = grace.shields;
   const stats = useMemo(() => computeSelahStats(entries, shields), [entries, shields]);
@@ -875,6 +893,9 @@ export default function SelahTab({ compact = false }: { compact?: boolean }) {
               }`}
             >
               {id === "tonight" ? l.tabTonight : l.tabPath}
+              {id === "tonight" && evening === false && !finished && step === 0 && (
+                <EveningLockIcon className="ml-1.5 inline h-3.5 w-3.5 align-[-2px]" />
+              )}
               {id === "path" && stats.current > 0 ? ` · 🌿 ${stats.current}` : ""}
             </button>
           ))}
@@ -915,7 +936,17 @@ export default function SelahTab({ compact = false }: { compact?: boolean }) {
         }}
       />
 
-      {tab === "tonight" && !finished && (
+      {/* Verrou du soir : avant 18h, chrono à la place de la pause (le parcours reste accessible) */}
+      {tab === "tonight" && !finished && step === 0 && evening === false && (
+        <SelahEveningGate
+          lang={lang}
+          compact={compact}
+          streak={stats.current}
+          onGoPath={() => setTab("path")}
+        />
+      )}
+
+      {tab === "tonight" && !finished && !(step === 0 && evening !== true) && (
         <div className="flex flex-col gap-6 md:gap-10">
           {/* Belle barre de progression */}
           <div role="progressbar" aria-valuenow={progressPct} aria-valuemin={0} aria-valuemax={100} aria-label={l.steps[step]} className="relative">
@@ -952,6 +983,9 @@ export default function SelahTab({ compact = false }: { compact?: boolean }) {
 
           {step === 0 && (
             <div className="selah-step flex flex-col gap-6 md:gap-10" key={`step0-${lang}`}>
+              {/* Graine plantée dans la journée : on la récolte ce soir */}
+              <SelahSeedHarvest lang={lang} />
+
               {yesterday && (
                 <section className="rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-4 md:p-6 md:flex md:items-center md:justify-between">
                   <div>
@@ -1552,6 +1586,8 @@ export default function SelahTab({ compact = false }: { compact?: boolean }) {
               )}
             </section>
           )}
+
+          <SelahReminderCard lang={lang} variant="compact" />
 
           <SelahCapsules lang={lang} entries={entries} variant="composer" verseRef={rx.ref} state={etat ?? undefined} />
 

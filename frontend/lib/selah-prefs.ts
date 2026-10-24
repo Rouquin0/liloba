@@ -25,6 +25,8 @@ export interface SelahPrefs {
   ambient: boolean;
   /** Guide de souffle (anneau + vibrations douces) pendant la prière. */
   breath: boolean;
+  /** Le rappel quotidien de 18h a déjà été ajouté à l'agenda. */
+  reminderAdded: boolean;
 }
 
 const DEFAULTS: SelahPrefs = {
@@ -33,6 +35,7 @@ const DEFAULTS: SelahPrefs = {
   readAloud: false,
   ambient: false,
   breath: false,
+  reminderAdded: false,
 };
 
 function parse(raw: string | null): SelahPrefs {
@@ -49,6 +52,7 @@ function parse(raw: string | null): SelahPrefs {
       readAloud: o.readAloud === true,
       ambient: o.ambient === true,
       breath: o.breath === true,
+      reminderAdded: o.reminderAdded === true,
     };
   } catch {
     return { ...DEFAULTS, milestonesSeen: [] };
@@ -112,6 +116,10 @@ export function setAmbient(on: boolean): void {
 
 export function setBreath(on: boolean): void {
   write({ ...getSelahPrefs(), breath: on === true });
+}
+
+export function setReminderAdded(on: boolean): void {
+  write({ ...getSelahPrefs(), reminderAdded: on === true });
 }
 
 /** Marque un palier (7/30/100) comme déjà célébré. */
