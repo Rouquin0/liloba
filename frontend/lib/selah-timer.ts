@@ -16,6 +16,8 @@
 // (aucune animation de respiration dans ce cas).
 // ============================================================
 
+import { stopVoice } from "@/lib/selah-voice";
+
 export interface PrayerTiming {
   /** Nombre de mots comptés */
   words: number;
@@ -102,6 +104,7 @@ export function isSpeechAvailable(): boolean {
 
 /** Arrête toute lecture vocale en cours (à appeler au démontage). */
 export function stopSpeech(): void {
+  stopVoice(); // coupe aussi la chaîne phrase par phrase (timers en attente)
   try {
     if (typeof window !== "undefined" && "speechSynthesis" in window) {
       window.speechSynthesis.cancel();

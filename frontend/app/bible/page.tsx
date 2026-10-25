@@ -172,7 +172,6 @@ function BibleContent() {
   const translationConfig =
     TRANSLATIONS.find((t) => t.id === translationId) ?? TRANSLATIONS[0];
 
-  // 🔥 CORRECTION : on utilise shortName (ex: "LSG") partout pour éviter que le texte ne pousse le bouton
   const subtitle =
     testament === "at"
       ? `Ancien Testament · ${translationConfig.shortName}`
@@ -186,12 +185,7 @@ function BibleContent() {
         title="La Bible"
         subtitle={subtitle}
         showMenuButton
-        rightSlot={
-          // 🔥 CACHE LE SELECTEUR SUR DESKTOP
-          <div className="md:hidden">
-            <VersionSelector />
-          </div>
-        }
+        rightSlot={<VersionSelector />}
       />
 
       <div className="flex-1 overflow-y-auto">

@@ -75,16 +75,16 @@ export default function VersionSelector({ onChange, className = "" }: VersionSel
   const handleSelect = (id: TranslationId) => {
     setCurrent(id as DefaultTranslationId);
     setDefaultTranslation(id as DefaultTranslationId);
-    
-    // 🔥 SÉCURITÉ HORS-LIGNE : on ne pré-charge que si on a du réseau
+    // Pré-charge en mémoire (bonus de vitesse) : UNIQUEMENT si le réseau est là.
+    // Hors ligne (mode avion), on ne tente rien : la version est déjà dans
+    // IndexedDB et sera lue à la demande. Jamais d'exception qui remonte ici.
     if (typeof navigator !== "undefined" && navigator.onLine) {
       try {
         preloadTranslation(id);
-      } catch (e) {
-        // On ignore l'erreur silencieusement pour ne pas crasher le composant
+      } catch {
+        // ignore : le sélecteur doit rester affiché quoi qu'il arrive
       }
     }
-    
     onChange?.(id);
     setOpen(false);
   };

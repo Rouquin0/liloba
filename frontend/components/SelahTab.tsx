@@ -30,6 +30,7 @@ import {
   type SoulState,
 } from "@/lib/selah";
 import { getSelahPrayer, type PrayerDuration } from "@/lib/selah-prayers";
+import { speakLines } from "@/lib/selah-voice";
 import {
   estimatePrayerTiming,
   formatPrayerCountdown,
@@ -467,11 +468,22 @@ export default function SelahTab({ compact = false }: { compact?: boolean }) {
   );
   const timing = useMemo(() => estimatePrayerTiming(prayerLines), [prayerLines]);
   const schedule = useMemo(() => lineSchedule(prayerLines), [prayerLines]);
+  const lineStarts = useMemo(
+    () => schedule.ends.map((_, i) => (i === 0 ? 0 : schedule.ends[i - 1])),
+    [schedule]
+  );
 
   const [phase, setPhase] = useState<PrayerPhase>("idle");
   const [elapsedMs, setElapsedMs] = useState(0);
   const [prayerFocus, setPrayerFocus] = useState(false);
-  const [speechOn, setSpeechOn] = useState(false);
+  // La voix suit la préférence enregistrée (case « Lire à voix haute »)
+  const speechOn = prefs.readAloud;
+  const speechOnRef = useRef(false);
+  useEffect(() => {
+    speechOnRef.current = speechOn;
+  }, [speechOn]);
+  // Phrase actuellement prononcée (-1 = la voix ne pilote pas l'écran)
+  const voiceLineRef = useRef(-1);
   const startRef = useRef(0);
   const baseRef = useRef(0);
   const speechAvailable = useMemo(() => isSpeechAvailable(), []);
@@ -509,24 +521,41 @@ export default function SelahTab({ compact = false }: { compact?: boolean }) {
     }
   }, [stats.current, prefs.milestonesSeen]);
 
+  // Lecture phrase par phrase : la VOIX donne le tempo, l'écran la suit.
+  // À chaque phrase prononcée, on recale l'horloge de la prière sur le début
+  // de cette phrase → la phrase en surbrillance est toujours celle qu'on entend.
   const speakFrom = (fromLine: number) => {
-    if (!speechOn || !speechAvailable) return;
-    try {
-      window.speechSynthesis.cancel();
-      const text = prayerLines.slice(fromLine).join(" ");
-      if (!text.trim()) return;
-      const u = new SpeechSynthesisUtterance(text);
-      u.lang = lang === "en" ? "en-US" : "fr-FR";
-      u.rate = 0.9;
-      window.speechSynthesis.speak(u);
-    } catch {
-      // ignore
-    }
+    if (!speechOnRef.current || !speechAvailable) return;
+    if (fromLine >= prayerLines.length) return;
+    speakLines(prayerLines, fromLine, {
+      lang: lang === "en" ? "en-US" : "fr-FR",
+      rate: 0.9,
+      gapMs: 1100,
+      onLine: (i) => {
+        voiceLineRef.current = i;
+        baseRef.current = lineStarts[i] ?? 0;
+        startRef.current = Date.now();
+        setElapsedMs(baseRef.current);
+      },
+      onDone: () => {
+        // Dernière phrase finie : on entre dans le silence final (chronométré)
+        voiceLineRef.current = -1;
+        const end = schedule.ends.length ? schedule.ends[schedule.ends.length - 1] : 0;
+        baseRef.current = end;
+        startRef.current = Date.now();
+        setElapsedMs(end);
+      },
+      onError: () => {
+        // Voix indisponible : l'horloge reprend la main, la prière continue en silence
+        voiceLineRef.current = -1;
+      },
+    });
   };
 
   const startPrayer = () => {
     primeAmbient(); // geste utilisateur : autorise le son (iOS)
     stopSpeech();
+    voiceLineRef.current = -1;
     baseRef.current = 0;
     startRef.current = Date.now();
     setElapsedMs(0);
@@ -537,7 +566,11 @@ export default function SelahTab({ compact = false }: { compact?: boolean }) {
   useEffect(() => {
     if (phase !== "running") return;
     const id = setInterval(() => {
-      const e = baseRef.current + (Date.now() - startRef.current);
+      let e = baseRef.current + (Date.now() - startRef.current);
+      // Tant que la voix lit une phrase, l'écran reste sur cette phrase
+      // (même si la voix est plus lente que l'estimation).
+      const vl = voiceLineRef.current;
+      if (vl >= 0 && vl < schedule.ends.length) e = Math.min(e, schedule.ends[vl] - 1);
       if (e >= schedule.totalMs) {
         setElapsedMs(schedule.totalMs);
         setPhase("done");
@@ -548,7 +581,7 @@ export default function SelahTab({ compact = false }: { compact?: boolean }) {
       }
     }, 250);
     return () => clearInterval(id);
-  }, [phase, schedule.totalMs]);
+  }, [phase, schedule]);
 
   // Arrêt propre de la synthèse au démontage / changement d'étape
   useEffect(() => {
@@ -565,35 +598,33 @@ export default function SelahTab({ compact = false }: { compact?: boolean }) {
 
   const pausePrayer = () => {
     if (phase !== "running") return;
-    baseRef.current = baseRef.current + (Date.now() - startRef.current);
+    let e = baseRef.current + (Date.now() - startRef.current);
+    const vl = voiceLineRef.current;
+    if (vl >= 0 && vl < schedule.ends.length) e = Math.min(e, schedule.ends[vl] - 1);
+    baseRef.current = e;
     setElapsedMs(baseRef.current);
     setPhase("paused");
-    try {
-      window.speechSynthesis.cancel();
-    } catch {
-      // ignore
-    }
+    stopSpeech(); // coupe la voix ET la chaîne de phrases en attente
   };
   const resumePrayer = () => {
     if (phase !== "paused") return;
     primeAmbient();
     startRef.current = Date.now();
     setPhase("running");
-    speakFrom(lineIdx);
+    // Reprend au DÉBUT de la phrase interrompue (plus naturel qu'au milieu d'un mot)
+    speakFrom(voiceLineRef.current >= 0 ? voiceLineRef.current : lineIdx);
   };
   const skipLine = () => {
     if (phase !== "running" && phase !== "paused") return;
+    stopSpeech(); // arrête la phrase en cours avant de passer à la suivante
     const target =
       lineIdx < schedule.ends.length ? schedule.ends[lineIdx] : schedule.totalMs;
     baseRef.current = Math.min(target, schedule.totalMs);
     startRef.current = Date.now();
     setElapsedMs(baseRef.current);
-    if (phase === "paused") {
-      setPhase("running");
-      speakFrom(Math.min(lineIdx + 1, prayerLines.length));
-    } else {
-      speakFrom(Math.min(lineIdx + 1, prayerLines.length));
-    }
+    voiceLineRef.current = -1;
+    if (phase === "paused") setPhase("running");
+    speakFrom(Math.min(lineIdx + 1, prayerLines.length));
     if (baseRef.current >= schedule.totalMs) {
       setPhase("done");
       stopSpeech();
@@ -602,6 +633,7 @@ export default function SelahTab({ compact = false }: { compact?: boolean }) {
   const restartPrayer = () => {
     primeAmbient();
     stopSpeech();
+    voiceLineRef.current = -1;
     baseRef.current = 0;
     startRef.current = Date.now();
     setElapsedMs(0);
@@ -1383,9 +1415,16 @@ export default function SelahTab({ compact = false }: { compact?: boolean }) {
                         type="checkbox"
                         checked={speechOn}
                         onChange={(e) => {
-                          setSpeechOn(e.target.checked);
-                          setReadAloud(e.target.checked);
-                          if (!e.target.checked) stopSpeech();
+                          const on = e.target.checked;
+                          speechOnRef.current = on;
+                          setReadAloud(on);
+                          if (!on) {
+                            stopSpeech();
+                            voiceLineRef.current = -1;
+                          } else if (phase === "running") {
+                            // activée en pleine prière : la voix rejoint la phrase affichée
+                            speakFrom(lineIdx);
+                          }
                         }}
                         className="h-5 w-5 accent-[#d4af37]"
                       />
