@@ -45,7 +45,7 @@ function AppShellContent({ children }: { children: React.ReactNode }) {
     setMounted(true);
   }, []);
 
-  // AJOUT DE /carnet ET /historique ICI
+  // AJOUT DE /histoires ICI
   const showMenu =
     pathname.startsWith("/chat") || 
     pathname.startsWith("/bible") || 
@@ -53,7 +53,8 @@ function AppShellContent({ children }: { children: React.ReactNode }) {
     pathname.startsWith("/selah") ||
     pathname.startsWith("/auth") ||
     pathname.startsWith("/carnet") ||
-    pathname.startsWith("/historique"); 
+    pathname.startsWith("/historique") ||
+    pathname.startsWith("/histoires");
 
   const allowScroll = 
     pathname === "/" || 
