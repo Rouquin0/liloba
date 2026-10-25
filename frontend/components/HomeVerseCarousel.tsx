@@ -4,7 +4,8 @@ import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore
 import Link from "next/link";
 import { findBookBySlug, parseReference } from "@/lib/bible-utils";
 import { getHomeDayKey, getTodayVerses } from "@/lib/home-verses";
-import VerseActionBar from "./VerseActionBar"; // <-- NOUVEL IMPORT
+import VerseActionBar from "./VerseActionBar";
+import VerseCardModal from "./VerseCardModal"; // <-- NOUVEL IMPORT
 
 const AUTOPLAY_MS = 7000;
 const RESUME_AFTER_MS = 12000;
@@ -42,6 +43,10 @@ export default function HomeVerseCarousel() {
   const verses = useMemo(() => (dayKey ? getTodayVerses() : []), [dayKey]);
 
   const [active, setActive] = useState(0);
+  
+  // NOUVEL ÉTAT : Gère la modale de partage d'image
+  const [shareVerse, setShareVerse] = useState<{ ref: string; text: string } | null>(null);
+
   const scrollerRef = useRef<HTMLDivElement>(null);
   const activeRef = useRef(0);
   const pausedRef = useRef(false);
@@ -140,7 +145,6 @@ export default function HomeVerseCarousel() {
                 <article
                   key={verse.ref}
                   aria-label={`Verset ${i + 1} sur ${verses.length}`}
-                  // On garde le design de la carte, on ajoute juste le flex pour pousser la barre en bas
                   className="relative flex w-[85vw] shrink-0 snap-center snap-always flex-col justify-between gap-4 overflow-hidden rounded-[24px] border border-[var(--border)] bg-[var(--surface)] p-5 shadow-[0_0_40px_color-mix(in_srgb,var(--foreground)_6%,transparent)]"
                 >
                   <span
@@ -177,8 +181,12 @@ export default function HomeVerseCarousel() {
                     )}
                   </div>
 
-                  {/* LA NOUVELLE BARRE D'ACTIONS */}
-                  <VerseActionBar verseText={verse.text} reference={verse.ref} />
+                  {/* BARRE D'ACTIONS (avec la prop onShareImage) */}
+                  <VerseActionBar 
+                    verseText={verse.text} 
+                    reference={verse.ref} 
+                    onShareImage={() => setShareVerse({ ref: verse.ref, text: verse.text })}
+                  />
 
                 </article>
               );
@@ -212,6 +220,15 @@ export default function HomeVerseCarousel() {
             </button>
           ))}
         </div>
+      )}
+
+      {/* LA MODALE DE PARTAGE D'IMAGE */}
+      {shareVerse && (
+        <VerseCardModal 
+          reference={shareVerse.ref} 
+          text={shareVerse.text} 
+          onClose={() => setShareVerse(null)} 
+        />
       )}
     </div>
   );
