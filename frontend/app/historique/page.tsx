@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { useSmartBack } from "@/hooks/useSmartBack";
 import {
   getHistory,
   clearHistory,
@@ -11,7 +10,7 @@ import {
   cleanupExpiredHistory,
   type HistoryEntry,
 } from "@/lib/history";
-import AdvancedStats from "@/components/AdvancedStats"; // <-- Nouvel import
+import AdvancedStats from "@/components/AdvancedStats";
 import PrayersFavTab from "@/components/PrayersFavTab";
 import SearchHistoryTab from "@/components/SearchHistoryTab";
 import JournalTab from "@/components/JournalTab";
@@ -27,7 +26,6 @@ const TAB_LABELS: Record<Tab, string> = {
 };
 
 export default function HistoriquePage() {
-  const goBack = useSmartBack("/bible");
   const [history, setHistory] = useState<HistoryEntry[]>([]);
   const [mounted, setMounted] = useState(false);
   const [confirmClear, setConfirmClear] = useState(false);
@@ -66,24 +64,18 @@ export default function HistoriquePage() {
       {/* HEADER */}
       <header className="sticky top-0 z-30 border-b border-[var(--border)] bg-[var(--background)]/95 backdrop-blur-sm">
         <div className="flex items-center gap-3 px-4 py-4 md:px-6">
+          
+          {/* BOUTON HAMBURGER */}
           <button
             type="button"
-            onClick={goBack}
+            onClick={() => window.dispatchEvent(new Event("liloba:open-menu"))}
             className="flex h-8 w-8 items-center justify-center rounded-lg text-[var(--muted)] transition-colors hover:bg-[var(--surface-hover)] hover:text-[var(--foreground)]"
-            aria-label="Retour"
+            aria-label="Ouvrir le menu"
           >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              className="h-5 w-5"
-            >
-              <path d="m12 19-7-7 7-7" />
-              <path d="M19 12H5" />
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-5 w-5">
+              <line x1="4" x2="20" y1="6" y2="6" />
+              <line x1="4" x2="20" y1="12" y2="12" />
+              <line x1="4" x2="20" y1="18" y2="18" />
             </svg>
           </button>
 
@@ -284,7 +276,7 @@ export default function HistoriquePage() {
             </>
           )}
 
-          {/* Onglet STATS (On utilise le nouveau composant ici) */}
+          {/* Onglet STATS */}
           {tab === "stats" && <AdvancedStats />}
 
           {/* Onglet PRIÈRES */}

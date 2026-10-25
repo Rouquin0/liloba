@@ -5,7 +5,6 @@ import { supabase } from "@/lib/supabase";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 
-// Fonction de traduction des erreurs adaptée pour la connexion
 function traduireErreur(message: string): string {
   const m = message.toLowerCase();
   if (m.includes("invalid login") || m.includes("invalid credentials")) {
@@ -30,8 +29,6 @@ export default function SignInPage() {
   const [message, setMessage] = useState("");
   const [messageType, setMessageType] = useState<"error" | "success" | "">("");
   const [loading, setLoading] = useState(false);
-  
-  // Mode : mot de passe ou lien magique
   const [mode, setMode] = useState<"password" | "magic_link">("password");
 
   const afficher = (texte: string, type: "error" | "success") => {
@@ -39,13 +36,9 @@ export default function SignInPage() {
     setMessageType(type);
   };
 
-  // 1. Connexion classique (Mot de passe)
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    // Garde-fou anti-double-soumission
     if (loading) return;
-    
     setMessage("");
     setMessageType("");
     setLoading(true);
@@ -62,12 +55,7 @@ export default function SignInPage() {
       }
 
       afficher("Connexion réussie. Redirection...", "success");
-      
-      // Petit délai pour que l'utilisateur voie le message de succès
-      setTimeout(() => {
-        router.push("/");
-      }, 800);
-
+      setTimeout(() => router.push("/"), 800);
     } catch (err) {
       afficher("Une erreur inattendue est survenue.", "error");
     } finally {
@@ -75,13 +63,9 @@ export default function SignInPage() {
     }
   };
 
-  // 2. Connexion par Lien Magique (Magic Link)
   const handleMagicLink = async (e: React.FormEvent) => {
     e.preventDefault();
-
-    // Garde-fou anti-double-soumission
     if (loading) return;
-
     setMessage("");
     setMessageType("");
     setLoading(true);
@@ -89,9 +73,7 @@ export default function SignInPage() {
     try {
       const { error } = await supabase.auth.signInWithOtp({ 
         email: email.trim(),
-        options: {
-          emailRedirectTo: `${window.location.origin}/`,
-        }
+        options: { emailRedirectTo: `${window.location.origin}/` }
       });
 
       if (error) {
@@ -114,7 +96,6 @@ export default function SignInPage() {
   };
 
   return (
-    // Conteneur global pour coller l'en-tête en haut
     <div className="flex min-h-full flex-col bg-[var(--background)]">
       
       {/* EN-TÊTE : Hamburger à gauche + Titre */}
@@ -134,10 +115,8 @@ export default function SignInPage() {
         <h1 className="text-xl font-bold text-[var(--foreground)]">Connexion</h1>
       </header>
 
-      {/* FORMULAIRE CENTRÉ */}
       <div className="mx-auto w-full max-w-md flex-1 p-6 pt-2">
         
-        {/* Boutons pour choisir la méthode */}
         <div className="flex gap-2 mb-6">
           <button
             type="button"
@@ -145,8 +124,8 @@ export default function SignInPage() {
             disabled={loading}
             className={`flex-1 p-2 rounded-lg border transition-colors ${
               mode === "password" 
-                ? "bg-gray-100 font-bold border-gray-400" 
-                : "bg-white border-gray-300 hover:bg-gray-50"
+                ? "bg-[var(--surface-hover)] font-bold border-[var(--border)]" 
+                : "bg-transparent border-[var(--border)] hover:bg-[var(--surface-hover)]"
             } disabled:opacity-50`}
           >
             Mot de passe
@@ -157,8 +136,8 @@ export default function SignInPage() {
             disabled={loading}
             className={`flex-1 p-2 rounded-lg border transition-colors ${
               mode === "magic_link" 
-                ? "bg-gray-100 font-bold border-gray-400" 
-                : "bg-white border-gray-300 hover:bg-gray-50"
+                ? "bg-[var(--surface-hover)] font-bold border-[var(--border)]" 
+                : "bg-transparent border-[var(--border)] hover:bg-[var(--surface-hover)]"
             } disabled:opacity-50`}
           >
             Lien magique
@@ -166,7 +145,6 @@ export default function SignInPage() {
         </div>
 
         {mode === "password" ? (
-          // Formulaire classique
           <form onSubmit={handleSignIn} className="flex flex-col gap-3">
             <input
               type="email"
@@ -176,7 +154,7 @@ export default function SignInPage() {
               required
               disabled={loading}
               autoComplete="email"
-              className="p-3 rounded-lg border border-gray-300 disabled:bg-gray-100 disabled:cursor-not-allowed"
+              className="p-3 rounded-lg border border-[var(--border)] bg-[var(--surface)] disabled:bg-[var(--surface-hover)] disabled:cursor-not-allowed"
             />
             <input
               type="password"
@@ -186,20 +164,19 @@ export default function SignInPage() {
               required
               disabled={loading}
               autoComplete="current-password"
-              className="p-3 rounded-lg border border-gray-300 disabled:bg-gray-100 disabled:cursor-not-allowed"
+              className="p-3 rounded-lg border border-[var(--border)] bg-[var(--surface)] disabled:bg-[var(--surface-hover)] disabled:cursor-not-allowed"
             />
             <button 
               type="submit" 
               disabled={loading}
-              className="p-3 rounded-lg bg-black text-white disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors"
+              className="p-3 mt-2 rounded-lg bg-black text-white disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors dark:bg-white dark:text-black"
             >
               {loading ? "Connexion..." : "Se connecter"}
             </button>
           </form>
         ) : (
-          // Formulaire Lien Magique
           <form onSubmit={handleMagicLink} className="flex flex-col gap-3">
-            <p className="text-sm text-gray-500 mb-1">
+            <p className="text-sm text-[var(--muted)] mb-1">
               Pas de mot de passe. On t'envoie un lien sécurisé par email.
             </p>
             <input
@@ -210,12 +187,12 @@ export default function SignInPage() {
               required
               disabled={loading}
               autoComplete="email"
-              className="p-3 rounded-lg border border-gray-300 disabled:bg-gray-100 disabled:cursor-not-allowed"
+              className="p-3 rounded-lg border border-[var(--border)] bg-[var(--surface)] disabled:bg-[var(--surface-hover)] disabled:cursor-not-allowed"
             />
             <button 
               type="submit" 
               disabled={loading}
-              className="p-3 rounded-lg bg-black text-white disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors"
+              className="p-3 mt-2 rounded-lg bg-black text-white disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors dark:bg-white dark:text-black"
             >
               {loading ? "Envoi..." : "Recevoir mon lien magique"}
             </button>
@@ -228,9 +205,9 @@ export default function SignInPage() {
           </p>
         )}
         
-        <p className="mt-5 text-sm">
+        <p className="mt-5 text-center text-sm">
           Pas de compte ?{" "}
-          <Link href="/auth/sign-up" className="underline">
+          <Link href="/auth/sign-up" className="underline font-medium">
             Créer un compte
           </Link>
         </p>

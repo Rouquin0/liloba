@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { useSmartBack } from "@/hooks/useSmartBack";
 import {
   getNotesList,
   getFavoritesList,
@@ -38,7 +37,6 @@ const TAB_LABELS: Record<Tab, string> = {
 type FilterMode = "all" | "book";
 
 export default function CarnetPage() {
-  const goBack = useSmartBack("/bible");
   const [tab, setTab] = useState<Tab>("favorites");
   const [notes, setNotes] = useState<Note[]>([]);
   const [favorites, setFavorites] = useState<Favorite[]>([]);
@@ -84,7 +82,7 @@ export default function CarnetPage() {
     setConfirmDelete(null);
   };
 
-    const handlePrivateSetupComplete = (
+  const handlePrivateSetupComplete = (
     pin: string,
     question: string,
     answer: string
@@ -154,15 +152,18 @@ export default function CarnetPage() {
       {/* HEADER */}
       <header className="sticky top-0 z-30 border-b border-[var(--border)] bg-[var(--background)]/95 backdrop-blur-sm">
         <div className="flex items-center gap-3 px-4 py-4 md:px-6">
+          
+          {/* BOUTON HAMBURGER */}
           <button
             type="button"
-            onClick={goBack}
+            onClick={() => window.dispatchEvent(new Event("liloba:open-menu"))}
             className="flex h-8 w-8 items-center justify-center rounded-lg text-[var(--muted)] transition-colors hover:bg-[var(--surface-hover)] hover:text-[var(--foreground)]"
-            aria-label="Retour"
+            aria-label="Ouvrir le menu"
           >
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-5 w-5">
-              <path d="m12 19-7-7 7-7" />
-              <path d="M19 12H5" />
+              <line x1="4" x2="20" y1="6" y2="6" />
+              <line x1="4" x2="20" y1="12" y2="12" />
+              <line x1="4" x2="20" y1="18" y2="18" />
             </svg>
           </button>
 
@@ -179,7 +180,7 @@ export default function CarnetPage() {
                 <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
               </svg>
             </div>
-                        <h1 className="text-base font-semibold text-[var(--foreground)]">
+            <h1 className="text-base font-semibold text-[var(--foreground)]">
               <span className="md:hidden">{TAB_LABELS[tab]}</span>
               <span className="hidden md:inline">Mon Carnet</span>
             </h1>
@@ -205,7 +206,7 @@ export default function CarnetPage() {
 
         {/* Onglets */}
         <div className="flex border-t border-[var(--border)]">
-                              <button
+          <button
             type="button"
             onClick={() => setTab("prayer")}
             className={`flex flex-1 items-center justify-center gap-0 py-3.5 text-xs font-medium transition-colors md:gap-2 md:py-3 ${
@@ -224,7 +225,7 @@ export default function CarnetPage() {
             </svg>
             <span className="hidden md:inline">Prière</span>
           </button>
-                    <button
+          <button
             type="button"
             onClick={() => setTab("favorites")}
             className={`relative flex flex-1 items-center justify-center gap-0 py-3.5 text-xs font-medium transition-colors md:gap-2 md:py-3 ${
@@ -251,7 +252,7 @@ export default function CarnetPage() {
               </span>
             )}
           </button>
-                    <button
+          <button
             type="button"
             onClick={() => setTab("notes")}
             className={`relative flex flex-1 items-center justify-center gap-0 py-3.5 text-xs font-medium transition-colors md:gap-2 md:py-3 ${
@@ -279,7 +280,7 @@ export default function CarnetPage() {
               </span>
             )}
           </button>
-                              <button
+          <button
             type="button"
             onClick={() => setTab("games")}
             className={`flex flex-1 items-center justify-center gap-0 py-3.5 text-xs font-medium transition-colors md:gap-2 md:py-3 ${
@@ -302,7 +303,7 @@ export default function CarnetPage() {
             </svg>
             <span className="hidden md:inline">Jeux</span>
           </button>
-                    <button
+          <button
             type="button"
             onClick={() => setTab("private")}
             className={`flex flex-1 items-center justify-center gap-0 py-3.5 text-xs font-medium transition-colors md:gap-2 md:py-3 ${
@@ -369,7 +370,7 @@ export default function CarnetPage() {
                   title={filterBook === "all" ? "Aucun favori" : `Aucun favori dans ${filterBook}`}
                   subtitle="Ajoute des favoris en cliquant sur un verset → ⭐ Ajouter aux favoris"
                 />
-                            ) : (
+              ) : (
                 <div className="flex flex-col">
                   {filteredFavorites.map((fav) => {
                     const url = referenceToUrl(fav.reference);
@@ -427,7 +428,7 @@ export default function CarnetPage() {
                   title={filterBook === "all" ? "Aucune note" : `Aucune note dans ${filterBook}`}
                   subtitle="Ajoute une note en cliquant sur un verset → 📝 Ajouter une note"
                 />
-                            ) : (
+              ) : (
                 <div className="flex flex-col">
                   {filteredNotes.map((note) => {
                     const url = referenceToUrl(note.reference);
@@ -481,9 +482,9 @@ export default function CarnetPage() {
               )}
             </>
           )}
-                    {/* Onglet PRIÈRE 🙏 */}
+          {/* Onglet PRIÈRE 🙏 */}
           {tab === "prayer" && <PrayerTab />}
-                    {/* Onglet JEUX 🎮 */}
+          {/* Onglet JEUX 🎮 */}
           {tab === "games" && <GamesTab />}
 
 

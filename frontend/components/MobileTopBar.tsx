@@ -1,9 +1,7 @@
 "use client";
 
-import BackButton from "./BackButton";
-
 /**
- * Barre d'en-tête MOBILE uniquement (masquée dès md:) : flèche retour + bouton menu.
+ * Barre d'en-tête MOBILE uniquement (masquée dès md:) : bouton menu.
  * Pour les pages qui affichent le menu hamburger (AppShell) mais n'ont pas
  * d'en-tête avec bouton pour l'ouvrir, comme /selah.
  */
@@ -15,8 +13,7 @@ export default function MobileTopBar() {
   };
 
   return (
-    <div className="sticky top-0 z-30 flex items-center justify-between border-b border-[var(--border)] bg-[var(--background)]/90 px-4 py-2 backdrop-blur-sm md:hidden">
-      <BackButton />
+    <div className="sticky top-0 z-30 flex items-center border-b border-[var(--border)] bg-[var(--background)]/90 px-4 py-2 backdrop-blur-sm md:hidden">
       <button
         type="button"
         onClick={openMenu}

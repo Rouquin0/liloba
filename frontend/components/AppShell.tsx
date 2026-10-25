@@ -45,21 +45,27 @@ function AppShellContent({ children }: { children: React.ReactNode }) {
     setMounted(true);
   }, []);
 
+  // AJOUT DE /carnet ET /historique ICI
   const showMenu =
     pathname.startsWith("/chat") || 
     pathname.startsWith("/bible") || 
     pathname.startsWith("/read") ||
-    pathname.startsWith("/selah");
+    pathname.startsWith("/selah") ||
+    pathname.startsWith("/auth") ||
+    pathname.startsWith("/carnet") ||
+    pathname.startsWith("/historique"); 
 
-  const allowScroll = pathname === "/" || pathname.startsWith("/selah") || pathname.startsWith("/histoires");
+  const allowScroll = 
+    pathname === "/" || 
+    pathname.startsWith("/selah") || 
+    pathname.startsWith("/histoires") ||
+    pathname.startsWith("/auth");
 
   const handleClose = useCallback(() => setIsMenuOpen(false), []);
 
   if (!showMenu) {
     return (
-      // h-dvh + overflow-hidden : le conteneur extérieur ne bouge JAMAIS.
       <div className="flex h-dvh overflow-hidden bg-[var(--background)]">
-        {/* C'est le main qui gère le scroll. overscroll-y-none empêche le rebond. */}
         <main className={`flex-1 ${allowScroll ? "overflow-y-auto overscroll-y-none" : "overflow-hidden"}`}>
           {children}
         </main>
