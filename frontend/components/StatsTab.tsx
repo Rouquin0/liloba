@@ -15,12 +15,20 @@ import {
   type StatsData,
   type StreakData,
 } from "@/lib/stats";
+import { getJournal } from "@/lib/journal";
+import {
+  getReadingTimeStats,
+  formatMinutes,
+  type ReadingTimeStats,
+} from "@/lib/reading-time";
 
 export default function StatsTab() {
   const [verse, setVerse] = useState<RandomVerse | null>(null);
   const [isLoadingVerse, setIsLoadingVerse] = useState(true);
   const [stats, setStats] = useState<StatsData | null>(null);
   const [streak, setStreak] = useState<StreakData | null>(null);
+  const [reading, setReading] = useState<ReadingTimeStats | null>(null);
+  const [journalTotal, setJournalTotal] = useState(0);
   const [mounted, setMounted] = useState(false);
   const [copied, setCopied] = useState(false);
 
@@ -28,6 +36,15 @@ export default function StatsTab() {
     setMounted(true);
     loadVerse();
     loadStats();
+    const reload = () => loadStats();
+    window.addEventListener("liloba:journal-updated", reload);
+    window.addEventListener("liloba:history-updated", reload);
+    window.addEventListener("liloba:reading-time-updated", reload);
+    return () => {
+      window.removeEventListener("liloba:journal-updated", reload);
+      window.removeEventListener("liloba:history-updated", reload);
+      window.removeEventListener("liloba:reading-time-updated", reload);
+    };
   }, []);
 
   const loadVerse = async () => {
@@ -40,6 +57,14 @@ export default function StatsTab() {
   const loadStats = () => {
     setStats(getStats());
     setStreak(getStreak());
+    setReading(getReadingTimeStats());
+    try {
+      // Total persistant (journal) : ne retombe jamais à 0 après 24 h
+      // contrairement à l'historique des versets marqués.
+      setJournalTotal(getJournal().length);
+    } catch {
+      setJournalTotal(0);
+    }
   };
 
   const handleCopy = async () => {
@@ -202,7 +227,7 @@ export default function StatsTab() {
           <p className="py-8 text-center text-xs text-[var(--muted)]">
             Chargement…
           </p>
-        ) : stats.totalCount === 0 ? (
+        ) : stats.totalCount === 0 && journalTotal === 0 ? (
           <div className="rounded-2xl border border-dashed border-[var(--border)] bg-[var(--surface)] px-4 py-12 text-center">
             <p className="mb-1 text-sm text-[var(--foreground)]">
               Aucune statistique pour l&apos;instant
@@ -267,6 +292,29 @@ export default function StatsTab() {
               <StatBox label="Aujourd'hui" value={stats.todayCount} />
               <StatBox label="Cette semaine" value={stats.weekCount} />
               <StatBox label="Ce mois" value={stats.monthCount} />
+            </div>
+
+            {/* ===== Temps de lecture réel (chrono mesuré) ===== */}
+            <div className="flex items-center justify-between rounded-xl border border-[var(--border)] bg-[var(--surface)] px-4 py-3">
+              <span className="flex items-center gap-2 text-xs text-[var(--muted)]">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  className="h-3.5 w-3.5"
+                >
+                  <circle cx="12" cy="12" r="10" />
+                  <polyline points="12 6 12 12 16 14" />
+                </svg>
+                Temps de lecture total
+              </span>
+              <span className="font-mono text-sm font-bold text-[var(--color-accent)]">
+                {reading ? formatMinutes(reading.totalSeconds) : "0 min"}
+              </span>
             </div>
 
             {/* ===== Graphique 7 jours ===== */}

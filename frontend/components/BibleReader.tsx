@@ -26,6 +26,7 @@ import BibleHeader from "@/components/BibleHeader";
 import VersionSelector from "@/components/VersionSelector";
 import { addToHistory } from "@/lib/history";
 import { trackStreak } from "@/lib/stats";
+import { trackChapterRead, addReadingSeconds } from "@/lib/reading-time";
 import { addJournalEntry } from "@/lib/journal";
 import VerseActionMenu from "@/components/VerseActionMenu";
 import VerseIOSMenu from "@/components/VerseIOSMenu";
@@ -264,6 +265,53 @@ export default function BibleReader({
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: 0 });
   }, [slug, chapitre]);
+
+  // 📖 Enregistre la lecture du chapitre (1x/jour/chapitre, persistant).
+  // C'est ce qui alimente "Chapitres lus" et le temps de lecture dans Stats.
+  const chapterTrackedRef = useRef<string | null>(null);
+  useEffect(() => {
+    if (isLoading || error || !versets || !bookName) return;
+    if (Object.keys(versets).length === 0) return;
+    const key = `${slug}/${chapitre}`;
+    if (chapterTrackedRef.current === key) return;
+    chapterTrackedRef.current = key;
+    trackChapterRead(bookName as string, chapitre, slug);
+  }, [versets, isLoading, error, bookName, slug, chapitre]);
+
+  // ⏱️ Chrono de temps de lecture réel : +15 s toutes les 15 s si l'onglet
+  // est visible et le chapitre est chargé. Flush à la sortie aussi.
+  useEffect(() => {
+    if (!versets || isLoading || error) return;
+    let acc = 0;
+    let last = Date.now();
+    const flush = () => {
+      const now = Date.now();
+      const elapsed = Math.round((now - last) / 1000);
+      last = now;
+      if (elapsed <= 0) return;
+      if (typeof document !== "undefined" && document.hidden) return;
+      acc += elapsed;
+      // Crédite par tranches de 15 s pour limiter les écritures
+      if (acc >= 15) {
+        const credit = Math.floor(acc / 15) * 15;
+        acc -= credit;
+        addReadingSeconds(credit);
+      }
+    };
+    const interval = setInterval(flush, 15000);
+    const onVis = () => {
+      last = Date.now();
+    };
+    document.addEventListener("visibilitychange", onVis);
+    window.addEventListener("beforeunload", flush);
+    return () => {
+      flush();
+      if (acc > 5) addReadingSeconds(acc); // solde restant (> 5 s)
+      clearInterval(interval);
+      document.removeEventListener("visibilitychange", onVis);
+      window.removeEventListener("beforeunload", flush);
+    };
+  }, [versets, isLoading, error, slug, chapitre]);
 
   const hasPrev = chapitre > 1;
   const hasNext = chapitre < totalChapters;
