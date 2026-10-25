@@ -114,106 +114,127 @@ export default function SignInPage() {
   };
 
   return (
-    <div className="max-w-md mx-auto mt-12 p-6">
-      <h1 className="text-2xl font-bold mb-6">Connexion</h1>
+    // Conteneur global pour coller l'en-tête en haut
+    <div className="flex min-h-full flex-col bg-[var(--background)]">
       
-      {/* Boutons pour choisir la méthode (Tailwind) */}
-      <div className="flex gap-2 mb-6">
+      {/* EN-TÊTE : Hamburger à gauche + Titre */}
+      <header className="flex items-center gap-3 px-4 py-4 md:px-6">
         <button
           type="button"
-          onClick={() => changerMode("password")}
-          disabled={loading}
-          className={`flex-1 p-2 rounded-lg border transition-colors ${
-            mode === "password" 
-              ? "bg-gray-100 font-bold border-gray-400" 
-              : "bg-white border-gray-300 hover:bg-gray-50"
-          } disabled:opacity-50`}
+          onClick={() => window.dispatchEvent(new Event("liloba:open-menu"))}
+          className="flex h-10 w-10 items-center justify-center rounded-xl border border-[var(--border)] bg-[var(--surface)] text-[var(--muted)] transition-colors hover:bg-[var(--surface-hover)] hover:text-[var(--foreground)]"
+          aria-label="Ouvrir le menu"
         >
-          Mot de passe
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-5 w-5">
+            <line x1="4" x2="20" y1="6" y2="6" />
+            <line x1="4" x2="20" y1="12" y2="12" />
+            <line x1="4" x2="20" y1="18" y2="18" />
+          </svg>
         </button>
-        <button
-          type="button"
-          onClick={() => changerMode("magic_link")}
-          disabled={loading}
-          className={`flex-1 p-2 rounded-lg border transition-colors ${
-            mode === "magic_link" 
-              ? "bg-gray-100 font-bold border-gray-400" 
-              : "bg-white border-gray-300 hover:bg-gray-50"
-          } disabled:opacity-50`}
-        >
-          Lien magique
-        </button>
-      </div>
+        <h1 className="text-xl font-bold text-[var(--foreground)]">Connexion</h1>
+      </header>
 
-      {mode === "password" ? (
-        // Formulaire classique
-        <form onSubmit={handleSignIn} className="flex flex-col gap-3">
-          <input
-            type="email"
-            placeholder="Ton email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
+      {/* FORMULAIRE CENTRÉ */}
+      <div className="mx-auto w-full max-w-md flex-1 p-6 pt-2">
+        
+        {/* Boutons pour choisir la méthode */}
+        <div className="flex gap-2 mb-6">
+          <button
+            type="button"
+            onClick={() => changerMode("password")}
             disabled={loading}
-            autoComplete="email"
-            className="p-3 rounded-lg border border-gray-300 disabled:bg-gray-100 disabled:cursor-not-allowed"
-          />
-          <input
-            type="password"
-            placeholder="Mot de passe"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-            disabled={loading}
-            autoComplete="current-password"
-            className="p-3 rounded-lg border border-gray-300 disabled:bg-gray-100 disabled:cursor-not-allowed"
-          />
-          <button 
-            type="submit" 
-            disabled={loading}
-            className="p-3 rounded-lg bg-black text-white disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors"
+            className={`flex-1 p-2 rounded-lg border transition-colors ${
+              mode === "password" 
+                ? "bg-gray-100 font-bold border-gray-400" 
+                : "bg-white border-gray-300 hover:bg-gray-50"
+            } disabled:opacity-50`}
           >
-            {loading ? "Connexion..." : "Se connecter"}
+            Mot de passe
           </button>
-        </form>
-      ) : (
-        // Formulaire Lien Magique
-        <form onSubmit={handleMagicLink} className="flex flex-col gap-3">
-          <p className="text-sm text-gray-500 mb-1">
-            Pas de mot de passe. On t'envoie un lien sécurisé par email.
+          <button
+            type="button"
+            onClick={() => changerMode("magic_link")}
+            disabled={loading}
+            className={`flex-1 p-2 rounded-lg border transition-colors ${
+              mode === "magic_link" 
+                ? "bg-gray-100 font-bold border-gray-400" 
+                : "bg-white border-gray-300 hover:bg-gray-50"
+            } disabled:opacity-50`}
+          >
+            Lien magique
+          </button>
+        </div>
+
+        {mode === "password" ? (
+          // Formulaire classique
+          <form onSubmit={handleSignIn} className="flex flex-col gap-3">
+            <input
+              type="email"
+              placeholder="Ton email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+              disabled={loading}
+              autoComplete="email"
+              className="p-3 rounded-lg border border-gray-300 disabled:bg-gray-100 disabled:cursor-not-allowed"
+            />
+            <input
+              type="password"
+              placeholder="Mot de passe"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+              disabled={loading}
+              autoComplete="current-password"
+              className="p-3 rounded-lg border border-gray-300 disabled:bg-gray-100 disabled:cursor-not-allowed"
+            />
+            <button 
+              type="submit" 
+              disabled={loading}
+              className="p-3 rounded-lg bg-black text-white disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors"
+            >
+              {loading ? "Connexion..." : "Se connecter"}
+            </button>
+          </form>
+        ) : (
+          // Formulaire Lien Magique
+          <form onSubmit={handleMagicLink} className="flex flex-col gap-3">
+            <p className="text-sm text-gray-500 mb-1">
+              Pas de mot de passe. On t'envoie un lien sécurisé par email.
+            </p>
+            <input
+              type="email"
+              placeholder="Ton email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+              disabled={loading}
+              autoComplete="email"
+              className="p-3 rounded-lg border border-gray-300 disabled:bg-gray-100 disabled:cursor-not-allowed"
+            />
+            <button 
+              type="submit" 
+              disabled={loading}
+              className="p-3 rounded-lg bg-black text-white disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors"
+            >
+              {loading ? "Envoi..." : "Recevoir mon lien magique"}
+            </button>
+          </form>
+        )}
+
+        {message && (
+          <p className={`mt-5 text-sm ${messageType === "error" ? "text-red-600" : "text-blue-600"}`}>
+            {message}
           </p>
-          <input
-            type="email"
-            placeholder="Ton email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-            disabled={loading}
-            autoComplete="email"
-            className="p-3 rounded-lg border border-gray-300 disabled:bg-gray-100 disabled:cursor-not-allowed"
-          />
-          <button 
-            type="submit" 
-            disabled={loading}
-            className="p-3 rounded-lg bg-black text-white disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors"
-          >
-            {loading ? "Envoi..." : "Recevoir mon lien magique"}
-          </button>
-        </form>
-      )}
-
-      {message && (
-        <p className={`mt-5 text-sm ${messageType === "error" ? "text-red-600" : "text-blue-600"}`}>
-          {message}
+        )}
+        
+        <p className="mt-5 text-sm">
+          Pas de compte ?{" "}
+          <Link href="/auth/sign-up" className="underline">
+            Créer un compte
+          </Link>
         </p>
-      )}
-      
-      <p className="mt-5 text-sm">
-        Pas de compte ?{" "}
-        <Link href="/auth/sign-up" className="underline">
-          Créer un compte
-        </Link>
-      </p>
+      </div>
     </div>
   );
 }
