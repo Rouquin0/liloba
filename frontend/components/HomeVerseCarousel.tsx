@@ -4,6 +4,7 @@ import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore
 import Link from "next/link";
 import { findBookBySlug, parseReference } from "@/lib/bible-utils";
 import { getHomeDayKey, getTodayVerses } from "@/lib/home-verses";
+import VerseActionBar from "./VerseActionBar"; // <-- NOUVEL IMPORT
 
 const AUTOPLAY_MS = 7000;
 const RESUME_AFTER_MS = 12000;
@@ -48,16 +49,14 @@ export default function HomeVerseCarousel() {
 
   const goTo = useCallback((index: number) => {
     const el = scrollerRef.current;
-    const card = el?.children[index + 1] as HTMLElement | undefined; // +1 à cause de l'espaceur au début
+    const card = el?.children[index + 1] as HTMLElement | undefined;
     if (!el || !card) return;
     
-    // On calcule pour centrer parfaitement la carte
     const scrollLeft = card.offsetLeft - (el.offsetWidth - card.offsetWidth) / 2;
     el.scrollTo({ left: scrollLeft, behavior: "smooth" });
   }, []);
 
   useEffect(() => {
-    // Au chargement, on centre le premier verset
     setTimeout(() => goTo(0), 100);
   }, [dayKey, goTo]);
 
@@ -98,7 +97,6 @@ export default function HomeVerseCarousel() {
     if (!el) return;
     let best = 0;
     let bestDist = Infinity;
-    // On ignore le premier enfant (l'espaceur)
     Array.from(el.children).slice(1).forEach((child, i) => {
       const card = child as HTMLElement;
       const center = card.offsetLeft + card.offsetWidth / 2 - el.offsetWidth / 2;
@@ -127,10 +125,8 @@ export default function HomeVerseCarousel() {
           role="region"
           aria-roledescription="carrousel"
           aria-label="Versets du jour"
-          // Pas de padding ici, on utilise des divs vides pour le centrage
           className="flex snap-x snap-mandatory overflow-x-auto overscroll-x-contain touch-pan-x gap-4 pb-4 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
         >
-          {/* Espaceur de gauche (50vw moins la moitié de la carte) */}
           <div aria-hidden="true" className="w-[calc(50vw-42.5vw)] shrink-0" />
 
           {verses.length === 0 ? (
@@ -144,25 +140,30 @@ export default function HomeVerseCarousel() {
                 <article
                   key={verse.ref}
                   aria-label={`Verset ${i + 1} sur ${verses.length}`}
-                  className="relative flex w-[85vw] shrink-0 snap-center snap-always flex-col justify-between gap-5 overflow-hidden rounded-[24px] border border-[var(--border)] bg-[var(--surface)] p-6 shadow-[0_0_40px_color-mix(in_srgb,var(--foreground)_6%,transparent)]"
+                  // On garde le design de la carte, on ajoute juste le flex pour pousser la barre en bas
+                  className="relative flex w-[85vw] shrink-0 snap-center snap-always flex-col justify-between gap-4 overflow-hidden rounded-[24px] border border-[var(--border)] bg-[var(--surface)] p-5 shadow-[0_0_40px_color-mix(in_srgb,var(--foreground)_6%,transparent)]"
                 >
                   <span
                     aria-hidden="true"
                     className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[var(--foreground)]/25 to-transparent"
                   />
+                  
+                  {/* Contenu du verset */}
                   <div>
                     <p className="mb-3 flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-[0.14em] text-[var(--muted)]">
                       <span aria-hidden="true" className="text-yellow-500">✦</span>
                       {i === 0 ? "Verset du jour" : "Pour toi aujourd'hui"}
                     </p>
                     <p
-                      className="text-[21px] italic leading-[1.5] text-[var(--foreground)]"
+                      className="text-[19px] italic leading-[1.5] text-[var(--foreground)]"
                       style={{ fontFamily: "var(--font-serif)" }}
                     >
                       « {verse.text} »
                     </p>
                   </div>
-                  <div className="flex items-center justify-between gap-3">
+
+                  {/* Référence et lien */}
+                  <div className="flex items-center justify-between gap-3 mb-1">
                     <span className="min-w-0 text-xs font-semibold tracking-wide text-[var(--muted)]">
                       {verse.ref}
                     </span>
@@ -175,12 +176,15 @@ export default function HomeVerseCarousel() {
                       </Link>
                     )}
                   </div>
+
+                  {/* LA NOUVELLE BARRE D'ACTIONS */}
+                  <VerseActionBar verseText={verse.text} reference={verse.ref} />
+
                 </article>
               );
             })
           )}
 
-          {/* Espaceur de droite */}
           <div aria-hidden="true" className="w-[calc(50vw-42.5vw)] shrink-0" />
         </div>
       </div>
