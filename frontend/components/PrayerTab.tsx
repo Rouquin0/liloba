@@ -8,6 +8,7 @@ import {
 } from "@/lib/prayers";
 import { isFavorite, toggleFavorite } from "@/lib/prayers-fav";
 import { addJournalEntry } from "@/lib/journal";
+import PrayerCompanion, { AmenButton } from "@/components/PrayerCompanion";
 
 // ============================================================
 // ICÔNES SVG PAR CATÉGORIE
@@ -348,6 +349,9 @@ export default function PrayerTab() {
             {copied ? "Copié !" : "Copier"}
           </button>
         </div>
+
+        {/* Sceller la prière d'un Amen (compteur local) */}
+        <AmenButton key={selectedPrayer.id} prayer={selectedPrayer} />
       </div>
     );
   }
@@ -439,6 +443,9 @@ export default function PrayerTab() {
       <p className="text-xs text-[var(--muted)]">
         {PRAYER_CATEGORIES.length} catégories · {getTotalPrayers()} prières
       </p>
+
+      {/* Compagnon de prière : nouveautés (quotidien, routine, intentions, silence, amen) */}
+      <PrayerCompanion onOpenPrayer={setSelectedPrayer} />
 
       <div className="flex flex-col gap-2">
         {PRAYER_CATEGORIES.map((cat) => (

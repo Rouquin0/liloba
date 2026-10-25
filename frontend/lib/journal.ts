@@ -14,6 +14,7 @@ export type JournalActionType =
   | "verse_favorited"
   | "note_added"
   | "prayer_favorited"
+  | "prayer_session"
   | "search"
   | "private_note_added"
   | "verse_card_created";
@@ -171,6 +172,7 @@ export const ACTION_META: Record<JournalActionType, ActionMeta> = {
   verse_favorited: { label: "Favori", icon: "star" },
   note_added: { label: "Note ajoutée", icon: "note" },
   prayer_favorited: { label: "Prière favorite", icon: "shield" },
+  prayer_session: { label: "Prière", icon: "shield" },
   search: { label: "Recherche", icon: "search" },
   private_note_added: { label: "Note privée", icon: "lock" },
   verse_card_created: { label: "Partage", icon: "image" },
