@@ -3,8 +3,9 @@
 import { useEffect } from "react";
 
 // Enregistre et met à jour le Service Worker.
-// v9 : pré-chauffe aussi /carnet, /historique, /histoires (+ 3 histoires)
-// pour garantir le hors ligne dès la 1re visite (données 100% locales).
+// v10 : pré-chauffe aussi /carnet, /historique, /histoires (20 histoires)
+// et /settings pour garantir le hors ligne dès la 1re visite
+// (données 100% locales).
 export default function ServiceWorkerRegister() {
   useEffect(() => {
     if (typeof window === "undefined") return;

@@ -1,16 +1,18 @@
 // ============================================================
-// LILOBA — Service Worker v9 (offline carnet/historique/histoires)
+// LILOBA — Service Worker v10 (offline histoires + paramètres)
 // ============================================================
-// Changements vs v7 (AUCUNE rupture, que des ajouts sûrs) :
-//  - STATIC/RUNTIME passent en v8 (ancien v7 purgé à l'activation).
+// Changements vs v9 (AUCUNE rupture, que des ajouts sûrs) :
+//  - STATIC/RUNTIME passent en v10 (ancien v9 purgé à l'activation).
 //  - BIBLE_CACHE RESTE en "liloba-bible-v4" : on ne retélécharge
 //    JAMAIS la Bible (45 Mo). Ne pas renommer ce cache.
 //  - "/offline.html" est pré-caché et servi en dernier recours
 //    pour les navigations quand réseau + cache sont vides.
-//    Avant : simple texte "Hors ligne". Après : belle page sombre.
-//  - v9 : /carnet, /historique, /histoires/<slug> marchent hors ligne
-//    (données 100% locales : localStorage + bundle JS, zéro API).
-//    Images /images/* en cache-first (fallback dégradé déjà prévu).
+//  - v10 : /settings est pré-caché + mappé (100% local : plus de
+//    renvoi vers "/" hors ligne) ; les 20 fiches /histoires/<slug>
+//    sont TOUTES pré-cachées (pages statiques, données bundlées) :
+//    lecture de chaque histoire possible en mode avion.
+//    Images /images/* en cache-first (StoryArt a déjà un fallback
+//    dégradé emoji si l'image n'est pas encore en cache).
 //  - Navigations : Cache-First instantané (anti écran blanc iOS)
 //    + revalidation réseau en arrière-plan (Stale-While-Revalidate).
 //    iOS purge le cache après ~24h d'inactivité : au retour, si un
@@ -28,21 +30,20 @@
 // avec "next build && next start" sur localhost.
 const ENABLE_ON_LOCALHOST = false;
 
-const STATIC_CACHE = "liloba-static-v9";
-const RUNTIME_CACHE = "liloba-runtime-v9";
+const STATIC_CACHE = "liloba-static-v10";
+const RUNTIME_CACHE = "liloba-runtime-v10";
 // ⚠️ NE PAS RENOMMER : évite de retélécharger la Bible (45 Mo).
 const BIBLE_CACHE = "liloba-bible-v4";
 const KEEP_CACHES = [STATIC_CACHE, RUNTIME_CACHE, BIBLE_CACHE];
 
 const OFFLINE_URL = "/offline.html";
 
-// Ajout de /histoires pour le pré-cache (+ offline.html = filet de sécurité)
-// Pages 100% locales (localStorage / données bundlées) : doivent marcher hors ligne.
-// /carnet (notes, favoris, prières, jeux) + /historique + /histoires.
-// Les fiches /histoires/<slug> sont statiques (generateStaticParams) :
-// pré-cache des 3 plus lues, les 20 autres se cachent à la 1re visite.
-const STORY_PRECACHE = ["/histoires/david-goliath", "/histoires/fils-perdu", "/histoires/joseph-pardon"];
-const PRECACHE_URLS = ["/", "/chat", "/bible", "/histoires", "/selah", "/carnet", "/historique", "/manifest.webmanifest", OFFLINE_URL, ...STORY_PRECACHE];
+// Pré-cache des pages 100% locales (localStorage / données bundlées) :
+// /carnet (notes, favoris, prières, jeux) + /historique + /histoires + /settings.
+// Les 20 fiches /histoires/<slug> sont statiques (generateStaticParams) :
+// TOUTES pré-cachées pour une lecture en mode avion dès l'installation.
+const STORY_PRECACHE = ["/histoires/david-goliath", "/histoires/joseph-pardon", "/histoires/noe-obeissance", "/histoires/ruth-loyaute", "/histoires/daniel-lions", "/histoires/esther-courage", "/histoires/fils-perdu", "/histoires/bon-samaritain", "/histoires/jonas-seconde-chance", "/histoires/abraham-confiance", "/histoires/moise-mer-rouge", "/histoires/salomon-sagesse", "/histoires/jesus-tempete", "/histoires/zachee-sycomore", "/histoires/cinq-pains-deux-poissons", "/histoires/veuve-offrande", "/histoires/samuel-ecoute", "/histoires/dix-lepreux", "/histoires/nehemie-muraille", "/histoires/anne-priere"];
+const PRECACHE_URLS = ["/", "/chat", "/bible", "/histoires", "/selah", "/carnet", "/historique", "/settings", "/manifest.webmanifest", OFFLINE_URL, ...STORY_PRECACHE];
 
 const IS_LOCAL = ["localhost", "127.0.0.1", "[::1]"].includes(
   self.location.hostname
@@ -270,6 +271,7 @@ async function handleNavigation(request, url) {
     else if (path.startsWith("/historique")) shellUrl = "/historique";
     else if (path.startsWith("/histoires")) shellUrl = "/histoires";
     else if (path.startsWith("/selah")) shellUrl = "/selah";
+    else if (path.startsWith("/settings")) shellUrl = "/settings";
 
     const shell =
       (await caches.match(shellUrl, { ignoreVary: true })) ||
