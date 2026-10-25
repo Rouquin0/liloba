@@ -2,6 +2,7 @@
 
 import { useUser } from "@/hooks/useUser";
 import { supabase } from "@/lib/supabase";
+import { KeyCapButton, KeyCapLink } from "@/components/KeyCap";
 import OnlineBadge from "./OnlineBadge";
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
@@ -345,47 +346,39 @@ export default function HamburgerMenu({
             </>
           ) : (
             <>
-              {/* Logo à gauche */}
-              <Link href="/" className="flex flex-1 items-center gap-2" onClick={onClose}>
+              {/* Logo à gauche (la zone vide à droite n'est PAS cliquable :
+                  un doigt qui dérape ne renvoie plus à l'accueil) */}
+              <Link href="/" className="flex min-w-0 shrink items-center gap-2" onClick={onClose}>
                 <Logo size={26} />
                 <span className="text-sm font-bold text-[var(--color-primary)]">
                   {BRANDING.app.name}
                 </span>
               </Link>
+              <div className="flex-1" aria-hidden="true" />
 
-              {/* Le Pill en haut à droite */}
-              <div className="flex items-center gap-1 rounded-full border border-[var(--border)] bg-[var(--background)] px-1.5 py-1 shadow-sm">
-                
+              {/* Touches : mobile = gros boutons façon clavier iPhone (44 px, espacés,
+                  qui grossissent au toucher) ; desktop = pilule discrète d'origine. */}
+              <div className="flex items-center gap-2 md:gap-1 md:rounded-full md:border md:border-[var(--border)] md:bg-[var(--background)] md:px-1.5 md:py-1 md:shadow-sm">
                 {/* Nouveau Chat */}
-                <button
-                  type="button"
-                  onClick={handleNewDiscussion}
-                  className="flex h-7 w-7 items-center justify-center rounded-full text-[var(--muted)] transition-colors hover:bg-[var(--surface-hover)] hover:text-[var(--color-accent)]"
-                  aria-label="Nouvelle discussion"
-                >
-                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-3.5 w-3.5">
+                <KeyCapButton label="Nouvelle discussion" onClick={handleNewDiscussion}>
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-5 w-5 md:h-3.5 md:w-3.5">
                     <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
                     <path d="M12 8v6" />
                     <path d="M9 11h6" />
                   </svg>
-                </button>
+                </KeyCapButton>
 
-                <div className="h-4 w-[1px] bg-[var(--border)] mx-0.5"></div>
+                <div className="mx-0.5 hidden h-4 w-[1px] bg-[var(--border)] md:block"></div>
 
                 {/* Recherche Bible */}
-                <Link
-                  href="/recherche"
-                  onClick={onClose}
-                  className="flex h-7 w-7 items-center justify-center rounded-full text-[var(--muted)] transition-colors hover:bg-[var(--surface-hover)] hover:text-[var(--color-accent)]"
-                  aria-label="Rechercher dans la Bible"
-                >
-                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-3.5 w-3.5">
+                <KeyCapLink href="/recherche" onClick={onClose} label="Rechercher dans la Bible">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-5 w-5 md:h-3.5 md:w-3.5">
                     <circle cx="11" cy="11" r="8" />
                     <path d="m21 21-4.3-4.3" />
                   </svg>
-                </Link>
+                </KeyCapLink>
 
-                <div className="h-4 w-[1px] bg-[var(--border)] mx-0.5"></div>
+                <div className="mx-0.5 hidden h-4 w-[1px] bg-[var(--border)] md:block"></div>
 
                 {/* Statut En ligne */}
                 <div className="flex items-center px-1">

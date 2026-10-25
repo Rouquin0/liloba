@@ -38,15 +38,8 @@ import {
   exportAllData,
   importAllData,
   getStorageEstimate,
-  reloadOfflineBible,
-  clearOfflineBible,
   type StorageEstimate,
 } from "@/lib/backup";
-import {
-  getOfflineStatus,
-  formatSize,
-  formatDownloadDate,
-} from "@/lib/offline-bible";
 import { applyAccentColor } from "@/hooks/useCustomColors";
 import HighlightsSection from "@/components/HighlightsSection";
 import OfflineCheckSection from "@/components/OfflineCheckSection";
@@ -76,10 +69,6 @@ export default function SettingsPage() {
 
   // ---- Données ----
   const [storage, setStorage] = useState<StorageEstimate | null>(null);
-  const [offlineInfo, setOfflineInfo] = useState<{
-    size: number;
-    date: number | null;
-  }>({ size: 0, date: null });
   const [busy, setBusy] = useState<string | null>(null);
   const [toast, setToast] = useState<{ ok: boolean; msg: string } | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -98,8 +87,6 @@ export default function SettingsPage() {
   const refreshStorage = async () => {
     const est = await getStorageEstimate();
     setStorage(est);
-    const st = await getOfflineStatus();
-    setOfflineInfo({ size: st.size, date: st.downloadedAt });
   };
 
   // ============================================================
@@ -199,28 +186,6 @@ export default function SettingsPage() {
       setTimeout(() => window.location.reload(), 1500);
     }
     e.target.value = "";
-  };
-
-  const handleReloadOffline = async () => {
-    setBusy("reload");
-    const res = await reloadOfflineBible();
-    setBusy(null);
-    setToast({ ok: res.ok, msg: res.message });
-    await refreshStorage();
-  };
-
-  const handleClearOffline = async () => {
-    if (
-      !confirm(
-        "Vider le cache de la Bible hors ligne ? Elle devra être retéléchargée."
-      )
-    )
-      return;
-    setBusy("clear");
-    const res = await clearOfflineBible();
-    setBusy(null);
-    setToast({ ok: res.ok, msg: res.message });
-    await refreshStorage();
   };
 
   const showSaved = () => {
@@ -750,62 +715,9 @@ export default function SettingsPage() {
               )}
             </div>
 
-            {/* Gestion cache hors-ligne */}
+            {/* Télécharger les 10 versions bibliques (remplace « Bible hors ligne » + « Réparer ») */}
             <div className="py-3 md:py-4">
-              <div className="mb-3 flex min-w-0 items-center gap-3 md:mb-4">
-                <div
-                  className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg md:h-9 md:w-9"
-                  style={{ background: "var(--surface-hover)" }}
-                >
-                  <IconCloud />
-                </div>
-                <div className="flex min-w-0 flex-col">
-                  <span className="text-sm font-medium text-[var(--foreground)]">
-                    Bible hors ligne
-                  </span>
-                  <span className="text-xs text-[var(--muted)]">
-                    {offlineInfo.size > 0
-                      ? `${formatSize(offlineInfo.size)}${
-                          offlineInfo.date
-                            ? ` · ${formatDownloadDate(offlineInfo.date)}`
-                            : ""
-                        }`
-                      : "Non téléchargée"}
-                  </span>
-                </div>
-              </div>
-              <div className="grid grid-cols-2 gap-2 md:ml-12 md:gap-3">
-                <button
-                  type="button"
-                  onClick={handleReloadOffline}
-                  disabled={busy === "reload"}
-                  className="flex items-center justify-center gap-2 rounded-lg border border-[var(--border)] py-2.5 text-xs font-medium text-[var(--foreground)] transition-all hover:border-[var(--color-accent)] hover:text-[var(--color-accent)] disabled:opacity-50"
-                >
-                  <IconRefresh />
-                  {busy === "reload" ? "Mise à jour..." : "Mettre à jour"}
-                </button>
-                <button
-                  type="button"
-                  onClick={handleClearOffline}
-                  disabled={busy === "clear" || offlineInfo.size === 0}
-                  className="flex items-center justify-center gap-2 rounded-lg border border-red-500/20 py-2.5 text-xs font-medium text-red-500 transition-all hover:border-red-500/40 hover:bg-red-500/5 disabled:opacity-30"
-                >
-                  <IconTrash />
-                  {busy === "clear" ? "Vidage..." : "Vider le cache"}
-                </button>
-              </div>
-              {offlineInfo.size === 0 && (
-                <p className="mt-2 text-[10px] leading-relaxed text-[var(--muted)] md:ml-12 md:mt-3">
-                  Pour télécharger la Bible hors ligne, installe LILOBA sur ton
-                  téléphone : Menu du navigateur → Ajouter à l&apos;écran
-                  d&apos;accueil.
-                </p>
-              )}
-              
-              {/* 🛠️ VÉRIFICATEUR HORS LIGNE (NOUVEAU) */}
-              <div className="mt-4 min-w-0 md:ml-12">
-                <OfflineCheckSection onChanged={refreshStorage} />
-              </div>
+              <OfflineCheckSection onChanged={refreshStorage} />
             </div>
           </Section>
 
@@ -985,16 +897,6 @@ function IconBrush() {
   );
 }
 
-function IconTrash() {
-  return (
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4 text-red-500">
-      <path d="M3 6h18" />
-      <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" />
-      <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" />
-    </svg>
-  );
-}
-
 function IconTextSize() {
   return (
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4">
@@ -1067,21 +969,3 @@ function IconHardDrive() {
   );
 }
 
-function IconCloud() {
-  return (
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4">
-      <path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z" />
-    </svg>
-  );
-}
-
-function IconRefresh() {
-  return (
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-3.5 w-3.5">
-      <path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8" />
-      <path d="M21 3v5h-5" />
-      <path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16" />
-      <path d="M3 21v-5h5" />
-    </svg>
-  );
-}
