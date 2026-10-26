@@ -19,6 +19,12 @@ function traduireErreur(message: string): string {
   if (m.includes("signups not allowed")) {
     return "Aucun compte trouvé avec cet email. Veuillez d'abord créer un compte.";
   }
+  if (m.includes("token has expired") || m.includes("otp has expired")) {
+    return "Ce code a expiré. Veuillez en demander un nouveau.";
+  }
+  if (m.includes("invalid token") || m.includes("invalid otp")) {
+    return "Code incorrect. Vérifiez le code saisi.";
+  }
   if (m.includes("network") || m.includes("fetch") || m.includes("failed")) {
     return "Problème de connexion. Vérifie ton réseau et réessaie.";
   }
@@ -29,17 +35,22 @@ export default function SignInPage() {
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [showPassword, setShowPassword] = useState(false); // <-- Nouvel état
+  const [showPassword, setShowPassword] = useState(false);
   const [message, setMessage] = useState("");
   const [messageType, setMessageType] = useState<"error" | "success" | "">("");
   const [loading, setLoading] = useState(false);
-  const [mode, setMode] = useState<"password" | "magic_link">("password");
+  const [mode, setMode] = useState<"password" | "otp">("password");
+
+  // États pour le code OTP
+  const [otpSent, setOtpSent] = useState(false);
+  const [otpCode, setOtpCode] = useState("");
 
   const afficher = (texte: string, type: "error" | "success") => {
     setMessage(texte);
     setMessageType(type);
   };
 
+  // 1. Connexion par mot de passe
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
     if (loading) return;
@@ -67,7 +78,8 @@ export default function SignInPage() {
     }
   };
 
-  const handleMagicLink = async (e: React.FormEvent) => {
+  // 2. Envoi du code OTP
+  const handleSendOtp = async (e: React.FormEvent) => {
     e.preventDefault();
     if (loading) return;
     setMessage("");
@@ -79,7 +91,7 @@ export default function SignInPage() {
         email: email.trim(),
         options: { 
           emailRedirectTo: `${window.location.origin}/`,
-          shouldCreateUser: false // <-- Empêche la création auto de compte
+          shouldCreateUser: false
         }
       });
 
@@ -88,7 +100,8 @@ export default function SignInPage() {
         return;
       }
 
-      afficher("Lien magique envoyé. Vérifie ta boîte mail.", "success");
+      setOtpSent(true);
+      afficher("Un code à 6 chiffres vous a été envoyé par email. Il expirera dans 10 minutes.", "success");
     } catch (err) {
       afficher("Une erreur inattendue est survenue.", "error");
     } finally {
@@ -96,10 +109,41 @@ export default function SignInPage() {
     }
   };
 
-  const changerMode = (nouveauMode: "password" | "magic_link") => {
+  // 3. Vérification du code OTP
+  const handleVerifyOtp = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (loading || !otpCode.trim()) return;
+    setMessage("");
+    setMessageType("");
+    setLoading(true);
+
+    try {
+      const { error } = await supabase.auth.verifyOtp({
+        email: email.trim(),
+        token: otpCode.trim(),
+        type: 'email'
+      });
+
+      if (error) {
+        afficher(traduireErreur(error.message), "error");
+        return;
+      }
+
+      afficher("Connexion réussie. Redirection...", "success");
+      setTimeout(() => router.push("/"), 800);
+    } catch (err) {
+      afficher("Une erreur inattendue est survenue.", "error");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const changerMode = (nouveauMode: "password" | "otp") => {
     setMode(nouveauMode);
     setMessage("");
     setMessageType("");
+    setOtpSent(false);
+    setOtpCode("");
   };
 
   return (
@@ -110,7 +154,7 @@ export default function SignInPage() {
         <button
           type="button"
           onClick={() => window.dispatchEvent(new Event("liloba:open-menu"))}
-          className="flex h-10 w-10 items-center justify-center rounded-xl border border-[var(--border)] bg-[var(--surface)] text-[var(--muted)] transition-colors hover:bg-[var(--surface-hover)] hover:text-[var(--foreground)]"
+          className="flex h-10 w-10 items-center justify-center rounded-xl border border-[var(--border)] bg-[var(--surface)] text-[var(--muted)] transition-colors hover:bg-[var(--surface-hover)] hover:text-[var(--foreground)] md:hidden"
           aria-label="Ouvrir le menu"
         >
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-5 w-5">
@@ -124,6 +168,7 @@ export default function SignInPage() {
 
       <div className="mx-auto w-full max-w-md flex-1 p-6 pt-2">
         
+        {/* ONGLETS */}
         <div className="flex gap-2 mb-6">
           <button
             type="button"
@@ -139,19 +184,20 @@ export default function SignInPage() {
           </button>
           <button
             type="button"
-            onClick={() => changerMode("magic_link")}
+            onClick={() => changerMode("otp")}
             disabled={loading}
             className={`flex-1 p-2 rounded-lg border transition-colors ${
-              mode === "magic_link" 
+              mode === "otp" 
                 ? "bg-[var(--surface-hover)] font-bold border-[var(--border)]" 
                 : "bg-transparent border-[var(--border)] hover:bg-[var(--surface-hover)]"
             } disabled:opacity-50`}
           >
-            Lien magique
+            Code par email
           </button>
         </div>
 
-        {mode === "password" ? (
+        {/* FORMULAIRE MOT DE PASSE */}
+        {mode === "password" && (
           <form onSubmit={handleSignIn} className="flex flex-col gap-3">
             <input
               type="email"
@@ -164,7 +210,6 @@ export default function SignInPage() {
               className="p-3 rounded-lg border border-[var(--border)] bg-[var(--surface)] disabled:bg-[var(--surface-hover)] disabled:cursor-not-allowed"
             />
             
-            {/* CHAMP MOT DE PASSE AVEC BOUTON OEIL */}
             <div className="relative">
               <input
                 type={showPassword ? "text" : "password"}
@@ -197,15 +242,18 @@ export default function SignInPage() {
             <button 
               type="submit" 
               disabled={loading}
-              className="p-3 mt-2 rounded-lg bg-black text-white disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors dark:bg-white dark:text-black"
+              className="p-3 mt-2 rounded-lg bg-black text-white disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors dark:bg-white dark:text-black font-semibold"
             >
               {loading ? "Connexion..." : "Se connecter"}
             </button>
           </form>
-        ) : (
-          <form onSubmit={handleMagicLink} className="flex flex-col gap-3">
+        )}
+
+        {/* FORMULAIRE CODE PAR EMAIL (OTP) */}
+        {mode === "otp" && (
+          <div className="flex flex-col gap-3">
             <p className="text-sm text-[var(--muted)] mb-1">
-              Pas de mot de passe. On t'envoie un lien sécurisé par email.
+              Recevez un code à 6 chiffres par email pour vous connecter.
             </p>
             <input
               type="email"
@@ -213,32 +261,78 @@ export default function SignInPage() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
-              disabled={loading}
+              disabled={loading || otpSent}
               autoComplete="email"
               className="p-3 rounded-lg border border-[var(--border)] bg-[var(--surface)] disabled:bg-[var(--surface-hover)] disabled:cursor-not-allowed"
             />
-            <button 
-              type="submit" 
-              disabled={loading}
-              className="p-3 mt-2 rounded-lg bg-black text-white disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors dark:bg-white dark:text-black"
-            >
-              {loading ? "Envoi..." : "Recevoir mon lien magique"}
-            </button>
-          </form>
+            
+            {!otpSent ? (
+              <button 
+                type="button"
+                onClick={handleSendOtp}
+                disabled={loading || !email.trim()}
+                className="p-3 mt-2 rounded-lg bg-black text-white disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors dark:bg-white dark:text-black font-semibold"
+              >
+                {loading ? "Envoi..." : "Recevoir mon code"}
+              </button>
+            ) : (
+              <>
+                <input
+                  type="text"
+                  placeholder="Code à 6 chiffres"
+                  value={otpCode}
+                  onChange={(e) => setOtpCode(e.target.value)}
+                  maxLength={6}
+                  disabled={loading}
+                  className="p-3 rounded-lg border border-[var(--border)] bg-[var(--surface)] disabled:bg-[var(--surface-hover)] disabled:cursor-not-allowed text-center text-lg tracking-widest font-mono"
+                />
+                <button 
+                  type="button"
+                  onClick={handleVerifyOtp}
+                  disabled={loading || !otpCode.trim()}
+                  className="p-3 mt-2 rounded-lg bg-black text-white disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors dark:bg-white dark:text-black font-semibold"
+                >
+                  {loading ? "Vérification..." : "Vérifier le code"}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setOtpSent(false);
+                    setOtpCode("");
+                    setMessage("");
+                  }}
+                  className="text-sm text-[var(--muted)] underline-offset-2 hover:underline mt-1"
+                >
+                  Renvoyer un code
+                </button>
+              </>
+            )}
+          </div>
         )}
 
+        {/* MESSAGES D'ERREUR / SUCCÈS */}
         {message && (
           <p className={`mt-5 text-sm ${messageType === "error" ? "text-red-600" : "text-blue-600"}`}>
             {message}
           </p>
         )}
         
-        <p className="mt-5 text-center text-sm">
-          Pas de compte ?{" "}
-          <Link href="/auth/sign-up" className="underline font-medium">
-            Créer un compte
+        {/* METTRE CRÉER UN COMPTE EN AVANT */}
+        <div className="mt-8 border-t border-[var(--border)] pt-6">
+          <p className="text-center text-sm text-[var(--muted)] mb-3">
+            Pas encore de compte sur LILOBA ?
+          </p>
+          <Link 
+            href="/auth/sign-up" 
+            className="flex w-full items-center justify-center gap-2 rounded-lg border-2 border-[var(--color-accent)] px-4 py-3 text-sm font-bold text-[var(--color-accent)] transition-all hover:bg-[var(--color-accent)]/10"
+          >
+            Créer un compte gratuitement
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4">
+              <path d="M5 12h14"/><path d="m12 5 7 7-7 7"/>
+            </svg>
           </Link>
-        </p>
+        </div>
+
       </div>
     </div>
   );
