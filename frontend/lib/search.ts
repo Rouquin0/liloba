@@ -12,6 +12,7 @@ import {
   type ParsedReference,
 } from "./bible-utils";
 import { getOfflineBible, getOfflineLivres } from "./offline-bible";
+import { localStorage } from "@/lib/profile-storage";
 
 // ============================================================
 // TYPES

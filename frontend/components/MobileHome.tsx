@@ -3,8 +3,8 @@
 import Link from "next/link";
 import Logo from "@/components/Logo";
 import StreakBadge from "@/components/StreakBadge";
-import ApollosMaintenanceBanner from "@/components/ApollosMaintenanceBanner";
 import HomeVerseCarousel from "@/components/HomeVerseCarousel";
+import HomeQuickActions from "@/components/HomeQuickActions";
 import HomeStoriesStrip from "@/components/HomeStoriesStrip";
 import HomeShortcutsNav from "@/components/HomeShortcutsNav";
 import { BRANDING } from "@/lib/branding";
@@ -35,6 +35,9 @@ export default function MobileHome() {
           </span>
 
           <HomeVerseCarousel />
+
+          {/* Profil famille + Plan de lecture : sous le carrousel, au-dessus de « Lire la Bible » */}
+          <HomeQuickActions />
 
           <Link
             href="/bible"
@@ -72,7 +75,6 @@ export default function MobileHome() {
 
         <HomeStoriesStrip />
 
-        <ApollosMaintenanceBanner compact />
       </div>
 
       <HomeShortcutsNav />

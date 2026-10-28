@@ -7,6 +7,8 @@
 
 "use client";
 
+
+import { localStorage } from "@/lib/profile-storage";
 // ---------- Types ----------
 
 export type AgeLevel = "8-11" | "12-15" | "16-17" | "18+";

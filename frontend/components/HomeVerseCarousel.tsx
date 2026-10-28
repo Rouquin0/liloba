@@ -137,7 +137,7 @@ export default function HomeVerseCarousel() {
       {/* MESSAGE D'ACCUEIL DYNAMIQUE */}
       <div className="mb-4 px-2">
         <h2 className="text-lg font-bold text-[var(--foreground)]">
-          {greeting}{pseudo ? `, ${pseudo}` : ""} 👋
+          {greeting}{pseudo ? `, ${pseudo}` : ""} 
         </h2>
         <p className="text-xs text-[var(--muted)]">Voici tes versets du jour</p>
       </div>

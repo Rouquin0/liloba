@@ -1,5 +1,7 @@
 "use client";
 
+
+import { localStorage } from "@/lib/profile-storage";
 // ============================================================
 // LILOBA — SELAH · La graine du jour
 // ============================================================

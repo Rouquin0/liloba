@@ -21,6 +21,7 @@ import {
   type PrayerIntention,
 } from "@/lib/prayer-life";
 import { addJournalEntry } from "@/lib/journal";
+import { localStorage } from "@/lib/profile-storage";
 
 // ============================================================
 // LILOBA — Compagnon de prière (5 nouveautés, style épuré)

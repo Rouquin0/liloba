@@ -7,12 +7,12 @@ import { useRouter } from "next/navigation";
 import { BRANDING } from "@/lib/branding";
 import { isOnboarded } from "@/lib/preferences";
 import { useIsMobile } from "@/hooks/useIsMobile";
-import ApollosMaintenanceBanner from "@/components/ApollosMaintenanceBanner";
 import StreakBadge from "@/components/StreakBadge";
 import InstallPwaButton from "@/components/InstallPwaButton";
 import HistoiresTeaser from "@/components/HistoiresTeaser";
 import OnlineBadge from "@/components/OnlineBadge";
 import MobileHome from "@/components/MobileHome";
+import HomeQuickActions from "@/components/HomeQuickActions";
 
 export default function HomePage() {
   const router = useRouter();
@@ -84,6 +84,11 @@ export default function HomePage() {
             <p className="text-lg text-gray-400">Choisis une option pour commencer</p>
           </div>
 
+          {/* Profil famille + Plan de lecture */}
+          <div className="mb-8 w-full max-w-md">
+            <HomeQuickActions tone="dark" />
+          </div>
+
           <div className="grid grid-cols-2 gap-6 w-full mb-8">
             
             {/* CARTE BIBLE */}
@@ -130,19 +135,6 @@ export default function HomePage() {
               </div>
             </Link>
 
-          </div>
-
-          {/* Bandeau Maintenance avec le style Glassmorphism */}
-          <div className="w-full rounded-[20px] bg-[#fb923c]/5 backdrop-blur-md border border-[#fb923c]/15 p-6 flex items-center gap-5 transition-all hover:bg-[#fb923c]/10 hover:border-[#fb923c]/30">
-            <div className="text-[#fb923c]">
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-7 h-7">
-                <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>
-              </svg>
-            </div>
-            <div>
-              <h4 className="text-base font-semibold text-white mb-1">Apollos en maintenance</h4>
-              <p className="text-sm text-gray-400">L'assistant IA est temporairement indisponible. La lecture de la Bible reste accessible en ligne.</p>
-            </div>
           </div>
 
         </main>

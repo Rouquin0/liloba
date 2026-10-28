@@ -18,6 +18,7 @@ import {
   type SoulMeta,
   type SoulState,
 } from "@/lib/selah-content";
+import { localStorage } from "@/lib/profile-storage";
 
 export type { Prescription, SoulMeta, SoulState };
 

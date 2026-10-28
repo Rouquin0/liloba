@@ -1,5 +1,7 @@
 "use client";
 
+
+import { localStorage } from "@/lib/profile-storage";
 // ============================================================
 // LILOBA — Scores des 2 jeux mobiles (clés séparées : ne touche
 // jamais à GameScores existant → zéro risque pour les records

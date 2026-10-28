@@ -12,6 +12,7 @@
 
 import { addJournalEntry, getJournal } from "./journal";
 import { trackStreak } from "./stats";
+import { localStorage } from "@/lib/profile-storage";
 
 const READING_TIME_KEY = "liloba-reading-time";
 const MAX_DAYS_KEPT = 120;

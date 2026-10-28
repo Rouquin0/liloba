@@ -1,5 +1,7 @@
 "use client";
 
+
+import { localStorage } from "@/lib/profile-storage";
 // ============================================================
 // LILOBA — Vie de prière (compagnon du carnet)
 // ------------------------------------------------------------

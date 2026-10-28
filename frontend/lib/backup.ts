@@ -5,6 +5,7 @@
 // ============================================================
 
 import { getOfflineBible, getOfflineStatus } from "./offline-bible";
+import { getActiveProfileId, migrateLegacyKeys } from "./profile-storage";
 
 // ---------- Types ----------
 
@@ -17,6 +18,10 @@ export interface BackupData {
 }
 
 // ---------- EXPORT ----------
+// Mode famille : ici `localStorage` est le VRAI stockage du navigateur (ce
+// fichier n'utilise pas le stockage « par profil »). La sauvegarde contient donc
+// TOUS les profils d'un coup : liste des profils (liloba-profiles) + les clés
+// liloba-<profil>-* de chacun. Les codes PIN y figurent sous forme hachée.
 
 export function exportAllData(): void {
   if (typeof window === "undefined") return;
@@ -72,6 +77,14 @@ export async function importAllData(file: File): Promise<{
       try {
         localStorage.setItem(key, value);
         count++;
+      } catch {}
+    }
+
+    // Ancienne sauvegarde (avant le mode famille) : ses clés n'ont pas de profil.
+    // On les range dans le profil actif pour que rien ne se perde.
+    if (!("liloba-profiles" in backup.localStorage)) {
+      try {
+        migrateLegacyKeys(getActiveProfileId(), true);
       } catch {}
     }
 

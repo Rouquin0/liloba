@@ -10,6 +10,7 @@
 // ============================================================
 
 import { isPrayerDuration, type PrayerDuration } from "@/lib/selah-prayers";
+import { localStorage } from "@/lib/profile-storage";
 
 const KEY = "liloba-selah-prefs";
 const EVENT = "liloba:selah-prefs-updated";

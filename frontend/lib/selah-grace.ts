@@ -1,5 +1,7 @@
 "use client";
 
+
+import { localStorage } from "@/lib/profile-storage";
 // ============================================================
 // LILOBA — SELAH · sursis de 24 h ILLIMITÉ
 // ============================================================

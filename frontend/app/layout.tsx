@@ -4,6 +4,7 @@ import { EB_Garamond } from "next/font/google";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import AppShell from "@/components/AppShell";
 import ServiceWorkerRegister from "@/components/ServiceWorkerRegister";
+import ProfileSync from "@/components/profile/ProfileSync";
 import "./globals.css";
 
 const serif = EB_Garamond({
@@ -82,6 +83,7 @@ export default function RootLayout({
                 <ThemeProvider>
           <AppShell>{children}</AppShell>
           <ServiceWorkerRegister />
+          <ProfileSync />
         </ThemeProvider>
       </body>
 

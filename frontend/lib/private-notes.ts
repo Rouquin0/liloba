@@ -1,6 +1,7 @@
 "use client";
 
 import CryptoJS from "crypto-js";
+import { localStorage } from "@/lib/profile-storage";
 
 // ============================================================
 // LILOBA — Notes privées chiffrées (AES)

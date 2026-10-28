@@ -1,6 +1,7 @@
 "use client";
 
 import type { SourceBiblique } from "./api";
+import { localStorage } from "@/lib/profile-storage";
 
 // ============================================================
 // TYPES

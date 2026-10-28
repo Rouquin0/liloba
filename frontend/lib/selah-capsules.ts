@@ -11,6 +11,7 @@
 // ============================================================
 
 import type { SoulState } from "@/lib/selah-content";
+import { localStorage } from "@/lib/profile-storage";
 
 const KEY = "liloba-selah-capsules";
 const EVENT = "liloba:selah-capsules-updated";

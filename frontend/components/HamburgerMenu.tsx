@@ -9,6 +9,9 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { BRANDING } from "@/lib/branding";
 import { ANCIEN_TESTAMENT, NOUVEAU_TESTAMENT } from "@/lib/bible-utils";
+import MenuAccordion from "@/components/ui/MenuAccordion";
+import ProfileSwitcher from "@/components/profile/ProfileSwitcher";
+import ReadingPlanButton from "@/components/plan/ReadingPlan";
 import Logo from "./Logo";
 import { getHistory, type HistoryEntry } from "@/lib/history";
 import {
@@ -60,9 +63,6 @@ export default function HamburgerMenu({
 
   // Gestion du profil
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
-  const [pseudo, setPseudo] = useState<string | null>(null);
-  const [isEditingPseudo, setIsEditingPseudo] = useState(false);
-  const [tempPseudo, setTempPseudo] = useState("");
   const [showProfileMenu, setShowProfileMenu] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -95,11 +95,9 @@ export default function HamburgerMenu({
 
   useEffect(() => {
     setMounted(true);
+    // Charger la photo de profil depuis le localStorage
     const savedAvatar = localStorage.getItem("liloba-profile-avatar");
     if (savedAvatar) setAvatarUrl(savedAvatar);
-    
-    const savedPseudo = localStorage.getItem("liloba-profile-pseudo");
-    if (savedPseudo) setPseudo(savedPseudo);
   }, []);
 
   useEffect(() => {
@@ -315,13 +313,15 @@ export default function HamburgerMenu({
     reader.onload = (event) => {
       const img = new Image();
       img.onload = () => {
+        // Redimensionner l'image pour éviter de saturer le localStorage
         const canvas = document.createElement("canvas");
         const ctx = canvas.getContext("2d");
-        const size = 150;
+        const size = 150; // Taille de l'avatar
         canvas.width = size;
         canvas.height = size;
         
         if (ctx) {
+          // Centrer et recadrer l'image (carré)
           const minSize = Math.min(img.width, img.height);
           const sx = (img.width - minSize) / 2;
           const sy = (img.height - minSize) / 2;
@@ -335,19 +335,6 @@ export default function HamburgerMenu({
       img.src = event.target?.result as string;
     };
     reader.readAsDataURL(file);
-    setShowProfileMenu(false);
-  };
-
-  // Sauvegarde du pseudo
-  const handleSavePseudo = () => {
-    if (tempPseudo.trim()) {
-      localStorage.setItem("liloba-profile-pseudo", tempPseudo.trim());
-      setPseudo(tempPseudo.trim());
-    } else {
-      localStorage.removeItem("liloba-profile-pseudo");
-      setPseudo(null);
-    }
-    setIsEditingPseudo(false);
     setShowProfileMenu(false);
   };
 
@@ -442,6 +429,7 @@ export default function HamburgerMenu({
 
         {/* ==================== CONTENU ==================== */}
         <div className="flex-1 overflow-y-auto px-3 py-4">
+          {/* ... (tout le contenu de la sidebar reste identique, je l'ai gardé intact) ... */}
           
           {history.length > 0 && !searchQuery && (
             <Link href="/historique" onClick={onClose} className="group flex items-center gap-3 rounded-xl px-3 py-1.5 transition-all hover:bg-[var(--surface-hover)]">
@@ -463,12 +451,34 @@ export default function HamburgerMenu({
           )}
 
           {!searchQuery && (
-            <Link href="/selah" onClick={onClose} className="group mb-4 flex items-center gap-3 rounded-xl px-3 py-1.5 transition-all hover:bg-[var(--surface-hover)]">
+            <Link href="/selah" onClick={onClose} className="group flex items-center gap-3 rounded-xl px-3 py-1.5 transition-all hover:bg-[var(--surface-hover)]">
               <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg text-[var(--muted)]">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z" /><path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12" /></svg>
               </span>
               <span className="min-w-0 flex-1 text-sm text-[var(--foreground)]">Selah<span className="ml-1.5 text-xs text-[var(--muted)]">pause du soir</span></span>
             </Link>
+          )}
+
+          {/* Mode famille + plan de lecture : cachés, se déplient au clic, se referment tout seuls */}
+          {!searchQuery && (
+            <MenuAccordion
+              key={`famille-${pathname}-${isOpen ? 1 : 0}`}
+              className="mb-4"
+              label="Profil et plan de lecture"
+              icon={
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4">
+                  <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+                  <circle cx="9" cy="7" r="4" />
+                  <path d="M22 21v-2a4 4 0 0 0-3-3.87" />
+                  <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+                </svg>
+              }
+            >
+              <div className="flex flex-col gap-2 px-2 pb-2 pt-1">
+                <ProfileSwitcher variant="pill" />
+                <ReadingPlanButton onNavigate={onClose} />
+              </div>
+            </MenuAccordion>
           )}
 
           {!searchQuery && (
@@ -481,10 +491,15 @@ export default function HamburgerMenu({
           )}
 
           <section className="mb-6">
-            <h3 className="mb-2 flex items-center gap-1.5 px-2 text-[10px] font-bold uppercase tracking-widest text-[var(--muted)]">
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-3 w-3"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" /><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" /></svg>
-              <span>La Bible</span>
-            </h3>
+            {/* « La Bible » : on clique pour voir Tous les livres / Ancien / Nouveau Testament */}
+            <MenuAccordion
+              key={`bible-${pathname}-${isOpen ? 1 : 0}`}
+              label="La Bible"
+              icon={
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" /><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" /></svg>
+              }
+            >
+              <div className="px-1 pb-1 pt-1">
             <Link href="/bible" onClick={onClose} className={`group relative mb-0.5 flex items-center gap-3 rounded-xl border px-3 py-2.5 text-sm transition-all ${pathname === "/bible" ? "border-[var(--color-accent)]/30 bg-[var(--color-accent)]/5" : "border-transparent text-[var(--foreground)] hover:border-[var(--border)] hover:bg-[var(--surface-hover)]"}`}>
               <span className="flex h-5 w-5 shrink-0 items-center justify-center text-[var(--muted)]">
                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z" /><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" /></svg>
@@ -501,6 +516,8 @@ export default function HamburgerMenu({
                 <span className="rounded-md border border-[var(--border)] px-1.5 py-0.5 font-mono text-[10px]">{NOUVEAU_TESTAMENT.length}</span>
               </Link>
             </div>
+              </div>
+            </MenuAccordion>
           </section>
 
           {pinnedConversations.length > 0 && (
@@ -576,64 +593,32 @@ export default function HamburgerMenu({
                     )}
                   </button>
                   
-                  {/* PSEUDO OU EMAIL */}
-                  <span className="truncate text-xs font-medium text-[var(--foreground)]">
-                    {pseudo || user.email}
-                  </span>
+                  {/* EMAIL (pour rappel) */}
+                  <span className="truncate text-xs text-[var(--muted)]">{user.email}</span>
 
                   {/* MENU DÉROULANT PROFIL */}
                   {showProfileMenu && (
                     <>
-                      <div className="fixed inset-0 z-40" onClick={() => { setShowProfileMenu(false); setIsEditingPseudo(false); }} />
-                      <div className="absolute bottom-full left-0 z-50 mb-2 w-56 overflow-hidden rounded-xl border border-[var(--border)] bg-[var(--surface)] shadow-xl animate-scale-in">
-                        
-                        {isEditingPseudo ? (
-                          <div className="p-3">
-                            <input
-                              type="text"
-                              value={tempPseudo}
-                              onChange={(e) => setTempPseudo(e.target.value)}
-                              placeholder="Ton pseudo..."
-                              maxLength={20}
-                              className="w-full rounded-lg border border-[var(--border)] bg-[var(--background)] px-3 py-2 text-xs text-[var(--foreground)] outline-none focus:border-[var(--color-accent)] mb-2"
-                              autoFocus
-                            />
-                            <div className="flex gap-2">
-                              <button onClick={() => setIsEditingPseudo(false)} className="flex-1 rounded-lg border border-[var(--border)] py-1.5 text-[10px] font-medium">Annuler</button>
-                              <button onClick={handleSavePseudo} className="flex-1 rounded-lg bg-[var(--color-accent)] py-1.5 text-[10px] font-bold text-white">Enregistrer</button>
-                            </div>
-                          </div>
-                        ) : (
-                          <>
-                            <button
-                              onClick={() => { setTempPseudo(pseudo || ""); setIsEditingPseudo(true); }}
-                              className="flex w-full items-center gap-3 px-4 py-3 text-left text-xs font-medium text-[var(--foreground)] transition-colors hover:bg-[var(--surface-hover)]"
-                            >
-                              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4 text-[var(--muted)]">
-                                <path d="M12 20h9"/><path d="M16.376 3.622a1 1 0 0 1 3.002 3.002L7.368 18.635a2 2 0 0 1-.855.506l-2.872.838a.5.5 0 0 1-.62-.62l.838-2.872a2 2 0 0 1 .506-.854z"/>
-                              </svg>
-                              Modifier le pseudo
-                            </button>
-                            <button
-                              onClick={() => fileInputRef.current?.click()}
-                              className="flex w-full items-center gap-3 px-4 py-3 text-left text-xs font-medium text-[var(--foreground)] transition-colors hover:bg-[var(--surface-hover)]"
-                            >
-                              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4 text-[var(--muted)]">
-                                <rect width="18" height="18" x="3" y="3" rx="2" ry="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/>
-                              </svg>
-                              Changer la photo
-                            </button>
-                            <button
-                              onClick={handleSignOut}
-                              className="flex w-full items-center gap-3 border-t border-[var(--border)] px-4 py-3 text-left text-xs font-medium text-red-500 transition-colors hover:bg-red-500/10"
-                            >
-                              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4">
-                                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" /><polyline points="16 17 21 12 16 7" /><line x1="21" x2="9" y1="12" y2="12" />
-                              </svg>
-                              Se déconnecter
-                            </button>
-                          </>
-                        )}
+                      <div className="fixed inset-0 z-40" onClick={() => setShowProfileMenu(false)} />
+                      <div className="absolute bottom-full left-0 z-50 mb-2 w-48 overflow-hidden rounded-xl border border-[var(--border)] bg-[var(--surface)] shadow-xl animate-scale-in">
+                        <button
+                          onClick={() => fileInputRef.current?.click()}
+                          className="flex w-full items-center gap-3 px-4 py-3 text-left text-xs font-medium text-[var(--foreground)] transition-colors hover:bg-[var(--surface-hover)]"
+                        >
+                          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4 text-[var(--muted)]">
+                            <rect width="18" height="18" x="3" y="3" rx="2" ry="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/>
+                          </svg>
+                          Changer la photo
+                        </button>
+                        <button
+                          onClick={handleSignOut}
+                          className="flex w-full items-center gap-3 border-t border-[var(--border)] px-4 py-3 text-left text-xs font-medium text-red-500 transition-colors hover:bg-red-500/10"
+                        >
+                          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4">
+                            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" /><polyline points="16 17 21 12 16 7" /><line x1="21" x2="9" y1="12" y2="12" />
+                          </svg>
+                          Se déconnecter
+                        </button>
                       </div>
                     </>
                   )}
@@ -703,7 +688,7 @@ export default function HamburgerMenu({
         </div>
       </aside>
 
-      {/* ... (menu contextuel et modale restent identiques) ... */}
+      {/* ... (menu contextuel et modale de confirmation restent identiques) ... */}
       
       {menu && (
         <div data-custom-menu className="animate-scale-in fixed z-[60] w-[200px] overflow-hidden rounded-xl border border-[var(--border)] bg-[var(--surface)] shadow-2xl" style={{ left: menu.x, top: menu.y }} onContextMenu={(e) => e.preventDefault()} onClick={(e) => e.stopPropagation()}>

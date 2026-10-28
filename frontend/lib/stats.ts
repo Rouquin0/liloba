@@ -5,6 +5,7 @@
 // ============================================================
 
 import { getHistory, type HistoryEntry } from "./history";
+import { localStorage } from "@/lib/profile-storage";
 
 const STREAK_KEY = "liloba-streak";
 
