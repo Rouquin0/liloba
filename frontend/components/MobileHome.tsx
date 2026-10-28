@@ -7,6 +7,7 @@ import HomeVerseCarousel from "@/components/HomeVerseCarousel";
 import HomeQuickActions from "@/components/HomeQuickActions";
 import HomeStoriesStrip from "@/components/HomeStoriesStrip";
 import HomeShortcutsNav from "@/components/HomeShortcutsNav";
+import AndroidInstallButton from "@/components/AndroidInstallButton"; // <-- NOUVEL IMPORT
 import { BRANDING } from "@/lib/branding";
 
 export default function MobileHome() {
@@ -14,7 +15,7 @@ export default function MobileHome() {
     <div className="md:hidden">
       <div className="mx-auto flex w-full max-w-md flex-col gap-6 px-5 pb-32 pt-[max(1rem,env(safe-area-inset-top,0px))]">
         
-        {/* En-tête : Logo à gauche, Flamme à droite (Engrenage supprimé) */}
+        {/* En-tête : Logo à gauche, Flamme à droite */}
         <header className="flex items-center justify-between gap-3">
           <div className="flex min-w-0 items-center gap-3">
             <Logo size={38} />
@@ -27,6 +28,11 @@ export default function MobileHome() {
             <StreakBadge />
           </div>
         </header>
+
+        {/* BOUTON D'INSTALLATION ANDROID (s'affiche uniquement sur Android et si non installé) */}
+        <div className="flex justify-center">
+          <AndroidInstallButton />
+        </div>
 
         {/* Aujourd'hui : versets qui défilent + lecture */}
         <main className="flex flex-col gap-4">
