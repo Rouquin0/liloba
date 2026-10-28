@@ -16,24 +16,20 @@ import { isSpeechAvailable } from "@/lib/selah-timer";
 interface VerseActionBarProps {
   verseText: string;
   reference: string;
-  onShareImage?: () => void; // Prop pour déclencher le partage d'image
+  onShareImage?: () => void;
 }
 
 export default function VerseActionBar({ verseText, reference, onShareImage }: VerseActionBarProps) {
   const { user } = useUser();
   
-  // États globaux (Supabase)
   const [stats, setStats] = useState({ likes: 0, comments: 0, shares: 0 });
   const [isLiked, setIsLiked] = useState(false);
-  
-  // États locaux (UI)
   const [copied, setCopied] = useState(false);
   const [showMore, setShowMore] = useState(false);
   const [showComments, setShowComments] = useState(false);
   const [comments, setComments] = useState<any[]>([]);
   const [newComment, setNewComment] = useState("");
 
-  // Charger les stats et vérifier si l'utilisateur a déjà liké
   useEffect(() => {
     async function load() {
       const s = await getVerseStats(reference);
@@ -45,10 +41,8 @@ export default function VerseActionBar({ verseText, reference, onShareImage }: V
     load();
   }, [reference, user]);
 
-  // Gérer le Like
   const handleLike = async () => {
     if (!user) {
-      // UX : On alerte l'invité au lieu de laisser le bouton mort
       alert("Connecte-toi pour aimer ce verset et rejoindre la communauté !");
       return;
     }
@@ -58,11 +52,9 @@ export default function VerseActionBar({ verseText, reference, onShareImage }: V
     await toggleLike(reference, user.id, isLiked);
   };
 
-  // Gérer le partage natif
   const handleShare = async () => {
     const url = typeof window !== "undefined" ? window.location.origin : "https://liloba.vercel.app";
     const text = `« ${verseText} » - ${reference}\n\nDécouvre LILOBA :`;
-    
     try {
       if (typeof navigator.share === "function") {
         await navigator.share({ title: "LILOBA", text, url });
@@ -71,14 +63,11 @@ export default function VerseActionBar({ verseText, reference, onShareImage }: V
         setCopied(true);
         setTimeout(() => setCopied(false), 2000);
       }
-      
-      // On enregistre le partage en base (même pour les invités)
       await recordShare(reference, user?.id);
       setStats(prev => ({ ...prev, shares: prev.shares + 1 }));
     } catch (err) {}
   };
 
-  // Copier le texte
   const handleCopy = async () => {
     try {
       await navigator.clipboard.writeText(`« ${verseText} » - ${reference}`);
@@ -88,7 +77,6 @@ export default function VerseActionBar({ verseText, reference, onShareImage }: V
     } catch (err) {}
   };
 
-  // Écouter avec la synthèse vocale
   const handleListen = () => {
     if (!isSpeechAvailable()) return;
     window.speechSynthesis.cancel();
@@ -99,13 +87,11 @@ export default function VerseActionBar({ verseText, reference, onShareImage }: V
     setShowMore(false);
   };
 
-  // Ouvrir la modale des commentaires
   const handleOpenComments = async () => {
     setShowComments(true);
     setComments(await getVerseComments(reference));
   };
 
-  // Envoyer un commentaire
   const handleSubmitComment = async () => {
     if (!user || !newComment.trim()) return;
     await addComment(reference, user.id, newComment.trim());
@@ -117,44 +103,45 @@ export default function VerseActionBar({ verseText, reference, onShareImage }: V
 
   return (
     <>
-      <div className="relative mt-2 flex w-full items-center justify-between border-t border-[var(--border)] pt-4">
+      {/* BARRE D'ACTIONS HORIZONTALE (Plus fine) */}
+      <div className="relative mt-3 flex w-full items-center justify-between border-t border-[var(--border)] pt-3">
         
-        {/* 1. J'aime */}
-        <button onClick={handleLike} className="group flex flex-col items-center gap-1">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill={isLiked ? "currentColor" : "none"} stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={`h-5 w-5 transition-transform group-active:scale-90 ${isLiked ? "text-red-500" : "text-[var(--muted)] group-hover:text-[var(--foreground)]"}`}>
+        {/* J'aime */}
+        <button onClick={handleLike} className="group flex items-center gap-1.5">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill={isLiked ? "currentColor" : "none"} stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={`h-4 w-4 transition-transform group-active:scale-90 ${isLiked ? "text-red-500" : "text-[var(--muted)] group-hover:text-[var(--foreground)]"}`}>
             <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
           </svg>
-          <span className={`text-[10px] font-medium ${isLiked ? "text-red-500" : "text-[var(--muted)]"}`}>
+          <span className={`text-xs font-medium ${isLiked ? "text-red-500" : "text-[var(--muted)]"}`}>
             {formatStatCount(stats.likes)}
           </span>
         </button>
 
-        {/* 2. Commenter */}
-        <button onClick={handleOpenComments} className="group flex flex-col items-center gap-1">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-5 w-5 text-[var(--muted)] transition-transform group-active:scale-90 group-hover:text-[var(--foreground)]">
+        {/* Commenter */}
+        <button onClick={handleOpenComments} className="group flex items-center gap-1.5">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4 text-[var(--muted)] transition-transform group-active:scale-90 group-hover:text-[var(--foreground)]">
             <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z" />
           </svg>
-          <span className="text-[10px] font-medium text-[var(--muted)]">
+          <span className="text-xs font-medium text-[var(--muted)]">
             {formatStatCount(stats.comments)}
           </span>
         </button>
 
-        {/* 3. Partager */}
-        <button onClick={handleShare} className="group flex flex-col items-center gap-1">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-5 w-5 text-[var(--muted)] transition-transform group-active:scale-90 group-hover:text-[var(--foreground)]">
+        {/* Partager */}
+        <button onClick={handleShare} className="group flex items-center gap-1.5">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4 text-[var(--muted)] transition-transform group-active:scale-90 group-hover:text-[var(--foreground)]">
             <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8" /><polyline points="16 6 12 2 8 6" /><line x1="12" x2="12" y1="2" y2="15" />
           </svg>
-          <span className="text-[10px] font-medium text-[var(--muted)]">
+          <span className="text-xs font-medium text-[var(--muted)]">
             {copied ? "Copié !" : formatStatCount(stats.shares)}
           </span>
         </button>
 
-        {/* 4. Plus */}
-        <button onClick={() => setShowMore(!showMore)} className="group flex flex-col items-center gap-1">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={`h-5 w-5 transition-transform group-active:scale-90 ${showMore ? "text-[var(--color-accent)]" : "text-[var(--muted)] group-hover:text-[var(--foreground)]"}`}>
+        {/* Plus */}
+        <button onClick={() => setShowMore(!showMore)} className="group flex items-center gap-1.5">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={`h-4 w-4 transition-transform group-active:scale-90 ${showMore ? "text-[var(--color-accent)]" : "text-[var(--muted)] group-hover:text-[var(--foreground)]"}`}>
             <circle cx="12" cy="12" r="1" /><circle cx="19" cy="12" r="1" /><circle cx="5" cy="12" r="1" />
           </svg>
-          <span className="text-[10px] font-medium text-[var(--muted)]">Plus</span>
+          <span className="text-xs font-medium text-[var(--muted)]">Plus</span>
         </button>
 
         {/* MENU DÉROULANT (3 points) */}
@@ -162,19 +149,16 @@ export default function VerseActionBar({ verseText, reference, onShareImage }: V
           <>
             <div className="fixed inset-0 z-40" onClick={() => setShowMore(false)} />
             <div className="absolute bottom-full right-0 z-50 mb-2 w-48 overflow-hidden rounded-xl border border-[var(--border)] bg-[var(--surface)] shadow-xl animate-fade-in">
-              
               {onShareImage && (
                 <button onClick={() => { onShareImage(); setShowMore(false); }} className="flex w-full items-center gap-3 px-4 py-3 text-left text-xs text-[var(--foreground)] hover:bg-[var(--surface-hover)]">
                   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="h-4 w-4"><rect width="18" height="18" x="3" y="3" rx="2" ry="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg>
                   Partager en image
                 </button>
               )}
-              
               <button onClick={handleCopy} className="flex w-full items-center gap-3 px-4 py-3 text-left text-xs text-[var(--foreground)] hover:bg-[var(--surface-hover)] border-t border-[var(--border)]">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="h-4 w-4"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
                 Copier le texte
               </button>
-              
               <button onClick={handleListen} className="flex w-full items-center gap-3 px-4 py-3 text-left text-xs text-[var(--foreground)] hover:bg-[var(--surface-hover)] border-t border-[var(--border)]">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="h-4 w-4"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg>
                 Écouter

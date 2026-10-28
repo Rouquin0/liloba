@@ -45,7 +45,6 @@ export default function HomeVerseCarousel() {
   const [active, setActive] = useState(0);
   const [shareVerse, setShareVerse] = useState<{ ref: string; text: string } | null>(null);
   
-  // NOUVEL ÉTAT POUR LE MESSAGE D'ACCUEIL
   const [greeting, setGreeting] = useState("");
   const [pseudo, setPseudo] = useState<string | null>(null);
 
@@ -54,7 +53,6 @@ export default function HomeVerseCarousel() {
   const pausedRef = useRef(false);
   const resumeTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  // Détection de l'heure et du pseudo au chargement
   useEffect(() => {
     const hour = new Date().getHours();
     if (hour >= 5 && hour < 18) {
@@ -135,11 +133,11 @@ export default function HomeVerseCarousel() {
   return (
     <div>
       {/* MESSAGE D'ACCUEIL DYNAMIQUE */}
-      <div className="mb-4 px-2">
-        <h2 className="text-lg font-bold text-[var(--foreground)]">
+      <div className="mb-2 px-2">
+        <h2 className="text-base font-bold text-[var(--foreground)]">
           {greeting}{pseudo ? `, ${pseudo}` : ""} 
         </h2>
-        <p className="text-xs text-[var(--muted)]">Voici tes versets du jour</p>
+        <p className="text-[11px] text-[var(--muted)]">Voici tes versets du jour</p>
       </div>
 
       <div className="relative">
@@ -153,12 +151,12 @@ export default function HomeVerseCarousel() {
           role="region"
           aria-roledescription="carrousel"
           aria-label="Versets du jour"
-          className="flex snap-x snap-mandatory overflow-x-auto overscroll-x-contain touch-pan-x gap-4 pb-4 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+          className="flex snap-x snap-mandatory overflow-x-auto overscroll-x-contain touch-pan-x gap-3 pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
         >
           <div aria-hidden="true" className="w-[calc(50vw-42.5vw)] shrink-0" />
 
           {verses.length === 0 ? (
-            <div className="flex min-h-[200px] w-[85vw] shrink-0 snap-center items-center justify-center rounded-[24px] border border-[var(--border)] bg-[var(--surface)] p-6">
+            <div className="flex min-h-[180px] w-[85vw] shrink-0 snap-center items-center justify-center rounded-[20px] border border-[var(--border)] bg-[var(--surface)] p-5">
               <p className="animate-pulse text-xs text-[var(--muted)]">Verset du jour…</p>
             </div>
           ) : (
@@ -168,7 +166,7 @@ export default function HomeVerseCarousel() {
                 <article
                   key={verse.ref}
                   aria-label={`Verset ${i + 1} sur ${verses.length}`}
-                  className="relative flex w-[85vw] shrink-0 snap-center snap-always flex-col justify-between gap-4 overflow-hidden rounded-[24px] border border-[var(--border)] bg-[var(--surface)] p-5 shadow-[0_0_40px_color-mix(in_srgb,var(--foreground)_6%,transparent)]"
+                  className="relative flex w-[85vw] shrink-0 snap-center snap-always flex-col justify-between gap-3 overflow-hidden rounded-[20px] border border-[var(--border)] bg-[var(--surface)] p-4 shadow-[0_0_30px_color-mix(in_srgb,var(--foreground)_5%,transparent)]"
                 >
                   <span
                     aria-hidden="true"
@@ -176,12 +174,12 @@ export default function HomeVerseCarousel() {
                   />
                   
                   <div>
-                    <p className="mb-3 flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-[0.14em] text-[var(--muted)]">
+                    <p className="mb-2 flex items-center gap-1.5 text-[9px] font-bold uppercase tracking-[0.14em] text-[var(--muted)]">
                       <span aria-hidden="true" className="text-yellow-500">✦</span>
                       {i === 0 ? "Verset du jour" : "Pour toi aujourd'hui"}
                     </p>
                     <p
-                      className="text-[19px] italic leading-[1.5] text-[var(--foreground)]"
+                      className="text-[17px] italic leading-[1.45] text-[var(--foreground)]"
                       style={{ fontFamily: "var(--font-serif)" }}
                     >
                       « {verse.text} »
@@ -189,13 +187,13 @@ export default function HomeVerseCarousel() {
                   </div>
 
                   <div className="flex items-center justify-between gap-3 mb-1">
-                    <span className="min-w-0 text-xs font-semibold tracking-wide text-[var(--muted)]">
+                    <span className="min-w-0 text-[11px] font-semibold tracking-wide text-[var(--muted)]">
                       {verse.ref}
                     </span>
                     {href && (
                       <Link
                         href={href}
-                        className="shrink-0 text-xs font-semibold text-[var(--foreground)] underline-offset-2 hover:underline"
+                        className="shrink-0 text-[11px] font-semibold text-[var(--foreground)] underline-offset-2 hover:underline"
                       >
                         Lire le chapitre →
                       </Link>
@@ -218,7 +216,7 @@ export default function HomeVerseCarousel() {
       </div>
 
       {verses.length > 1 && (
-        <div className="mt-2 flex items-center justify-center" role="tablist" aria-label="Choisir un verset">
+        <div className="mt-1 flex items-center justify-center gap-0.5" role="tablist" aria-label="Choisir un verset">
           {verses.map((verse, i) => (
             <button
               key={verse.ref}
@@ -230,11 +228,11 @@ export default function HomeVerseCarousel() {
                 pause();
                 goTo(i);
               }}
-              className="flex h-5 items-center px-1"
+              className="flex h-4 items-center px-1"
             >
               <span
-                className={`block h-1.5 rounded-full transition-all duration-300 ${
-                  i === active ? "w-5 bg-[var(--foreground)]" : "w-1.5 bg-[var(--border)]"
+                className={`block h-1 rounded-full transition-all duration-300 ${
+                  i === active ? "w-4 bg-[var(--foreground)]" : "w-1 bg-[var(--border)]"
                 }`}
               />
             </button>
