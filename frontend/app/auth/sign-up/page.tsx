@@ -22,6 +22,12 @@ function traduireErreur(message: string): string {
   if (m.includes("rate limit") || m.includes("too many")) {
     return "Trop de tentatives. Réessaie dans quelques minutes.";
   }
+  if (m.includes("token has expired") || m.includes("otp has expired")) {
+    return "Ce code a expiré. Veuillez en demander un nouveau.";
+  }
+  if (m.includes("invalid token") || m.includes("invalid otp")) {
+    return "Code incorrect. Vérifiez le code saisi.";
+  }
   if (m.includes("network") || m.includes("fetch") || m.includes("failed")) {
     return "Problème de connexion. Vérifie ton réseau et réessaie.";
   }
@@ -35,15 +41,21 @@ export default function SignUpPage() {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  
   const [message, setMessage] = useState("");
   const [messageType, setMessageType] = useState<"error" | "success" | "">("");
   const [loading, setLoading] = useState(false);
+
+  // État pour la confirmation par code
+  const [awaitingConfirmation, setAwaitingConfirmation] = useState(false);
+  const [otpCode, setOtpCode] = useState("");
 
   const afficher = (texte: string, type: "error" | "success") => {
     setMessage(texte);
     setMessageType(type);
   };
 
+  // 1. Création du compte
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
     if (loading) return;
@@ -66,7 +78,8 @@ export default function SignUpPage() {
         email: email.trim(),
         password,
         options: {
-          emailRedirectTo: `${window.location.origin}/auth/sign-in`,
+          // On ne redirige plus vers une page, on demande le code
+          emailRedirectTo: undefined, 
         },
       });
 
@@ -75,20 +88,53 @@ export default function SignUpPage() {
         return;
       }
 
+      // Si l'utilisateur existe déjà (Supabase le détecte via identities vides)
       if (data.user && !data.user.identities?.length) {
         afficher("Un compte existe déjà avec cet email. Essaie de te connecter.", "error");
         return;
       }
 
+      // Si confirmation par email est activée, on passe à l'étape du code
       if (!data.session) {
-        afficher("Compte créé. Vérifie ta boîte mail pour confirmer ton adresse.", "success");
+        setAwaitingConfirmation(true);
+        afficher("Compte créé. Un code de confirmation vous a été envoyé par email.", "success");
         return;
       }
 
+      // Si la confirmation est désactivée (session immédiate)
       afficher("Compte créé et connecté. Redirection...", "success");
       router.push("/");
     } catch (err) {
       afficher("Une erreur inattendue est survenue. Réessaie.", "error");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // 2. Vérification du code de confirmation
+  const handleVerifyCode = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (loading || !otpCode.trim()) return;
+    setMessage("");
+    setMessageType("");
+    setLoading(true);
+
+    try {
+      const { error } = await supabase.auth.verifyOtp({
+        email: email.trim(),
+        token: otpCode.trim(),
+        type: 'signup' // Type spécifique pour la confirmation d'inscription
+      });
+
+      if (error) {
+        afficher(traduireErreur(error.message), "error");
+        return;
+      }
+
+      afficher("Compte confirmé et connecté. Redirection...", "success");
+      setTimeout(() => router.push("/"), 800);
+    } catch (err) {
+      afficher("Une erreur inattendue est survenue.", "error");
     } finally {
       setLoading(false);
     }
@@ -110,91 +156,132 @@ export default function SignUpPage() {
             <path d="M19 12H5" />
           </svg>
         </button>
-        <h1 className="text-xl font-bold text-[var(--foreground)]">Créer un compte</h1>
+        <h1 className="text-xl font-bold text-[var(--foreground)]">
+          {awaitingConfirmation ? "Confirmation" : "Créer un compte"}
+        </h1>
       </header>
 
       <div className="mx-auto w-full max-w-md flex-1 p-6 pt-2">
-        <form onSubmit={handleSignUp} className="flex flex-col gap-3">
-          <input
-            type="email"
-            placeholder="Ton email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-            disabled={loading}
-            autoComplete="email"
-            className="p-3 rounded-lg border border-[var(--border)] bg-[var(--surface)] disabled:bg-[var(--surface-hover)] disabled:cursor-not-allowed"
-          />
-          
-          {/* MOT DE PASSE */}
-          <div className="relative">
+        
+        {/* ÉTAPE 1 : Formulaire d'inscription */}
+        {!awaitingConfirmation && (
+          <form onSubmit={handleSignUp} className="flex flex-col gap-3">
             <input
-              type={showPassword ? "text" : "password"}
-              placeholder="Mot de passe (6 caractères min)"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              type="email"
+              placeholder="Ton email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
               required
               disabled={loading}
-              minLength={6}
-              autoComplete="new-password"
-              className="w-full p-3 pr-10 rounded-lg border border-[var(--border)] bg-[var(--surface)] disabled:bg-[var(--surface-hover)] disabled:cursor-not-allowed"
+              autoComplete="email"
+              className="p-3 rounded-lg border border-[var(--border)] bg-[var(--surface)] disabled:bg-[var(--surface-hover)] disabled:cursor-not-allowed"
             />
-            <button
-              type="button"
-              onClick={() => setShowPassword(!showPassword)}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-[var(--muted)] hover:text-[var(--foreground)]"
-            >
-              {showPassword ? (
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-5 w-5">
-                  <path d="M9.88 9.88a3 3 0 1 0 4.24 4.24"/><path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68"/><path d="M6.61 6.61A13.526 13.526 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61"/><line x1="2" x2="22" y1="2" y2="22"/>
-                </svg>
-              ) : (
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-5 w-5">
-                  <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/>
-                </svg>
-              )}
-            </button>
-          </div>
+            
+            <div className="relative">
+              <input
+                type={showPassword ? "text" : "password"}
+                placeholder="Mot de passe (6 caractères min)"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+                disabled={loading}
+                minLength={6}
+                autoComplete="new-password"
+                className="w-full p-3 pr-10 rounded-lg border border-[var(--border)] bg-[var(--surface)] disabled:bg-[var(--surface-hover)] disabled:cursor-not-allowed"
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-[var(--muted)] hover:text-[var(--foreground)]"
+              >
+                {showPassword ? (
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-5 w-5">
+                    <path d="M9.88 9.88a3 3 0 1 0 4.24 4.24"/><path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68"/><path d="M6.61 6.61A13.526 13.526 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61"/><line x1="2" x2="22" y1="2" y2="22"/>
+                  </svg>
+                ) : (
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-5 w-5">
+                    <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/>
+                  </svg>
+                )}
+              </button>
+            </div>
 
-          {/* CONFIRMATION MOT DE PASSE */}
-          <div className="relative">
-            <input
-              type={showConfirmPassword ? "text" : "password"}
-              placeholder="Confirme le mot de passe"
-              value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
-              required
+            <div className="relative">
+              <input
+                type={showConfirmPassword ? "text" : "password"}
+                placeholder="Confirme le mot de passe"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                required
+                disabled={loading}
+                minLength={6}
+                autoComplete="new-password"
+                className="w-full p-3 pr-10 rounded-lg border border-[var(--border)] bg-[var(--surface)] disabled:bg-[var(--surface-hover)] disabled:cursor-not-allowed"
+              />
+              <button
+                type="button"
+                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-[var(--muted)] hover:text-[var(--foreground)]"
+              >
+                {showConfirmPassword ? (
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-5 w-5">
+                    <path d="M9.88 9.88a3 3 0 1 0 4.24 4.24"/><path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68"/><path d="M6.61 6.61A13.526 13.526 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61"/><line x1="2" x2="22" y1="2" y2="22"/>
+                  </svg>
+                ) : (
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-5 w-5">
+                    <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/>
+                  </svg>
+                )}
+              </button>
+            </div>
+
+            <button
+              type="submit"
               disabled={loading}
-              minLength={6}
-              autoComplete="new-password"
-              className="w-full p-3 pr-10 rounded-lg border border-[var(--border)] bg-[var(--surface)] disabled:bg-[var(--surface-hover)] disabled:cursor-not-allowed"
+              aria-busy={loading}
+              className="p-3 mt-2 rounded-lg bg-black text-white disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors dark:bg-white dark:text-black font-semibold"
+            >
+              {loading ? "Création..." : "S'inscrire"}
+            </button>
+          </form>
+        )}
+
+        {/* ÉTAPE 2 : Saisie du code de confirmation */}
+        {awaitingConfirmation && (
+          <form onSubmit={handleVerifyCode} className="flex flex-col gap-3">
+            <p className="text-sm text-[var(--muted)] mb-2 text-center">
+              Un code de confirmation a été envoyé à <strong>{email}</strong>. 
+              Saisis-le ci-dessous pour activer ton compte.
+            </p>
+            <input
+              type="text"
+              placeholder="Code à 6 chiffres"
+              value={otpCode}
+              onChange={(e) => setOtpCode(e.target.value)}
+              maxLength={8}
+              disabled={loading}
+              className="p-3 rounded-lg border border-[var(--border)] bg-[var(--surface)] disabled:bg-[var(--surface-hover)] disabled:cursor-not-allowed text-center text-lg tracking-widest font-mono"
             />
             <button
-              type="button"
-              onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-[var(--muted)] hover:text-[var(--foreground)]"
+              type="submit"
+              disabled={loading || !otpCode.trim()}
+              className="p-3 mt-2 rounded-lg bg-black text-white disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors dark:bg-white dark:text-black font-semibold"
             >
-              {showConfirmPassword ? (
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-5 w-5">
-                  <path d="M9.88 9.88a3 3 0 1 0 4.24 4.24"/><path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68"/><path d="M6.61 6.61A13.526 13.526 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61"/><line x1="2" x2="22" y1="2" y2="22"/>
-                </svg>
-              ) : (
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-5 w-5">
-                  <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/>
-                </svg>
-              )}
+              {loading ? "Vérification..." : "Confirmer mon compte"}
             </button>
-          </div>
-
-          <button
-            type="submit"
-            disabled={loading}
-            aria-busy={loading}
-            className="p-3 mt-2 rounded-lg bg-black text-white disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors dark:bg-white dark:text-black font-semibold"
-          >
-            {loading ? "Création..." : "S'inscrire"}
-          </button>
-        </form>
+            <button
+              type="button"
+              onClick={() => {
+                setAwaitingConfirmation(false);
+                setOtpCode("");
+                setMessage("");
+              }}
+              className="text-sm text-[var(--muted)] underline-offset-2 hover:underline mt-1"
+            >
+              Modifier l'email
+            </button>
+          </form>
+        )}
 
         {message && (
           <p className={`mt-5 text-sm ${messageType === "error" ? "text-red-600" : "text-blue-600"}`}>
