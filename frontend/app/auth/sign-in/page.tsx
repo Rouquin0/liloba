@@ -16,7 +16,7 @@ function traduireErreur(message: string): string {
   if (m.includes("rate limit") || m.includes("too many")) {
     return "Trop de tentatives. Réessaie dans quelques minutes.";
   }
-  if (m.includes("signups not allowed")) {
+  if (m.includes("signups not allowed") || m.includes("otp_disabled")) {
     return "Aucun compte trouvé avec cet email. Veuillez d'abord créer un compte.";
   }
   if (m.includes("token has expired") || m.includes("otp has expired")) {
@@ -91,7 +91,7 @@ export default function SignInPage() {
         email: email.trim(),
         options: { 
           emailRedirectTo: `${window.location.origin}/`,
-          shouldCreateUser: false
+          shouldCreateUser: false // Bloque la création de compte
         }
       });
 
@@ -101,7 +101,7 @@ export default function SignInPage() {
       }
 
       setOtpSent(true);
-      afficher("Un code à 6 chiffres vous a été envoyé par email. Il expirera dans 10 minutes.", "success");
+      afficher("Un code vous a été envoyé par email. Il expirera dans 10 minutes.", "success");
     } catch (err) {
       afficher("Une erreur inattendue est survenue.", "error");
     } finally {
@@ -121,7 +121,7 @@ export default function SignInPage() {
       const { error } = await supabase.auth.verifyOtp({
         email: email.trim(),
         token: otpCode.trim(),
-        type: 'email'
+        type: 'magiclink' // <-- MODIFIÉ ICI (au lieu de 'email')
       });
 
       if (error) {
@@ -253,7 +253,7 @@ export default function SignInPage() {
         {mode === "otp" && (
           <div className="flex flex-col gap-3">
             <p className="text-sm text-[var(--muted)] mb-1">
-              Recevez un code à 6 chiffres par email pour vous connecter.
+              Recevez un code par email pour vous connecter.
             </p>
             <input
               type="email"
@@ -279,10 +279,10 @@ export default function SignInPage() {
               <>
                 <input
                   type="text"
-                  placeholder="Code à 6 chiffres"
+                  placeholder="Code reçu par email"
                   value={otpCode}
                   onChange={(e) => setOtpCode(e.target.value)}
-                  maxLength={6}
+                  maxLength={8} // Le code peut faire 6 ou 8 chiffres
                   disabled={loading}
                   className="p-3 rounded-lg border border-[var(--border)] bg-[var(--surface)] disabled:bg-[var(--surface-hover)] disabled:cursor-not-allowed text-center text-lg tracking-widest font-mono"
                 />
