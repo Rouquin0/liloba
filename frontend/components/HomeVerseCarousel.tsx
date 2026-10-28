@@ -5,7 +5,7 @@ import Link from "next/link";
 import { findBookBySlug, parseReference } from "@/lib/bible-utils";
 import { getHomeDayKey, getTodayVerses } from "@/lib/home-verses";
 import VerseActionBar from "./VerseActionBar";
-import VerseCardModal from "./VerseCardModal"; // <-- NOUVEL IMPORT
+import VerseCardModal from "./VerseCardModal";
 
 const AUTOPLAY_MS = 7000;
 const RESUME_AFTER_MS = 12000;
@@ -43,14 +43,29 @@ export default function HomeVerseCarousel() {
   const verses = useMemo(() => (dayKey ? getTodayVerses() : []), [dayKey]);
 
   const [active, setActive] = useState(0);
-  
-  // NOUVEL ÉTAT : Gère la modale de partage d'image
   const [shareVerse, setShareVerse] = useState<{ ref: string; text: string } | null>(null);
+  
+  // NOUVEL ÉTAT POUR LE MESSAGE D'ACCUEIL
+  const [greeting, setGreeting] = useState("");
+  const [pseudo, setPseudo] = useState<string | null>(null);
 
   const scrollerRef = useRef<HTMLDivElement>(null);
   const activeRef = useRef(0);
   const pausedRef = useRef(false);
   const resumeTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  // Détection de l'heure et du pseudo au chargement
+  useEffect(() => {
+    const hour = new Date().getHours();
+    if (hour >= 5 && hour < 18) {
+      setGreeting("Bonjour");
+    } else {
+      setGreeting("Bonsoir");
+    }
+
+    const savedPseudo = localStorage.getItem("liloba-profile-pseudo");
+    if (savedPseudo) setPseudo(savedPseudo);
+  }, []);
 
   const goTo = useCallback((index: number) => {
     const el = scrollerRef.current;
@@ -119,6 +134,14 @@ export default function HomeVerseCarousel() {
 
   return (
     <div>
+      {/* MESSAGE D'ACCUEIL DYNAMIQUE */}
+      <div className="mb-4 px-2">
+        <h2 className="text-lg font-bold text-[var(--foreground)]">
+          {greeting}{pseudo ? `, ${pseudo}` : ""} 👋
+        </h2>
+        <p className="text-xs text-[var(--muted)]">Voici tes versets du jour</p>
+      </div>
+
       <div className="relative">
         <div
           ref={scrollerRef}
@@ -152,7 +175,6 @@ export default function HomeVerseCarousel() {
                     className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[var(--foreground)]/25 to-transparent"
                   />
                   
-                  {/* Contenu du verset */}
                   <div>
                     <p className="mb-3 flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-[0.14em] text-[var(--muted)]">
                       <span aria-hidden="true" className="text-yellow-500">✦</span>
@@ -166,7 +188,6 @@ export default function HomeVerseCarousel() {
                     </p>
                   </div>
 
-                  {/* Référence et lien */}
                   <div className="flex items-center justify-between gap-3 mb-1">
                     <span className="min-w-0 text-xs font-semibold tracking-wide text-[var(--muted)]">
                       {verse.ref}
@@ -181,7 +202,6 @@ export default function HomeVerseCarousel() {
                     )}
                   </div>
 
-                  {/* BARRE D'ACTIONS (avec la prop onShareImage) */}
                   <VerseActionBar 
                     verseText={verse.text} 
                     reference={verse.ref} 
@@ -222,7 +242,6 @@ export default function HomeVerseCarousel() {
         </div>
       )}
 
-      {/* LA MODALE DE PARTAGE D'IMAGE */}
       {shareVerse && (
         <VerseCardModal 
           reference={shareVerse.ref} 
