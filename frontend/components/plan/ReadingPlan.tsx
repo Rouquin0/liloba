@@ -4,77 +4,56 @@ import { useState, useSyncExternalStore } from "react";
 import Link from "next/link";
 import ModalShell from "@/components/ui/ModalShell";
 import ProgressRing from "@/components/plan/ProgressRing";
+import PlanBooks from "@/components/plan/PlanBooks";
+import PlanBuilder from "@/components/plan/PlanBuilder";
+import PlanStats from "@/components/plan/PlanStats";
+import {
+  BookOpenIcon,
+  CalendarIcon,
+  CheckIcon,
+  ChevronRight,
+  CloseIcon,
+  FlameIcon,
+  PauseIcon,
+  PlayIcon,
+  PlusIcon,
+  RefreshIcon,
+} from "@/components/plan/PlanIcons";
 import { slugify } from "@/lib/bible-utils";
 import { getTodayKey } from "@/lib/journal";
 import {
   PLANS,
+  addDays,
   buildPlanView,
   chaptersPerDay,
+  formatDateFr,
+  getPlanDefFor,
   getPlanState,
   getServerPlanState,
   markChaptersRead,
+  markIfAutoMark,
+  nextMonday,
   planChapters,
+  realignCalendar,
   refLabel,
+  setAutoMark,
   startPlan,
   stopPlan,
   subscribePlan,
   toggleChapter,
+  togglePause,
   type PlanDef,
   type PlanItem,
+  type PlanState,
+  type PlanView,
 } from "@/lib/reading-plan";
 
 // ============================================================
 // LILOBA — Plan de lecture : bouton rond d'accueil + fenêtre
 // Design épuré : anneau de progression, lectures du jour avec case à
 // cocher, parcours au choix. Aucun emoji, SVG stroke, variables du thème.
+// Trois onglets : Aujourd'hui · Parcours (livre par livre) · Bilan.
 // ============================================================
-
-const ico = {
-  fill: "none",
-  stroke: "currentColor",
-  strokeWidth: 2,
-  strokeLinecap: "round" as const,
-  strokeLinejoin: "round" as const,
-};
-
-function CalendarIcon({ className = "h-5 w-5" }: { className?: string }) {
-  return (
-    <svg viewBox="0 0 24 24" className={className} {...ico} aria-hidden="true">
-      <rect x="3" y="4" width="18" height="17" rx="2" />
-      <path d="M8 2v4M16 2v4M3 10h18" />
-      <path d="m9 15.5 2 2 4-4" />
-    </svg>
-  );
-}
-function BookOpenIcon({ className = "h-5 w-5" }: { className?: string }) {
-  return (
-    <svg viewBox="0 0 24 24" className={className} {...ico} aria-hidden="true">
-      <path d="M2 4h6a4 4 0 0 1 4 4v13a3 3 0 0 0-3-3H2z" />
-      <path d="M22 4h-6a4 4 0 0 0-4 4v13a3 3 0 0 1 3-3h7z" />
-    </svg>
-  );
-}
-function CheckIcon({ className = "h-4 w-4" }: { className?: string }) {
-  return (
-    <svg viewBox="0 0 24 24" className={className} {...ico} strokeWidth={3} aria-hidden="true">
-      <path d="M20 6 9 17l-5-5" />
-    </svg>
-  );
-}
-function CloseIcon() {
-  return (
-    <svg viewBox="0 0 24 24" className="h-4 w-4" {...ico} aria-hidden="true">
-      <path d="M6 6l12 12M18 6 6 18" />
-    </svg>
-  );
-}
-function ChevronRight() {
-  return (
-    <svg viewBox="0 0 24 24" className="h-4 w-4" {...ico} aria-hidden="true">
-      <path d="m9 6 6 6-6 6" />
-    </svg>
-  );
-}
 
 function perDay(def: PlanDef): string {
   const n = chaptersPerDay(def);
@@ -121,7 +100,10 @@ function ReadingRow({ item, onOpen }: { item: PlanItem; onOpen: () => void }) {
       </span>
       <Link
         href={`/bible/${slugify(item.ref.book)}/${item.ref.chapter}`}
-        onClick={onOpen}
+        onClick={() => {
+          markIfAutoMark(item.index);
+          onOpen();
+        }}
         className="flex min-h-[44px] shrink-0 items-center gap-1 rounded-xl px-3 text-xs font-semibold text-[var(--color-accent)] transition-colors hover:bg-[var(--color-accent)]/10"
       >
         Lire
@@ -132,21 +114,62 @@ function ReadingRow({ item, onOpen }: { item: PlanItem; onOpen: () => void }) {
 }
 
 // ------------------------------------------------------------
-// Choix du parcours
+// Choix du parcours (+ jour de départ + parcours personnalisé)
 // ------------------------------------------------------------
 
+type StartChoice = "today" | "tomorrow" | "monday";
+
 function Chooser({ onPicked }: { onPicked: () => void }) {
+  const [when, setWhen] = useState<StartChoice>("today");
+  const [builder, setBuilder] = useState(false);
+  const today = getTodayKey();
+  const startDate = when === "today" ? today : when === "tomorrow" ? addDays(today, 1) : nextMonday(today);
+
+  if (builder) {
+    return <PlanBuilder startDate={startDate} onBack={() => setBuilder(false)} onDone={onPicked} />;
+  }
+
+  const options: { id: StartChoice; label: string }[] = [
+    { id: "today", label: "Aujourd'hui" },
+    { id: "tomorrow", label: "Demain" },
+    { id: "monday", label: "Lundi" },
+  ];
+
   return (
     <div className="flex flex-col gap-2">
       <p className="mb-1 text-xs leading-relaxed text-[var(--muted)]">
         Choisis un parcours. Chaque jour, LILOBA te donne les chapitres à lire : tu les coches, ton anneau se remplit.
       </p>
+
+      <div className="mb-1 flex flex-col gap-1.5">
+        <span className="text-[11px] font-semibold text-[var(--muted)]">Début du plan</span>
+        <div role="radiogroup" aria-label="Début du plan" className="grid grid-cols-3 gap-1 rounded-xl border border-[var(--border)] p-1">
+          {options.map((o) => (
+            <button
+              key={o.id}
+              type="button"
+              role="radio"
+              aria-checked={when === o.id}
+              onClick={() => setWhen(o.id)}
+              className={`min-h-[40px] rounded-lg text-xs font-semibold transition-colors ${
+                when === o.id
+                  ? "bg-[var(--color-accent)] text-white"
+                  : "text-[var(--muted)] hover:text-[var(--foreground)]"
+              }`}
+            >
+              {o.label}
+            </button>
+          ))}
+        </div>
+        {when !== "today" && <span className="text-[11px] text-[var(--muted)]">Premier jour : {formatDateFr(startDate)}</span>}
+      </div>
+
       {PLANS.map((def) => (
         <button
           key={def.id}
           type="button"
           onClick={() => {
-            startPlan(def.id);
+            startPlan(def.id, startDate);
             onPicked();
           }}
           className="flex min-h-[64px] w-full items-center gap-3 rounded-2xl border border-[var(--border)] px-3 text-left transition-all hover:border-[var(--color-accent)]/60 hover:bg-[var(--color-accent)]/5 active:scale-[0.99]"
@@ -165,52 +188,100 @@ function Chooser({ onPicked }: { onPicked: () => void }) {
           </span>
         </button>
       ))}
+
+      <button
+        type="button"
+        onClick={() => setBuilder(true)}
+        className="flex min-h-[64px] w-full items-center gap-3 rounded-2xl border border-dashed border-[var(--border)] px-3 text-left transition-all hover:border-[var(--color-accent)]/60 hover:bg-[var(--color-accent)]/5 active:scale-[0.99]"
+      >
+        <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[var(--color-accent)]/10 text-[var(--color-accent)]">
+          <PlusIcon className="h-5 w-5" />
+        </span>
+        <span className="min-w-0 flex-1">
+          <span className="block text-sm font-semibold text-[var(--foreground)]">Parcours personnalisé</span>
+          <span className="block truncate text-xs text-[var(--muted)]">Tes livres, ta durée</span>
+        </span>
+        <span className="text-[var(--muted)]">
+          <ChevronRight />
+        </span>
+      </button>
     </div>
   );
 }
 
 // ------------------------------------------------------------
-// Plan en cours
+// Bandeau de la semaine : 7 derniers jours de lecture + série
 // ------------------------------------------------------------
 
-function Active({ onClose, onNavigate }: { onClose: () => void; onNavigate?: () => void }) {
-  // « Lire » quitte la page : on ferme la fenêtre ET, si le bouton est dans le menu, le menu
-  const leave = () => {
-    onNavigate?.();
-    onClose();
-  };
-  const state = useSyncExternalStore(subscribePlan, getPlanState, getServerPlanState);
-  const [showAllLate, setShowAllLate] = useState(false);
-  if (!state) return null;
-  const view = buildPlanView(state, getTodayKey());
-  if (!view) return null;
+function WeekStrip({ view }: { view: PlanView }) {
+  return (
+    <div className="flex w-full items-center justify-between gap-3 rounded-2xl border border-[var(--border)] px-3 py-2.5">
+      <div className="flex items-center gap-1.5" role="img" aria-label="Lecture des 7 derniers jours">
+        {view.week.map((d) => (
+          <span key={d.key} className="flex flex-col items-center gap-1">
+            <span
+              className={`flex h-6 w-6 items-center justify-center rounded-full border-2 transition-colors ${
+                d.read
+                  ? "border-[var(--color-accent)] bg-[var(--color-accent)] text-white"
+                  : d.isToday
+                    ? "border-[var(--color-accent)]/60 text-transparent"
+                    : "border-[var(--border)] text-transparent"
+              }`}
+            >
+              <CheckIcon className="h-3 w-3" />
+            </span>
+            <span className={`text-[10px] font-semibold ${d.isToday ? "text-[var(--foreground)]" : "text-[var(--muted)]"}`}>
+              {d.label}
+            </span>
+          </span>
+        ))}
+      </div>
+      <span
+        className={`inline-flex shrink-0 items-center gap-1 text-xs font-bold ${
+          view.streak > 0 ? "text-[var(--color-accent)]" : "text-[var(--muted)]"
+        }`}
+        aria-label={`Série de ${view.streak} jour${view.streak > 1 ? "s" : ""}`}
+      >
+        <FlameIcon className="h-4 w-4" />
+        {view.streak}
+      </span>
+    </div>
+  );
+}
 
+// ------------------------------------------------------------
+// Onglet « Aujourd'hui »
+// ------------------------------------------------------------
+
+const NEXT_LABEL = { late: "Rattraper", today: "Continuer", ahead: "Lire en avance" } as const;
+
+function TodayTab({ view, leave }: { view: PlanView; leave: () => void }) {
+  const [showAllLate, setShowAllLate] = useState(false);
   const lateShown = showAllLate ? view.late : view.late.slice(0, 5);
+  const next = view.next;
 
   return (
     <div className="flex flex-col gap-5">
-      {/* Anneau */}
-      <div className="flex flex-col items-center">
-        <ProgressRing percent={view.percent} size={168} stroke={12}>
-          <span className="text-4xl font-bold leading-none text-[var(--foreground)]" style={{ fontFamily: "var(--font-serif)" }}>
-            {view.percent}
-            <span className="text-xl">%</span>
+      {/* Reprendre où j'en suis */}
+      {next && view.nextKind && !view.finished && (
+        <Link
+          href={`/bible/${slugify(next.ref.book)}/${next.ref.chapter}`}
+          onClick={() => {
+            markIfAutoMark(next.index);
+            leave();
+          }}
+          className="flex min-h-[56px] items-center gap-3 rounded-2xl bg-[var(--color-accent)] px-4 text-white transition-all active:scale-[0.98]"
+        >
+          <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-white/15">
+            <PlayIcon className="h-4 w-4" />
           </span>
-          <span className="mt-1 text-[11px] font-semibold uppercase tracking-widest text-[var(--muted)]">lu</span>
-        </ProgressRing>
-        <p className="mt-3 text-sm font-semibold text-[var(--foreground)]">
-          {view.finished
-            ? "Plan terminé"
-            : view.notStarted
-              ? "Le plan commence bientôt"
-              : view.overtime
-                ? "Durée du plan écoulée"
-                : `Jour ${view.dayNumber} sur ${view.def.days}`}
-        </p>
-        <p className="text-xs text-[var(--muted)]">
-          {view.readCount} / {view.total} chapitres · {view.def.scope}
-        </p>
-      </div>
+          <span className="min-w-0 flex-1">
+            <span className="block text-[11px] font-semibold opacity-80">{NEXT_LABEL[view.nextKind]}</span>
+            <span className="block truncate text-sm font-bold">{refLabel(next.ref)}</span>
+          </span>
+          <ChevronRight />
+        </Link>
+      )}
 
       {/* Terminé */}
       {view.finished && (
@@ -227,9 +298,7 @@ function Active({ onClose, onNavigate }: { onClose: () => void; onNavigate?: () 
       {!view.finished && view.today.length > 0 && (
         <section>
           <div className="mb-2 flex items-center justify-between gap-2">
-            <h3 className="text-[11px] font-bold uppercase tracking-widest text-[var(--muted)]">
-              Lecture du jour
-            </h3>
+            <h3 className="text-[11px] font-bold uppercase tracking-widest text-[var(--muted)]">Lecture du jour</h3>
             {view.todayDone && (
               <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-[var(--color-accent)]">
                 <CheckIcon className="h-3 w-3" />
@@ -282,7 +351,183 @@ function Active({ onClose, onNavigate }: { onClose: () => void; onNavigate?: () 
               {showAllLate ? "Voir moins" : `Voir les ${view.late.length - 5} autres`}
             </button>
           )}
+          <button
+            type="button"
+            onClick={() => {
+              if (confirm("Le calendrier repart du premier chapitre non lu. Ta progression est conservée. Continuer ?")) {
+                realignCalendar(getTodayKey());
+              }
+            }}
+            className="mt-1 inline-flex min-h-[44px] w-full items-center justify-center gap-2 rounded-xl border border-[var(--border)] text-xs font-semibold text-[var(--foreground)] transition-all hover:border-[var(--color-accent)] hover:text-[var(--color-accent)]"
+          >
+            <RefreshIcon className="h-4 w-4" />
+            Recaler le calendrier
+          </button>
         </section>
+      )}
+
+      {!view.finished && view.today.length === 0 && view.late.length === 0 && !view.overtime && (
+        <p className="rounded-2xl border border-[var(--border)] p-3 text-center text-xs text-[var(--muted)]">
+          {view.notStarted ? `Rien à lire avant le ${formatDateFr(view.startDate)}.` : "Rien de prévu aujourd'hui."}
+        </p>
+      )}
+    </div>
+  );
+}
+
+// ------------------------------------------------------------
+// Options (pause, lecture automatique)
+// ------------------------------------------------------------
+
+function Options({ state, view }: { state: PlanState; view: PlanView }) {
+  return (
+    <div className="flex flex-col gap-2">
+      <button
+        type="button"
+        role="switch"
+        aria-checked={!!state.autoMark}
+        onClick={() => setAutoMark(!state.autoMark)}
+        className="flex min-h-[52px] w-full items-center gap-3 rounded-2xl border border-[var(--border)] px-3 text-left transition-colors hover:border-[var(--color-accent)]/60"
+      >
+        <span className="min-w-0 flex-1">
+          <span className="block text-sm font-semibold text-[var(--foreground)]">Cocher en ouvrant</span>
+          <span className="block text-xs text-[var(--muted)]">Le chapitre est marqué lu dès que tu l&apos;ouvres depuis le plan.</span>
+        </span>
+        <span
+          className={`relative h-6 w-10 shrink-0 rounded-full transition-colors ${
+            state.autoMark ? "bg-[var(--color-accent)]" : "bg-[var(--border)]"
+          }`}
+          aria-hidden="true"
+        >
+          <span
+            className={`absolute top-0.5 h-5 w-5 rounded-full bg-white shadow transition-all ${
+              state.autoMark ? "left-[18px]" : "left-0.5"
+            }`}
+          />
+        </span>
+      </button>
+
+      {!view.finished && (
+        <button
+          type="button"
+          onClick={() => togglePause(getTodayKey())}
+          className="flex min-h-[52px] w-full items-center gap-3 rounded-2xl border border-[var(--border)] px-3 text-left transition-colors hover:border-[var(--color-accent)]/60"
+        >
+          <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[var(--color-accent)]/10 text-[var(--color-accent)]">
+            {view.paused ? <PlayIcon className="h-4 w-4" /> : <PauseIcon className="h-4 w-4" />}
+          </span>
+          <span className="min-w-0 flex-1">
+            <span className="block text-sm font-semibold text-[var(--foreground)]">
+              {view.paused ? "Reprendre le plan" : "Mettre en pause"}
+            </span>
+            <span className="block text-xs text-[var(--muted)]">
+              {view.paused
+                ? "Le calendrier est repoussé du temps de pause."
+                : "Vacances, maladie : le calendrier se fige, ta série est préservée."}
+            </span>
+          </span>
+        </button>
+      )}
+    </div>
+  );
+}
+
+// ------------------------------------------------------------
+// Plan en cours
+// ------------------------------------------------------------
+
+type Tab = "today" | "books" | "stats";
+const TABS: { id: Tab; label: string }[] = [
+  { id: "today", label: "Aujourd'hui" },
+  { id: "books", label: "Parcours" },
+  { id: "stats", label: "Bilan" },
+];
+
+function Active({ onClose, onNavigate }: { onClose: () => void; onNavigate?: () => void }) {
+  // « Lire » quitte la page : on ferme la fenêtre ET, si le bouton est dans le menu, le menu
+  const leave = () => {
+    onNavigate?.();
+    onClose();
+  };
+  const state = useSyncExternalStore(subscribePlan, getPlanState, getServerPlanState);
+  const [tab, setTab] = useState<Tab>("today");
+  if (!state) return null;
+  const view = buildPlanView(state, getTodayKey());
+  if (!view) return null;
+
+  return (
+    <div className="flex flex-col gap-5">
+      {/* Anneau */}
+      <div className="flex flex-col items-center">
+        <ProgressRing percent={view.percent} size={168} stroke={12}>
+          <span className="text-4xl font-bold leading-none text-[var(--foreground)]" style={{ fontFamily: "var(--font-serif)" }}>
+            {view.percent}
+            <span className="text-xl">%</span>
+          </span>
+          <span className="mt-1 text-[11px] font-semibold uppercase tracking-widest text-[var(--muted)]">lu</span>
+        </ProgressRing>
+        <p className="mt-3 text-sm font-semibold text-[var(--foreground)]">
+          {view.finished
+            ? "Plan terminé"
+            : view.paused
+              ? "Plan en pause"
+              : view.notStarted
+                ? "Le plan commence bientôt"
+                : view.overtime
+                  ? "Durée du plan écoulée"
+                  : `Jour ${view.dayNumber} sur ${view.def.days}`}
+        </p>
+        <p className="text-xs text-[var(--muted)]">
+          {view.readCount} / {view.total} chapitres · {view.def.scope}
+        </p>
+      </div>
+
+      <WeekStrip view={view} />
+
+      {/* Pause */}
+      {view.paused && view.pausedSince && (
+        <div className="flex items-center gap-3 rounded-2xl border border-[var(--color-accent)]/40 bg-[var(--color-accent)]/5 p-3">
+          <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[var(--color-accent)] text-white">
+            <PauseIcon className="h-4 w-4" />
+          </span>
+          <p className="min-w-0 flex-1 text-xs leading-relaxed text-[var(--foreground)]">
+            En pause depuis le {formatDateFr(view.pausedSince)}.
+          </p>
+          <button
+            type="button"
+            onClick={() => togglePause(getTodayKey())}
+            className="min-h-[40px] shrink-0 rounded-xl bg-[var(--color-accent)] px-3 text-xs font-semibold text-white transition-all active:scale-95"
+          >
+            Reprendre
+          </button>
+        </div>
+      )}
+
+      {/* Onglets */}
+      <div role="tablist" aria-label="Sections du plan" className="grid grid-cols-3 gap-1 rounded-xl border border-[var(--border)] p-1">
+        {TABS.map((t) => (
+          <button
+            key={t.id}
+            type="button"
+            role="tab"
+            aria-selected={tab === t.id}
+            onClick={() => setTab(t.id)}
+            className={`min-h-[40px] rounded-lg text-xs font-semibold transition-colors ${
+              tab === t.id ? "bg-[var(--color-accent)] text-white" : "text-[var(--muted)] hover:text-[var(--foreground)]"
+            }`}
+          >
+            {t.label}
+          </button>
+        ))}
+      </div>
+
+      {tab === "today" && <TodayTab view={view} leave={leave} />}
+      {tab === "books" && <PlanBooks state={state} view={view} onLeave={leave} />}
+      {tab === "stats" && (
+        <div className="flex flex-col gap-5">
+          <PlanStats view={view} />
+          <Options state={state} view={view} />
+        </div>
       )}
 
       {/* Changer de plan */}
@@ -312,7 +557,7 @@ function Active({ onClose, onNavigate }: { onClose: () => void; onNavigate?: () 
 
 function PlanSheet({ onClose, onNavigate }: { onClose: () => void; onNavigate?: () => void }) {
   const state = useSyncExternalStore(subscribePlan, getPlanState, getServerPlanState);
-  const def = state ? PLANS.find((p) => p.id === state.planId) : null;
+  const def = state ? getPlanDefFor(state) : null;
   return (
     <ModalShell label="Plan de lecture" onClose={onClose}>
       <div className="mb-3 flex items-center justify-between gap-3">
